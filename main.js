@@ -4,14 +4,14 @@ import PlayScene from './src/scenes/PlayScene';
 
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: '100%',
+  height: '100%',
   parent: 'game-container',
   backgroundColor: '#5c94fc', // Classic Mario sky blue
   pixelArt: true,
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.NO_CENTER
   },
   physics: {
     default: 'arcade',
