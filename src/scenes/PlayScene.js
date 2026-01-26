@@ -28,7 +28,7 @@ export default class PlayScene extends Phaser.Scene {
     // Position at width/2, height/2 (center of screen) but relative to camera (ScrollFactor 0)
     this.add.tileSprite(width / 2, height / 2, visibleWidth, visibleHeight, 'sky_main')
         .setScrollFactor(0)
-        .setScale(skyScale) // Scale the TILE, not the sprite, usually better but here sprite scale works if ScrollFactor is 0
+        .setTileScale(skyScale) // Scale the TILE, not the sprite, usually better but here sprite scale works if ScrollFactor is 0
         .setDepth(-10);
 
     // 2. Create Layout
