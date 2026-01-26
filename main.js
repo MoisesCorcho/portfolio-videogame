@@ -4,20 +4,20 @@ import PlayScene from './src/scenes/PlayScene';
 
 const config = {
   type: Phaser.AUTO,
-  width: '100%',
-  height: '100%',
+  width: 1280,
+  height: 720,
   parent: 'game-container',
   backgroundColor: '#5c94fc', // Classic Mario sky blue
   pixelArt: true,
   scale: {
-    mode: Phaser.Scale.RESIZE,
-    autoCenter: Phaser.Scale.NO_CENTER
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
   },
   physics: {
     default: 'arcade',
     arcade: {
       gravity: { y: 1000 },
-      debug: true // Enable debug for development
+      debug: false // Enable debug for development
     }
   },
   scene: [Preloader, PlayScene]

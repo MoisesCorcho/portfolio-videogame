@@ -22,9 +22,14 @@ export default class Preloader extends Phaser.Scene {
     loadingText.setOrigin(0.5, 0.5);
 
     // Load Assets
-    this.load.image('bg1', 'assets/background/background_layer_1.png');
-    this.load.image('bg2', 'assets/background/background_layer_2.png');
-    this.load.image('bg3', 'assets/background/background_layer_3.png');
+    
+    // Legacy Fantasy Assets
+    this.load.image('sky_main', 'assets/legacyFantasy/backgound/Background.png');
+    this.load.image('tree_green', 'assets/legacyFantasy/Trees/Green-Tree.png');
+    this.load.image('tree_red', 'assets/legacyFantasy/Trees/Red-Tree.png');
+    this.load.image('tree_yellow', 'assets/legacyFantasy/Trees/Yellow-Tree.png');
+    this.load.image('tree_dark', 'assets/legacyFantasy/Trees/Dark-Tree.png');
+    this.load.image('tree_golden', 'assets/legacyFantasy/Trees/Golden-Tree.png');
     
     // Character (Assuming 32x32, we verify later)
     // Common free assets are often 48x48 or 50x37. I'll load it as a static image first to debug or 

@@ -11,33 +11,25 @@ export default class PlayScene extends Phaser.Scene {
     const height = this.scale.height;
 
     // 1. Background (Parallax with TileSprite)
-    // 1. Background (Disabled for now)
-    // const bg1Tex = this.textures.get('bg1').getSourceImage();
-    // const bg1ScaleX = width / bg1Tex.width;
-    // const bg1ScaleY = height / bg1Tex.height;
+    // 1. Background
 
-    // this.bg1 = this.add.tileSprite(0, 0, width, height, 'bg1')
-    //     .setOrigin(0, 0)
-    //     .setScrollFactor(0)
-    //     .setTileScale(bg1ScaleX, bg1ScaleY);
-        
-    // const bg2Tex = this.textures.get('bg2').getSourceImage();
-    // const bg2ScaleX = width / bg2Tex.width;
-    // const bg2ScaleY = height / bg2Tex.height;
+    // Sky Main (Fixed)
+    // Camera is zoomed 2.5x
+    const zoom = 2.5; 
+    
+    // The camera sees a "world" window smaller than the screen resolution.
+    const visibleWidth = width / zoom;
+    const visibleHeight = height / zoom;
+    
+    const skyTex = this.textures.get('sky_main').getSourceImage();
+    const skyScale = Math.max(visibleWidth / skyTex.width, visibleHeight / skyTex.height);
 
-    // this.bg2 = this.add.tileSprite(0, 0, width, height, 'bg2')
-    //     .setOrigin(0, 0)
-    //     .setScrollFactor(0)
-    //     .setTileScale(bg2ScaleX, bg2ScaleY);
-        
-    // const bg3Tex = this.textures.get('bg3').getSourceImage();
-    // const bg3ScaleX = width / bg3Tex.width;
-    // const bg3ScaleY = height / bg3Tex.height;
-
-    // this.bg3 = this.add.tileSprite(0, 0, width, height, 'bg3')
-    //     .setOrigin(0, 0)
-    //     .setScrollFactor(0)
-    //     .setTileScale(bg3ScaleX, bg3ScaleY);
+    // Use TileSprite to ensure coverage and easier scaling
+    // Position at width/2, height/2 (center of screen) but relative to camera (ScrollFactor 0)
+    this.add.tileSprite(width / 2, height / 2, visibleWidth, visibleHeight, 'sky_main')
+        .setScrollFactor(0)
+        .setScale(skyScale) // Scale the TILE, not the sprite, usually better but here sprite scale works if ScrollFactor is 0
+        .setDepth(-10);
 
     // 2. Create Layout
     this.createLevel();
