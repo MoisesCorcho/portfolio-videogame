@@ -30,6 +30,11 @@ export const ASSETS = {
   SIGN: 'sign',
   LAMP: 'lamp',
   LARGE_TENT: 'large_tent',
+  FENCE_1: 'fence_1',
+  FENCE_2: 'fence_2',
+  ROCK_1: 'rock_1',
+  ROCK_2: 'rock_2',
+  ROCK_3: 'rock_3',
 };
 
 export const INTERACTION_TYPES = {
