@@ -1,5 +1,6 @@
 import Player from '../player/Player';
 import { ASSETS, EVENTS, INTERACTION_TYPES } from '../utils/Constants';
+import { openModal } from '../ui/stores/uiStore';
 
 export default class PlayScene extends Phaser.Scene {
   constructor() {
@@ -180,9 +181,6 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   triggerModal(type) {
-    const event = new CustomEvent(EVENTS.OPEN_MODAL, {
-      detail: { type: type },
-    });
-    window.dispatchEvent(event);
+    openModal(type);
   }
 }

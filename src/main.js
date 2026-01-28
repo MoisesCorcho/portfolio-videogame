@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Preloader from './scenes/Preloader';
 import PlayScene from './scenes/PlayScene';
-import UIManager from './managers/UIManager';
+import App from './ui/App.svelte';
 
 const config = {
   type: Phaser.AUTO,
@@ -25,6 +25,13 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+window.gameInstance = game; // Expose for Svelte to resume
 
-// Initialize UI Manager
-new UIManager(game);
+import { mount } from 'svelte';
+
+// Mount Svelte UI
+const app = mount(App, {
+  target: document.getElementById('ui-layer'),
+});
+
+export default app;
