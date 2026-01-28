@@ -16,7 +16,7 @@ export const ResumeData = {
     {
       id: 'exp_flusso',
       role: 'Laravel Backend Developer',
-      company: 'Flusso',
+      company: 'andrestelocambia',
       date: 'Diciembre 2025 – Febrero 2026',
       description:
         'Realicé un rebranding completo de la Landing Page y el Panel de Usuario de la plataforma de Exchange andrestelocambia, migrando toda la interfaz de Bootstrap a Tailwind CSS. Se refactorizaron módulos críticos como el flujo de envío de dinero. Implementación de OAuth con Google y Google Reviews vía SerpApi.',

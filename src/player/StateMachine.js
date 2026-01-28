@@ -5,9 +5,6 @@ export default class StateMachine {
     this.stateArgs = stateArgs;
     this.state = null;
 
-    // States instances are deferred until actually needed or initialized here?
-    // Let's create instances for all states to keep them persistent (optional)
-    // For simplicity, we step() the current state.
     for (const state of Object.values(this.possibleStates)) {
       state.stateMachine = this;
     }

@@ -13,7 +13,6 @@ export default class PlayScene extends Phaser.Scene {
     const height = this.scale.height;
 
     // 1. Background (Parallax with TileSprite)
-    // Camera is zoomed 2.5x
     const zoom = 2.5;
 
     const visibleWidth = width / zoom;
@@ -40,14 +39,13 @@ export default class PlayScene extends Phaser.Scene {
     // 2. Create Layout
     this.createLevel();
 
-    // 3. Create Player (Refactored)
+    // 3. Create Player
     this.createPlayer();
 
     // 6. Interactables
     this.createInteractables();
 
-    // 5. Input (Still needed for Interaction check 'E', but player movement is in Player class)
-    // We can keep 'keys' here for scene-level inputs if any, but Player handles its own movement inputs.
+    // 5. Input
     this.keys = this.input.keyboard.addKeys({
       e: Phaser.Input.Keyboard.KeyCodes.E,
     });

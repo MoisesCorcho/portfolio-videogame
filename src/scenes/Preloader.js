@@ -47,10 +47,7 @@ export default class Preloader extends Phaser.Scene {
       'assets/legacyFantasy/Trees/Golden-Tree.png'
     );
 
-    // Character (Assuming 32x32, we verify later)
-    // Common free assets are often 48x48 or 50x37. I'll load it as a static image first to debug or
-    // better yet, standard Oak Woods char is often a large sheet. Let's load as spritesheet with a guess.
-    // If it fails, Phaser usually warns or shows it just wrong.
+    // Character
     this.load.spritesheet(ASSETS.PLAYER, 'assets/character/char_blue.png', {
       frameWidth: 56,
       frameHeight: 56,
@@ -62,8 +59,7 @@ export default class Preloader extends Phaser.Scene {
 
     this.load.tilemapTiledJSON(ASSETS.LEVEL_1_MAP, ASSETS.LEVEL_1_JSON);
 
-    // Load tileset as spritesheet to pick individual tiles
-    // Oak Woods is typically 24x24
+    // Load tileset
     this.load.spritesheet(
       ASSETS.TILES,
       'assets/tilesets/oak_woods_tileset.png',
@@ -146,7 +142,7 @@ export default class Preloader extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
         start: 8,
         end: 13,
-      }), // Row 2 (0-indexed logic: 8 sprites per row)
+      }), // Row 2
       frameRate: 12,
       repeat: 0,
     });
