@@ -63,14 +63,20 @@
                  "type":"",
                  "visible":true,
                  "width":45,
-                 "x":385.333333333333,
-                 "y":935.666666666667
+                 "x":385.333,
+                 "y":935.667
                 }, 
                 {
                  "gid":332,
                  "height":128,
                  "id":20,
                  "name":"large_tent",
+                 "properties":[
+                        {
+                         "name":"interactionType",
+                         "type":"string",
+                         "value":"profile"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -83,6 +89,12 @@
                  "height":57,
                  "id":21,
                  "name":"lamp",
+                 "properties":[
+                        {
+                         "name":"interactionType",
+                         "type":"string",
+                         "value":"education"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -115,22 +127,16 @@
                  "y":888
                 }, 
                 {
-                 "gid":321,
-                 "height":57,
-                 "id":34,
-                 "name":"lamp",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":23,
-                 "x":790,
-                 "y":936
-                }, 
-                {
                  "gid":325,
                  "height":31,
                  "id":35,
                  "name":"sign",
+                 "properties":[
+                        {
+                         "name":"interactionType",
+                         "type":"string",
+                         "value":"skills"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -235,7 +241,7 @@
          "height":40,
          "id":1,
          "name":"Ground",
-         "offsetx":0.0208333333334849,
+         "offsetx":0.0208333,
          "offsety":-0.125,
          "opacity":1,
          "type":"tilelayer",

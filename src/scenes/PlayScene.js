@@ -14,7 +14,6 @@ export default class PlayScene extends Phaser.Scene {
     const height = this.scale.height;
 
     // 1. Background (Parallax with TileSprite)
-    // 1. Background (Parallax with TileSprite)
     const zoom = GAME_CONFIG.zoom;
 
     const visibleWidth = width / zoom + 2;
@@ -139,38 +138,28 @@ export default class PlayScene extends Phaser.Scene {
     if (!objectsLayer) return;
 
     objectsLayer.objects.forEach((obj) => {
-      if (obj.name === ASSETS.SHOP) {
-        const shop = this.interactables.create(obj.x, obj.y, ASSETS.SHOP);
-        shop.setOrigin(0, 1);
-        shop.setData('type', INTERACTION_TYPES.PROFILE);
-        shop.refreshBody();
-      } else if (obj.name === ASSETS.SKILLS || obj.name === ASSETS.SIGN) {
-        const sign = this.interactables.create(obj.x, obj.y, ASSETS.SIGN);
-        sign.setOrigin(0, 1);
-        sign.setData('type', INTERACTION_TYPES.SKILLS);
-        sign.refreshBody();
-      } else if (obj.name === OBJECT_NAMES.PROJECTS) {
-        const sign = this.interactables.create(obj.x, obj.y, ASSETS.SIGN);
-        sign.setOrigin(0, 1);
-        sign.setData('type', INTERACTION_TYPES.EXPERIENCE);
-        sign.refreshBody();
-      } else if (obj.name === ASSETS.LAMP) {
-        const lamp = this.interactables.create(obj.x, obj.y, ASSETS.LAMP);
-        lamp.setOrigin(0, 1);
-        lamp.setData('type', INTERACTION_TYPES.EDUCATION);
-        lamp.refreshBody();
-      } else if (obj.name === ASSETS.LARGE_TENT) {
-        const tent = this.interactables.create(obj.x, obj.y, ASSETS.LARGE_TENT);
-        tent.setOrigin(0, 1);
-        tent.setData('type', INTERACTION_TYPES.EXPERIENCE);
-        tent.refreshBody();
+      // Get custom properties from Tiled
+      const interactionType = obj.properties?.find((p) => p.name === 'interactionType')?.value;
+      const assetKey = obj.properties?.find((p) => p.name === 'assetKey')?.value || obj.name;
 
-        if (obj.width && obj.height) {
-          tent.setDisplaySize(obj.width, obj.height);
+      if (interactionType) {
+        // It's an interactable object (Physics body + Modal trigger)
+        const item = this.interactables.create(obj.x, obj.y, assetKey);
+        item.setOrigin(0, 1);
+        item.setData('type', interactionType);
+        item.refreshBody();
+
+        // Apply custom size if defined in Tiled
+        if (obj.width && obj.height && (obj.width !== item.width || obj.height !== item.height)) {
+          item.setDisplaySize(obj.width, obj.height);
+          item.refreshBody();
         }
-      } else if (obj.name.startsWith(OBJECT_NAMES.ROCKS) || obj.name.startsWith(OBJECT_NAMES.FENCE)) {
-        const img = this.add.image(obj.x, obj.y, obj.name).setOrigin(0, 1);
-        if (obj.width && obj.height) {
+      } else if (obj.name && obj.name !== '') {
+        // It's a decorative object (Static image)
+        const img = this.add.image(obj.x, obj.y, assetKey).setOrigin(0, 1);
+        
+        // Apply custom size if defined in Tiled
+        if (obj.width && obj.height && (obj.width !== img.width || obj.height !== img.height)) {
           img.setDisplaySize(obj.width, obj.height);
         }
       }
