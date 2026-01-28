@@ -12,16 +12,16 @@ const config = {
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.RESIZE, // Switch to RESIZE as per previous intent for full screen
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {
     default: 'arcade',
     arcade: {
       gravity: { y: 1000 },
-      debug: true // Enable debug for development
-    }
+      debug: true, // Enable debug for development
+    },
   },
-  scene: [Preloader, PlayScene]
+  scene: [Preloader, PlayScene],
 };
 
 const game = new Phaser.Game(config);
@@ -33,24 +33,24 @@ const closeModal = document.getElementById('close-modal');
 
 // Close Modal Logic
 closeModal.addEventListener('click', () => {
-    uiLayer.classList.add('hidden');
-    game.scene.resume('PlayScene'); // Resume game
+  uiLayer.classList.add('hidden');
+  game.scene.resume('PlayScene'); // Resume game
 });
 
 // Open Modal Logic
 window.addEventListener('open-modal', (event) => {
-    const type = event.detail.type;
-    console.log('Open Modal:', type);
-    
-    // Pause Game
-    game.scene.pause('PlayScene');
+  const type = event.detail.type;
+  console.log('Open Modal:', type);
 
-    // Set Content
-    let content = '';
-    
-    if (type === 'profile' || type === 'about') {
-        const p = ResumeData.profile;
-        content = `
+  // Pause Game
+  game.scene.pause('PlayScene');
+
+  // Set Content
+  let content = '';
+
+  if (type === 'profile' || type === 'about') {
+    const p = ResumeData.profile;
+    content = `
             <div class="resume-section">
                 <h2>${p.name}</h2>
                 <h3 class="text-xl text-gray-300">${p.title}</h3>
@@ -66,10 +66,10 @@ window.addEventListener('open-modal', (event) => {
                 </div>
             </div>
         `;
-    } else if (type === 'experience') {
-        content = `<h2>Experience</h2><div class="space-y-4">`;
-        ResumeData.experience.forEach(exp => {
-            content += `
+  } else if (type === 'experience') {
+    content = `<h2>Experience</h2><div class="space-y-4">`;
+    ResumeData.experience.forEach((exp) => {
+      content += `
                 <div class="p-4 bg-gray-800 rounded border border-gray-700">
                     <h3 class="text-lg font-bold text-yellow-400">${exp.role}</h3>
                     <div class="flex justify-between text-sm text-gray-400 mb-2">
@@ -78,15 +78,15 @@ window.addEventListener('open-modal', (event) => {
                     </div>
                     <p class="text-sm mb-2">${exp.description}</p>
                     <div class="flex flex-wrap gap-2">
-                        ${exp.stack.map(s => `<span class="px-2 py-1 bg-blue-900 rounded text-xs">${s}</span>`).join('')}
+                        ${exp.stack.map((s) => `<span class="px-2 py-1 bg-blue-900 rounded text-xs">${s}</span>`).join('')}
                     </div>
                 </div>
             `;
-        });
-        content += `</div>`;
-    } else if (type === 'skills') {
-        const s = ResumeData.skills;
-        content = `
+    });
+    content += `</div>`;
+  } else if (type === 'skills') {
+    const s = ResumeData.skills;
+    content = `
             <h2>Skills</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-gray-800 p-3 rounded">
@@ -107,26 +107,26 @@ window.addEventListener('open-modal', (event) => {
                 </div>
             </div>
         `;
-    } else if (type === 'education') {
-        content = `<h2>Education & Certifications</h2><div class="space-y-4">`;
-        ResumeData.education.forEach(edu => {
-             content += `
+  } else if (type === 'education') {
+    content = `<h2>Education & Certifications</h2><div class="space-y-4">`;
+    ResumeData.education.forEach((edu) => {
+      content += `
                 <div class="p-3 bg-gray-800 rounded border-l-4 border-green-500">
                     <h3 class="font-bold">${edu.degree}</h3>
                     <p class="text-sm text-gray-300">${edu.school}</p>
                     <p class="text-xs text-gray-500">${edu.date}</p>
                 </div>
              `;
-        });
-        content += `<h3 class="mt-4 text-yellow-400">Certifications</h3><ul class="list-disc pl-5 text-sm">`;
-        ResumeData.certs.forEach(cert => {
-            content += `<li>${cert}</li>`;
-        });
-        content += `</ul></div>`;
-    } else {
-        content = `<p>Unknown section type: ${type}</p>`;
-    }
+    });
+    content += `<h3 class="mt-4 text-yellow-400">Certifications</h3><ul class="list-disc pl-5 text-sm">`;
+    ResumeData.certs.forEach((cert) => {
+      content += `<li>${cert}</li>`;
+    });
+    content += `</ul></div>`;
+  } else {
+    content = `<p>Unknown section type: ${type}</p>`;
+  }
 
-    modalContent.innerHTML = content;
-    uiLayer.classList.remove('hidden');
+  modalContent.innerHTML = content;
+  uiLayer.classList.remove('hidden');
 });

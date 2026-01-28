@@ -12,18 +12,28 @@ export default class PlayScene extends Phaser.Scene {
 
     // 1. Background (Parallax with TileSprite)
     // Camera is zoomed 2.5x
-    const zoom = 2.5; 
-    
+    const zoom = 2.5;
+
     const visibleWidth = width / zoom;
     const visibleHeight = height / zoom;
-    
-    const skyTex = this.textures.get('sky_main').getSourceImage();
-    const skyScale = Math.max(visibleWidth / skyTex.width, visibleHeight / skyTex.height);
 
-    this.add.tileSprite(width / 2, height / 2, visibleWidth, visibleHeight, 'sky_main')
-        .setScrollFactor(0)
-        .setTileScale(skyScale) 
-        .setDepth(-10);
+    const skyTex = this.textures.get('sky_main').getSourceImage();
+    const skyScale = Math.max(
+      visibleWidth / skyTex.width,
+      visibleHeight / skyTex.height
+    );
+
+    this.add
+      .tileSprite(
+        width / 2,
+        height / 2,
+        visibleWidth,
+        visibleHeight,
+        'sky_main'
+      )
+      .setScrollFactor(0)
+      .setTileScale(skyScale)
+      .setDepth(-10);
 
     // 2. Create Layout
     this.createLevel();
@@ -37,19 +47,29 @@ export default class PlayScene extends Phaser.Scene {
     // 5. Input (Still needed for Interaction check 'E', but player movement is in Player class)
     // We can keep 'keys' here for scene-level inputs if any, but Player handles its own movement inputs.
     this.keys = this.input.keyboard.addKeys({
-        e: Phaser.Input.Keyboard.KeyCodes.E
+      e: Phaser.Input.Keyboard.KeyCodes.E,
     });
 
     // Camera follow behavior
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setZoom(2.5); 
+    this.cameras.main.setZoom(2.5);
 
     if (this.map) {
-        this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+      this.physics.world.setBounds(
+        0,
+        0,
+        this.map.widthInPixels,
+        this.map.heightInPixels
+      );
+      this.cameras.main.setBounds(
+        0,
+        0,
+        this.map.widthInPixels,
+        this.map.heightInPixels
+      );
     } else {
-        this.physics.world.setBounds(0, 0, 2400, 800);
-        this.cameras.main.setBounds(0, 0, 2400, 600);
+      this.physics.world.setBounds(0, 0, 2400, 800);
+      this.cameras.main.setBounds(0, 0, 2400, 600);
     }
 
     // 7. Collisions
@@ -74,18 +94,18 @@ export default class PlayScene extends Phaser.Scene {
     const objectsLayer = this.map.getObjectLayer('Objects');
 
     if (startLayer && startLayer.objects) {
-        spawnPoint = startLayer.objects.find(obj => obj.name === 'start');
+      spawnPoint = startLayer.objects.find((obj) => obj.name === 'start');
     }
     if (!spawnPoint && objectsLayer && objectsLayer.objects) {
-        spawnPoint = objectsLayer.objects.find(obj => obj.name === 'start');
+      spawnPoint = objectsLayer.objects.find((obj) => obj.name === 'start');
     }
-    
+
     let spawnX = 100;
     let spawnY = 550;
 
     if (spawnPoint) {
-        spawnX = spawnPoint.x;
-        spawnY = spawnPoint.y;
+      spawnX = spawnPoint.x;
+      spawnY = spawnPoint.y;
     }
 
     // Instantiate State Machine Player
@@ -94,58 +114,53 @@ export default class PlayScene extends Phaser.Scene {
 
   createInteractables() {
     this.interactables = this.physics.add.staticGroup();
-    
+
     const objectsLayer = this.map.getObjectLayer('Objects');
     if (!objectsLayer) return;
 
-    objectsLayer.objects.forEach(obj => {
-        if (obj.name === 'shop') {
-            const shop = this.interactables.create(obj.x, obj.y, 'shop');
-            shop.setOrigin(0, 1); 
-            shop.setData('type', 'profile'); 
-            shop.refreshBody();
-        } 
-        else if (obj.name === 'skills' || obj.name === 'sign') { 
-            const sign = this.interactables.create(obj.x, obj.y, 'sign');
-            sign.setOrigin(0, 1);
-            sign.setData('type', 'skills');
-            sign.refreshBody();
+    objectsLayer.objects.forEach((obj) => {
+      if (obj.name === 'shop') {
+        const shop = this.interactables.create(obj.x, obj.y, 'shop');
+        shop.setOrigin(0, 1);
+        shop.setData('type', 'profile');
+        shop.refreshBody();
+      } else if (obj.name === 'skills' || obj.name === 'sign') {
+        const sign = this.interactables.create(obj.x, obj.y, 'sign');
+        sign.setOrigin(0, 1);
+        sign.setData('type', 'skills');
+        sign.refreshBody();
+      } else if (obj.name === 'projects') {
+        const sign = this.interactables.create(obj.x, obj.y, 'sign');
+        sign.setOrigin(0, 1);
+        sign.setData('type', 'experience');
+        sign.refreshBody();
+      } else if (obj.name === 'lamp') {
+        const lamp = this.interactables.create(obj.x, obj.y, 'lamp');
+        lamp.setOrigin(0, 1);
+        lamp.setData('type', 'education');
+        lamp.refreshBody();
+      } else if (obj.name === 'large_tent') {
+        const tent = this.interactables.create(obj.x, obj.y, 'large_tent');
+        tent.setOrigin(0, 1);
+        tent.setData('type', 'experience');
+        tent.refreshBody();
+
+        if (obj.width && obj.height) {
+          tent.setDisplaySize(obj.width, obj.height);
         }
-        else if (obj.name === 'projects') {
-            const sign = this.interactables.create(obj.x, obj.y, 'sign');
-            sign.setOrigin(0, 1);
-            sign.setData('type', 'experience');
-            sign.refreshBody();
+      } else if (obj.name.startsWith('rock') || obj.name.startsWith('fence')) {
+        const img = this.add.image(obj.x, obj.y, obj.name).setOrigin(0, 1);
+        if (obj.width && obj.height) {
+          img.setDisplaySize(obj.width, obj.height);
         }
-        else if (obj.name === 'lamp') {
-            const lamp = this.interactables.create(obj.x, obj.y, 'lamp');
-            lamp.setOrigin(0, 1);
-            lamp.setData('type', 'education');
-            lamp.refreshBody();
-        }
-        else if (obj.name === 'large_tent') {
-             const tent = this.interactables.create(obj.x, obj.y, 'large_tent');
-             tent.setOrigin(0, 1);
-             tent.setData('type', 'experience');
-             tent.refreshBody();
-             
-             if (obj.width && obj.height) {
-                 tent.setDisplaySize(obj.width, obj.height);
-             }
-        }
-        else if (obj.name.startsWith('rock') || obj.name.startsWith('fence')) {
-            const img = this.add.image(obj.x, obj.y, obj.name).setOrigin(0, 1);
-            if (obj.width && obj.height) {
-                img.setDisplaySize(obj.width, obj.height);
-            }
-        }
+      }
     });
   }
 
   handleInteraction(player, interactable) {
     if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
-        const type = interactable.getData('type');
-        this.triggerModal(type);
+      const type = interactable.getData('type');
+      this.triggerModal(type);
     }
   }
 
@@ -154,7 +169,13 @@ export default class PlayScene extends Phaser.Scene {
     this.player.update();
 
     // Interaction Check
-    this.physics.overlap(this.player, this.interactables, this.handleInteraction, null, this);
+    this.physics.overlap(
+      this.player,
+      this.interactables,
+      this.handleInteraction,
+      null,
+      this
+    );
   }
 
   triggerModal(type) {

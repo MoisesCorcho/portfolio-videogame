@@ -6,12 +6,12 @@ export default class AttackState extends State {
     this.player.anims.play('attack1', true);
 
     this.player.once('animationcomplete', () => {
-        this.stateMachine.transition('idle');
+      this.stateMachine.transition('idle');
     });
   }
 
   update() {
-    // Locked in animation. 
+    // Locked in animation.
     // Could add combo logic here if needed.
   }
 }

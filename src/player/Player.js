@@ -1,15 +1,15 @@
-import Phaser from "phaser"; // Import Phaser to extend Sprite
-import StateMachine from "./StateMachine";
-import IdleState from "./states/IdleState";
-import RunState from "./states/RunState";
-import JumpState from "./states/JumpState";
-import FallState from "./states/FallState";
-import LandingState from "./states/LandingState";
-import AttackState from "./states/AttackState";
+import Phaser from 'phaser'; // Import Phaser to extend Sprite
+import StateMachine from './StateMachine';
+import IdleState from './states/IdleState';
+import RunState from './states/RunState';
+import JumpState from './states/JumpState';
+import FallState from './states/FallState';
+import LandingState from './states/LandingState';
+import AttackState from './states/AttackState';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
-    super(scene, x, y, "player");
+    super(scene, x, y, 'player');
 
     // Add to scene and physics
     scene.add.existing(this);
@@ -40,8 +40,8 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     };
 
     // Initialize State Machine
-    this.stateMachine = new StateMachine("idle", this.states, [scene, this]);
-    this.stateMachine.transition("idle");
+    this.stateMachine = new StateMachine('idle', this.states, [scene, this]);
+    this.stateMachine.transition('idle');
   }
 
   update() {

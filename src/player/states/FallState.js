@@ -11,18 +11,18 @@ export default class FallState extends State {
 
     // Air Control
     if (cursors.left.isDown) {
-        this.player.setVelocityX(-speed);
-        this.player.setFlipX(true);
+      this.player.setVelocityX(-speed);
+      this.player.setFlipX(true);
     } else if (cursors.right.isDown) {
-        this.player.setVelocityX(speed);
-        this.player.setFlipX(false);
+      this.player.setVelocityX(speed);
+      this.player.setFlipX(false);
     } else {
-        this.player.setVelocityX(0); 
+      this.player.setVelocityX(0);
     }
 
     // Transition to Landing
     if (this.player.body.onFloor()) {
-        this.stateMachine.transition('landing');
+      this.stateMachine.transition('landing');
     }
   }
 }
