@@ -42,3 +42,16 @@ export const INTERACTION_TYPES = {
 export const EVENTS = {
   OPEN_MODAL: 'open-modal',
 };
+
+export const MAP_LAYERS = {
+  GROUND: 'Ground',
+  OBJECTS: 'Objects',
+  START: 'Start',
+};
+
+export const OBJECT_NAMES = {
+  START: 'start',
+  PROJECTS: 'projects',
+  ROCKS: 'rock',
+  FENCE: 'fence',
+};

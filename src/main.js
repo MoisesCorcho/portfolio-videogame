@@ -3,22 +3,24 @@ import Preloader from './scenes/Preloader';
 import PlayScene from './scenes/PlayScene';
 import App from './ui/App.svelte';
 
+import { GAME_CONFIG } from './config/GameConfig';
+
 const config = {
   type: Phaser.AUTO,
-  width: 1280,
-  height: 720,
+  width: GAME_CONFIG.width,
+  height: GAME_CONFIG.height,
   parent: 'game-container',
-  backgroundColor: '#5c94fc', // Classic Mario sky blue
+  backgroundColor: GAME_CONFIG.bgColor,
   pixelArt: true,
   scale: {
-    mode: Phaser.Scale.RESIZE, // Switch to RESIZE as per previous intent for full screen
+    mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 1000 },
-      debug: true, // Enable debug for development
+      gravity: { x: 0, y: GAME_CONFIG.gravity },
+      debug: GAME_CONFIG.debug,
     },
   },
   scene: [Preloader, PlayScene],
@@ -30,8 +32,10 @@ window.gameInstance = game; // Expose for Svelte to resume
 import { mount } from 'svelte';
 
 // Mount Svelte UI
-const app = mount(App, {
-  target: document.getElementById('ui-layer'),
-});
+const target = document.getElementById('ui-layer');
+if (target) {
+  mount(App, { target });
+}
+const app = target ? mount : null;
 
 export default app;

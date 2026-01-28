@@ -1,5 +1,5 @@
-import Phaser from 'phaser';
 import { ASSETS, SCENES } from '../utils/Constants';
+import { PLAYER_ANIMS, SPRITE_CONFIG } from '../data/Animations';
 
 export default class Preloader extends Phaser.Scene {
   constructor() {
@@ -48,10 +48,7 @@ export default class Preloader extends Phaser.Scene {
     );
 
     // Character
-    this.load.spritesheet(ASSETS.PLAYER, 'assets/character/char_blue.png', {
-      frameWidth: 56,
-      frameHeight: 56,
-    });
+    this.load.spritesheet(ASSETS.PLAYER, 'assets/character/char_blue.png', SPRITE_CONFIG.PLAYER);
 
     // Decorations
     this.load.image(ASSETS.SIGN, 'assets/decorations/sign.png');
@@ -63,10 +60,7 @@ export default class Preloader extends Phaser.Scene {
     this.load.spritesheet(
       ASSETS.TILES,
       'assets/tilesets/oak_woods_tileset.png',
-      {
-        frameWidth: 24,
-        frameHeight: 24,
-      }
+      SPRITE_CONFIG.TILES
     );
 
     // Decor
@@ -87,64 +81,17 @@ export default class Preloader extends Phaser.Scene {
 
   createAnimations() {
     // Basic animations
-    this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
-        start: 0,
-        end: 5,
-      }),
-      frameRate: 8,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
-        start: 16,
-        end: 23,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'jump',
-      frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
-        start: 24,
-        end: 31,
-      }), // Jump up / Peak
-      frameRate: 10,
-      repeat: 0,
-    });
-
-    this.anims.create({
-      key: 'fall',
-      frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
-        start: 32,
-        end: 37,
-      }), // Falling down (trimmed last 2 frames)
-      frameRate: 10,
-      repeat: 0,
-    });
-
-    this.anims.create({
-      key: 'landing',
-      frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
-        start: 38,
-        end: 39,
-      }),
-      frameRate: 8, // Slower to make it visible
-      repeat: 0,
-    });
-
-    this.anims.create({
-      key: 'attack1',
-      frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
-        start: 8,
-        end: 13,
-      }), // Row 2
-      frameRate: 12,
-      repeat: 0,
+    // Helper to create animations
+    Object.values(PLAYER_ANIMS).forEach((anim) => {
+      this.anims.create({
+        key: anim.key,
+        frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
+          start: anim.start,
+          end: anim.end,
+        }),
+        frameRate: anim.rate,
+        repeat: anim.repeat,
+      });
     });
   }
 }

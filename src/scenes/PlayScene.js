@@ -1,5 +1,6 @@
 import Player from '../player/Player';
-import { ASSETS, EVENTS, INTERACTION_TYPES } from '../utils/Constants';
+import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES } from '../utils/Constants';
+import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
 
 export default class PlayScene extends Phaser.Scene {
@@ -13,7 +14,8 @@ export default class PlayScene extends Phaser.Scene {
     const height = this.scale.height;
 
     // 1. Background (Parallax with TileSprite)
-    const zoom = 2.5;
+    // 1. Background (Parallax with TileSprite)
+    const zoom = GAME_CONFIG.zoom;
 
     const visibleWidth = width / zoom;
     const visibleHeight = height / zoom;
@@ -52,7 +54,7 @@ export default class PlayScene extends Phaser.Scene {
 
     // Camera follow behavior
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setZoom(2.5);
+    this.cameras.main.setZoom(GAME_CONFIG.zoom);
 
     if (this.map) {
       this.physics.world.setBounds(
@@ -68,8 +70,8 @@ export default class PlayScene extends Phaser.Scene {
         this.map.heightInPixels
       );
     } else {
-      this.physics.world.setBounds(0, 0, 2400, 800);
-      this.cameras.main.setBounds(0, 0, 2400, 600);
+      this.physics.world.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
+      this.cameras.main.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
     }
 
     // 7. Collisions
@@ -81,7 +83,7 @@ export default class PlayScene extends Phaser.Scene {
     this.map = map;
 
     const tileset = map.addTilesetImage('oak_woods_tileset', 'tiles');
-    const platforms = map.createLayer('Ground', tileset, 0, 0);
+    const platforms = map.createLayer(MAP_LAYERS.GROUND, tileset, 0, 0);
     platforms.setCollisionBetween(1, 1000);
 
     this.platforms = platforms;
@@ -90,14 +92,14 @@ export default class PlayScene extends Phaser.Scene {
   createPlayer() {
     // Find spawn point
     let spawnPoint = null;
-    const startLayer = this.map.getObjectLayer('Start');
-    const objectsLayer = this.map.getObjectLayer('Objects');
+    const startLayer = this.map.getObjectLayer(MAP_LAYERS.START);
+    const objectsLayer = this.map.getObjectLayer(MAP_LAYERS.OBJECTS);
 
     if (startLayer && startLayer.objects) {
-      spawnPoint = startLayer.objects.find((obj) => obj.name === 'start');
+      spawnPoint = startLayer.objects.find((obj) => obj.name === OBJECT_NAMES.START);
     }
     if (!spawnPoint && objectsLayer && objectsLayer.objects) {
-      spawnPoint = objectsLayer.objects.find((obj) => obj.name === 'start');
+      spawnPoint = objectsLayer.objects.find((obj) => obj.name === OBJECT_NAMES.START);
     }
 
     let spawnX = 100;
@@ -115,7 +117,7 @@ export default class PlayScene extends Phaser.Scene {
   createInteractables() {
     this.interactables = this.physics.add.staticGroup();
 
-    const objectsLayer = this.map.getObjectLayer('Objects');
+    const objectsLayer = this.map.getObjectLayer(MAP_LAYERS.OBJECTS);
     if (!objectsLayer) return;
 
     objectsLayer.objects.forEach((obj) => {
@@ -129,7 +131,7 @@ export default class PlayScene extends Phaser.Scene {
         sign.setOrigin(0, 1);
         sign.setData('type', INTERACTION_TYPES.SKILLS);
         sign.refreshBody();
-      } else if (obj.name === 'projects') {
+      } else if (obj.name === OBJECT_NAMES.PROJECTS) {
         const sign = this.interactables.create(obj.x, obj.y, ASSETS.SIGN);
         sign.setOrigin(0, 1);
         sign.setData('type', INTERACTION_TYPES.EXPERIENCE);
@@ -148,7 +150,7 @@ export default class PlayScene extends Phaser.Scene {
         if (obj.width && obj.height) {
           tent.setDisplaySize(obj.width, obj.height);
         }
-      } else if (obj.name.startsWith('rock') || obj.name.startsWith('fence')) {
+      } else if (obj.name.startsWith(OBJECT_NAMES.ROCKS) || obj.name.startsWith(OBJECT_NAMES.FENCE)) {
         const img = this.add.image(obj.x, obj.y, obj.name).setOrigin(0, 1);
         if (obj.width && obj.height) {
           img.setDisplaySize(obj.width, obj.height);
