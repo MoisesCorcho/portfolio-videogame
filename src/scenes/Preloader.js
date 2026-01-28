@@ -44,6 +44,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('sign', 'assets/decorations/sign.png');
     this.load.image('shop', 'assets/decorations/shop.png');
     
+    this.load.tilemapTiledJSON('level1', 'assets/maps/level1.json');
+
     // Load tileset as spritesheet to pick individual tiles
     // Oak Woods is typically 24x24
     this.load.spritesheet('tiles', 'assets/tilesets/oak_woods_tileset.png', {
@@ -56,7 +58,11 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('fence_2', 'assets/decorations/fence_2.png');
     this.load.image('rock_1', 'assets/decorations/rock_1.png');
     this.load.image('rock_2', 'assets/decorations/rock_2.png');
+    this.load.image('rock_1', 'assets/decorations/rock_1.png');
+    this.load.image('rock_2', 'assets/decorations/rock_2.png');
+    this.load.image('rock_3', 'assets/decorations/rock_3.png');
     this.load.image('lamp', 'assets/decorations/lamp.png');
+    this.load.image('large_tent', 'assets/decorations/large_tent.png');
   }
 
   create() {
@@ -83,8 +89,29 @@ export default class Preloader extends Phaser.Scene {
 
     this.anims.create({
         key: 'jump',
-        frames: this.anims.generateFrameNumbers('player', { start: 24, end: 29 }), // Next row
+        frames: this.anims.generateFrameNumbers('player', { start: 24, end: 31 }), // Jump up / Peak
         frameRate: 10,
+        repeat: 0
+    });
+
+    this.anims.create({
+        key: 'fall',
+        frames: this.anims.generateFrameNumbers('player', { start: 32, end: 37 }), // Falling down (trimmed last 2 frames)
+        frameRate: 10,
+        repeat: 0
+    });
+
+    this.anims.create({
+        key: 'landing',
+        frames: this.anims.generateFrameNumbers('player', { start: 38, end: 39 }), 
+        frameRate: 8, // Slower to make it visible
+        repeat: 0
+    });
+
+    this.anims.create({
+        key: 'attack1',
+        frames: this.anims.generateFrameNumbers('player', { start: 8, end: 13 }), // Row 2 (0-indexed logic: 8 sprites per row)
+        frameRate: 12,
         repeat: 0
     });
   }

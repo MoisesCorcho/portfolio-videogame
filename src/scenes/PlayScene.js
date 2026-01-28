@@ -37,99 +37,160 @@ export default class PlayScene extends Phaser.Scene {
     // 3. Create Player
     this.createPlayer();
 
-    // 4. Collisions
-    this.physics.add.collider(this.player, this.platforms);
-
-    // 5. Input
-    this.cursors = this.input.keyboard.createCursorKeys();
-
     // 6. Interactables
     this.createInteractables();
 
-    // Camera follow
+    // 5. Input
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keys = this.input.keyboard.addKeys({
+        e: Phaser.Input.Keyboard.KeyCodes.E,
+        j: Phaser.Input.Keyboard.KeyCodes.J
+    });
+
+    // Camera follow behavior
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBounds(0, 0, 2400, 600);
-    this.cameras.main.setZoom(2.5); // Zoomed in closer for pixel art look
+    this.cameras.main.setZoom(2.5); 
+
+    // Set bounds to match the map size if map exists
+    if (this.map) {
+        this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    } else {
+        this.physics.world.setBounds(0, 0, 2400, 800);
+        this.cameras.main.setBounds(0, 0, 2400, 600);
+    }
+
+    // 7. Collisions (Must be called AFTER creating level and player)
+    this.physics.add.collider(this.player, this.platforms);
+    
+    this.wasOnGround = false;
   }
 
   createLevel() {
-    this.platforms = this.physics.add.staticGroup();
+    // Create the map
+    const map = this.make.tilemap({ key: 'level1' });
+    this.map = map;
 
-    // 1. Continuous Ground (Base Floor)
-    // Spans the entire world width
-    this.createPlatform(0, 2400, 580);
+    // Add tileset image
+    // Ensure the key 'oak_woods_tileset' matches the JSON tileset name
+    const tileset = map.addTilesetImage('oak_woods_tileset', 'tiles');
 
-    // 2. Elevated Platforms (Floating or Steps)
-    // Platform 1 (Low)
-    this.createPlatform(600, 900, 490);
+    // Create the Ground layer
+    // 'Ground' must match the layer name in Tiled
+    const platforms = map.createLayer('Ground', tileset, 0, 0);
 
-    // Platform 2 (High - requiring jump)
-    this.createPlatform(1000, 1500, 420);
+    // Set collisions
+    // Use a wide range to ensure all visible tiles collide
+    platforms.setCollisionBetween(1, 1000);
 
-    // Platform 3 (Higher/Farther)
-    this.createPlatform(1700, 2000, 350);
+    // Manual Debug: visualizes collision tiles
+    // const debugGraphics = this.add.graphics().setAlpha(0.7);
+    // platforms.renderDebug(debugGraphics, {
+    //     tileColor: null, // Color of non-colliding tiles
+    //     collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Orange for colliding tiles
+    //     faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
+    // });
 
-    // Decorations
-    this.add.image(200, 595 - 14, 'fence_1').setOrigin(0.5, 1);
-    this.add.image(400, 595 - 14, 'fence_2').setOrigin(0.5, 1);
-    
-    // Props on platforms
-    this.add.image(750, 450, 'lamp').setOrigin(0.5, 1);
-    this.add.image(1200, 320, 'rock_1').setOrigin(0.5, 1);
-  }
-
-  createPlatform(startX, endX, y) {
-    const tileWidth = 24;
-    for (let x = startX; x < endX; x += tileWidth) {
-        const tile = this.platforms.create(x, y, 'tiles', 2);
-        tile.setOrigin(0, 0);
-        tile.refreshBody();
-        
-        // Add minimal "soil" look below (one layer deep)
-        this.add.image(x, y + 24, 'tiles', 26).setOrigin(0, 0);
-    }
+    this.platforms = platforms;
   }
 
   createPlayer() {
-    // Add player sprite
-    this.player = this.physics.add.sprite(100, 550, 'player');
+    // Find spawn point from 'Start' layer or 'Objects' layer
+    let spawnPoint = null;
+    const startLayer = this.map.getObjectLayer('Start');
+    const objectsLayer = this.map.getObjectLayer('Objects');
 
-    // Physics properties
+    if (startLayer && startLayer.objects) {
+        spawnPoint = startLayer.objects.find(obj => obj.name === 'start');
+    }
+    
+    // If not found in Start layer, try Objects layer
+    if (!spawnPoint && objectsLayer && objectsLayer.objects) {
+        spawnPoint = objectsLayer.objects.find(obj => obj.name === 'start');
+    }
+    
+    let spawnX = 100;
+    let spawnY = 550;
+
+    if (spawnPoint) {
+        spawnX = spawnPoint.x;
+        spawnY = spawnPoint.y;
+    }
+
+    // Add player sprite
+    this.player = this.physics.add.sprite(spawnX, spawnY, 'player');
+    this.player.setDepth(10); // Ensure player is in front of decorations
+
+    // PhysicsProperties
     this.player.setBounce(0.1);
     this.player.setCollideWorldBounds(true);
-    
     this.player.body.setSize(20, 30);
     this.player.body.setOffset(18, 26);
 
     this.player.play('idle');
-    
-    this.physics.world.setBounds(0, 0, 2400, 800);
   }
 
   createInteractables() {
     this.interactables = this.physics.add.staticGroup();
     
-    // About Me (Shop) - On Ground
-    const aboutShop = this.interactables.create(300, 580, 'shop');
-    aboutShop.setOrigin(0.5, 1); 
-    aboutShop.setData('type', 'about');
-    aboutShop.refreshBody();
-    
-    // Skills (Sign) - On Platform 1
-    const skillsSign = this.interactables.create(730, 490, 'sign');
-    skillsSign.setOrigin(0.5, 1);
-    skillsSign.setData('type', 'skills');
-    skillsSign.refreshBody();
+    const objectsLayer = this.map.getObjectLayer('Objects');
+    if (!objectsLayer) return;
 
-    // Projects (Sign) - On Platform 2
-    const projectsSign = this.interactables.create(1300, 320, 'sign');
-    projectsSign.setOrigin(0.5, 1);
-    projectsSign.setData('type', 'projects');
-    projectsSign.refreshBody();
+    objectsLayer.objects.forEach(obj => {
+        // Tiled objects normally anchor bottom-left (0,1) for tiles, but points are (0.5,0.5).
+        // We adjusted Phaser sprites to match.
+        
+        if (obj.name === 'shop') {
+            const shop = this.interactables.create(obj.x, obj.y, 'shop');
+            shop.setOrigin(0, 1); 
+            shop.setData('type', 'profile'); // Changed to profile
+            shop.refreshBody();
+        } 
+        else if (obj.name === 'skills' || obj.name === 'sign') { 
+            const sign = this.interactables.create(obj.x, obj.y, 'sign');
+            sign.setOrigin(0, 1);
+            sign.setData('type', 'skills');
+            sign.refreshBody();
+        }
+        else if (obj.name === 'projects') {
+             // Remap projects to experience or keep as unused?
+             // Let's use it for Experience if found
+            const sign = this.interactables.create(obj.x, obj.y, 'sign');
+            sign.setOrigin(0, 1);
+            sign.setData('type', 'experience');
+            sign.refreshBody();
+        }
+        else if (obj.name === 'lamp') {
+            // Make lamp interactable for Education
+            const lamp = this.interactables.create(obj.x, obj.y, 'lamp');
+            lamp.setOrigin(0, 1);
+            lamp.setData('type', 'education');
+            lamp.refreshBody();
+        }
+        else if (obj.name === 'large_tent') {
+             // Large tent -> Experience
+             const tent = this.interactables.create(obj.x, obj.y, 'large_tent');
+             tent.setOrigin(0, 1);
+             tent.setData('type', 'experience');
+             tent.refreshBody();
+             
+             if (obj.width && obj.height) {
+                 tent.setDisplaySize(obj.width, obj.height);
+             }
+        }
+        else if (obj.name.startsWith('rock') || obj.name.startsWith('fence')) {
+            // Generic visual props
+            const img = this.add.image(obj.x, obj.y, obj.name).setOrigin(0, 1);
+            
+            if (obj.width && obj.height) {
+                img.setDisplaySize(obj.width, obj.height);
+            }
+        }
+    });
   }
 
   handleInteraction(player, interactable) {
-    if (this.cursors.up.isDown) {
+    if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
         const type = interactable.getData('type');
         this.triggerModal(type);
     }
@@ -139,44 +200,85 @@ export default class PlayScene extends Phaser.Scene {
     const speed = 160;
     const jumpForce = -500;
     
-    const onGround = this.player.body.touching.down;
+    // Check if player is touching ground (platforms) OR blocked by world bounds (floor)
+    const onGround = this.player.body.touching.down || this.player.body.blocked.down;
+
+    // Detect landing
+    if (onGround && !this.wasOnGround) {
+        // Force landing animation regardless of previous speed
+        this.player.anims.play('landing', true);
+        this.isLanding = true;
+        this.player.setVelocityX(0); // Stop momentum
+        this.player.once('animationcomplete', () => {
+            if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === 'landing') {
+                this.isLanding = false;
+            }
+        });
+    }
+    this.wasOnGround = onGround; // Store for next frame
+
+    // 0. Attack Input
+    if (Phaser.Input.Keyboard.JustDown(this.keys.j)) {
+        this.player.anims.play('attack1', true);
+        this.isLanding = false; // Cancel landing
+        this.player.once('animationcomplete', () => {
+            if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === 'attack1') {
+                this.player.anims.play('idle', true);
+            }
+        });
+    }
+
+    // Don't interrupt attack animation if it's playing
+    if (this.player.anims.currentAnim && this.player.anims.currentAnim.key === 'attack1' && this.player.anims.isPlaying) {
+        this.player.setVelocityX(0); // Stop moving while attacking
+        return;
+    }
 
     // 1. Horizontal Movement
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-speed);
-      this.player.setFlipX(true);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(speed);
-      this.player.setFlipX(false);
+    // Block movement if currently landing
+    if (this.isLanding) {
+        this.player.setVelocityX(0);
     } else {
-      this.player.setVelocityX(0);
+        if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-speed);
+            this.player.setFlipX(true);
+        } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(speed);
+            this.player.setFlipX(false);
+        } else {
+            this.player.setVelocityX(0);
+        }
     }
 
     // 2. Jumping Input
     if (this.cursors.up.isDown && onGround) {
       this.player.setVelocityY(jumpForce);
+      this.isLanding = false; // Jump cancels landing
     }
 
     // 3. Animation Control
-    if (!onGround) {
-        // In Air
-        this.player.anims.play('jump', true);
+    if (this.isLanding && this.player.anims.currentAnim && this.player.anims.currentAnim.key === 'landing' && this.player.anims.isPlaying) {
+        // Allow landing to play out if valid
     } else {
-        // On Ground
-        if (this.player.body.velocity.x !== 0) {
-            this.player.anims.play('run', true);
+        if (!onGround) {
+            // In Air
+            if (this.player.body.velocity.y < 0) {
+                this.player.anims.play('jump', true);
+            } else {
+                this.player.anims.play('fall', true);
+            }
         } else {
-            this.player.anims.play('idle', true);
+            // On Ground
+            if (this.player.body.velocity.x !== 0) {
+                this.player.anims.play('run', true);
+            } else {
+                this.player.anims.play('idle', true);
+            }
         }
     }
 
     // Interaction Check
     this.physics.overlap(this.player, this.interactables, this.handleInteraction, null, this);
-    
-    // Parallax: Scroll texture inside the fixed container (Disabled)
-    // if (this.bg1) this.bg1.tilePositionX = this.cameras.main.scrollX * 0.1; 
-    // if (this.bg2) this.bg2.tilePositionX = this.cameras.main.scrollX * 0.5;
-    // if (this.bg3) this.bg3.tilePositionX = this.cameras.main.scrollX * 0.8;
   }
 
   triggerModal(type) {
