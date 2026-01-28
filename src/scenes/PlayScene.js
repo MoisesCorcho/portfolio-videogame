@@ -1,4 +1,5 @@
 import Player from '../player/Player';
+import { ASSETS, EVENTS, INTERACTION_TYPES } from '../utils/Constants';
 
 export default class PlayScene extends Phaser.Scene {
   constructor() {
@@ -17,7 +18,7 @@ export default class PlayScene extends Phaser.Scene {
     const visibleWidth = width / zoom;
     const visibleHeight = height / zoom;
 
-    const skyTex = this.textures.get('sky_main').getSourceImage();
+    const skyTex = this.textures.get(ASSETS.SKY).getSourceImage();
     const skyScale = Math.max(
       visibleWidth / skyTex.width,
       visibleHeight / skyTex.height
@@ -29,7 +30,7 @@ export default class PlayScene extends Phaser.Scene {
         height / 2,
         visibleWidth,
         visibleHeight,
-        'sky_main'
+        ASSETS.SKY
       )
       .setScrollFactor(0)
       .setTileScale(skyScale)
@@ -119,30 +120,30 @@ export default class PlayScene extends Phaser.Scene {
     if (!objectsLayer) return;
 
     objectsLayer.objects.forEach((obj) => {
-      if (obj.name === 'shop') {
-        const shop = this.interactables.create(obj.x, obj.y, 'shop');
+      if (obj.name === ASSETS.SHOP) {
+        const shop = this.interactables.create(obj.x, obj.y, ASSETS.SHOP);
         shop.setOrigin(0, 1);
-        shop.setData('type', 'profile');
+        shop.setData('type', INTERACTION_TYPES.PROFILE);
         shop.refreshBody();
-      } else if (obj.name === 'skills' || obj.name === 'sign') {
-        const sign = this.interactables.create(obj.x, obj.y, 'sign');
+      } else if (obj.name === ASSETS.SKILLS || obj.name === ASSETS.SIGN) {
+        const sign = this.interactables.create(obj.x, obj.y, ASSETS.SIGN);
         sign.setOrigin(0, 1);
-        sign.setData('type', 'skills');
+        sign.setData('type', INTERACTION_TYPES.SKILLS);
         sign.refreshBody();
       } else if (obj.name === 'projects') {
-        const sign = this.interactables.create(obj.x, obj.y, 'sign');
+        const sign = this.interactables.create(obj.x, obj.y, ASSETS.SIGN);
         sign.setOrigin(0, 1);
-        sign.setData('type', 'experience');
+        sign.setData('type', INTERACTION_TYPES.EXPERIENCE);
         sign.refreshBody();
-      } else if (obj.name === 'lamp') {
-        const lamp = this.interactables.create(obj.x, obj.y, 'lamp');
+      } else if (obj.name === ASSETS.LAMP) {
+        const lamp = this.interactables.create(obj.x, obj.y, ASSETS.LAMP);
         lamp.setOrigin(0, 1);
-        lamp.setData('type', 'education');
+        lamp.setData('type', INTERACTION_TYPES.EDUCATION);
         lamp.refreshBody();
-      } else if (obj.name === 'large_tent') {
-        const tent = this.interactables.create(obj.x, obj.y, 'large_tent');
+      } else if (obj.name === ASSETS.LARGE_TENT) {
+        const tent = this.interactables.create(obj.x, obj.y, ASSETS.LARGE_TENT);
         tent.setOrigin(0, 1);
-        tent.setData('type', 'experience');
+        tent.setData('type', INTERACTION_TYPES.EXPERIENCE);
         tent.refreshBody();
 
         if (obj.width && obj.height) {
@@ -179,7 +180,9 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   triggerModal(type) {
-    const event = new CustomEvent('open-modal', { detail: { type: type } });
+    const event = new CustomEvent(EVENTS.OPEN_MODAL, {
+      detail: { type: type },
+    });
     window.dispatchEvent(event);
   }
 }
