@@ -10,7 +10,10 @@ export const SCENES = {
 
 export const ASSETS = {
   // Environment
-  SKY: 'sky_main',
+  SKY: 'sky_main', // Keeping this if needed, or deprecate later
+  BG_LAYER_1: 'bg_layer_1',
+  BG_LAYER_2: 'bg_layer_2',
+  BG_LAYER_3: 'bg_layer_3',
   TREE_GREEN: 'tree_green',
   TREE_RED: 'tree_red',
   TREE_YELLOW: 'tree_yellow',

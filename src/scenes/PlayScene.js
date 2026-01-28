@@ -17,26 +17,11 @@ export default class PlayScene extends Phaser.Scene {
     // 1. Background (Parallax with TileSprite)
     const zoom = GAME_CONFIG.zoom;
 
-    const visibleWidth = width / zoom;
-    const visibleHeight = height / zoom;
+    const visibleWidth = width / zoom + 2;
+    const visibleHeight = height / zoom + 2;
 
-    const skyTex = this.textures.get(ASSETS.SKY).getSourceImage();
-    const skyScale = Math.max(
-      visibleWidth / skyTex.width,
-      visibleHeight / skyTex.height
-    );
-
-    this.add
-      .tileSprite(
-        width / 2,
-        height / 2,
-        visibleWidth,
-        visibleHeight,
-        ASSETS.SKY
-      )
-      .setScrollFactor(0)
-      .setTileScale(skyScale)
-      .setDepth(-10);
+    // 1. Background (Parallax Layers)
+    this.createParallaxBackground(width, height, visibleWidth, visibleHeight);
 
     // 2. Create Layout
     this.createLevel();
@@ -76,6 +61,39 @@ export default class PlayScene extends Phaser.Scene {
 
     // 7. Collisions
     this.physics.add.collider(this.player, this.platforms);
+  }
+
+  createParallaxBackground(width, height, visibleWidth, visibleHeight) {
+    const layers = [
+      { key: ASSETS.BG_LAYER_1, scroll: 0, depth: -12 },
+      { key: ASSETS.BG_LAYER_2, scroll: 0.1, depth: -11 },
+      { key: ASSETS.BG_LAYER_3, scroll: 0.25, depth: -10 },
+    ];
+
+    this.backgrounds = [];
+
+    layers.forEach((layer) => {
+      const tex = this.textures.get(layer.key).getSourceImage();
+      const scale = visibleHeight / tex.height;
+
+      const bg = this.add
+        .tileSprite(
+          width / 2,
+          height / 2,
+          visibleWidth,
+          visibleHeight,
+          layer.key
+        )
+        .setOrigin(0.5, 0.5)
+        .setScrollFactor(0) // Fix to viewport
+        .setTileScale(scale)
+        .setDepth(layer.depth);
+
+      this.backgrounds.push({
+        sprite: bg,
+        ratio: layer.scroll
+      });
+    });
   }
 
   createLevel() {
@@ -169,6 +187,13 @@ export default class PlayScene extends Phaser.Scene {
   update() {
     // Update Player State Machine
     this.player.update();
+
+    // Update Parallax
+    if (this.backgrounds) {
+      this.backgrounds.forEach((bg) => {
+        bg.sprite.tilePositionX = (this.cameras.main.scrollX * bg.ratio) / bg.sprite.tileScaleX;
+      });
+    }
 
     // Interaction Check
     this.physics.overlap(

@@ -4,6 +4,9 @@ import { SPRITE_CONFIG } from './Animations';
 export const ASSET_MANIFEST = [
   // Environment
   { type: 'image', key: ASSETS.SKY, path: 'assets/legacyFantasy/backgound/Background.png' },
+  { type: 'image', key: ASSETS.BG_LAYER_1, path: 'assets/background/background_layer_1.png' },
+  { type: 'image', key: ASSETS.BG_LAYER_2, path: 'assets/background/background_layer_2.png' },
+  { type: 'image', key: ASSETS.BG_LAYER_3, path: 'assets/background/background_layer_3.png' },
   { type: 'image', key: ASSETS.TREE_GREEN, path: 'assets/legacyFantasy/Trees/Green-Tree.png' },
   { type: 'image', key: ASSETS.TREE_RED, path: 'assets/legacyFantasy/Trees/Red-Tree.png' },
   { type: 'image', key: ASSETS.TREE_YELLOW, path: 'assets/legacyFantasy/Trees/Yellow-Tree.png' },
