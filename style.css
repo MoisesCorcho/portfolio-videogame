@@ -26,10 +26,6 @@ body {
   align-items: center;
 }
 
-#game-container {
-  /* Game logic handles this */
-}
-
 #ui-layer {
   position: absolute;
   top: 0;
@@ -42,8 +38,6 @@ body {
   align-items: center;
   z-index: 10;
 }
-
-
 
 /* Typography for content */
 h1,

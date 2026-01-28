@@ -1,12 +1,12 @@
 <script>
-    let { onclose } = $props();
+    let { onclose, children } = $props();
 </script>
 
 <div class="modal-overlay">
     <div class="modal-content">
         <button class="close-btn" onclick={onclose}>X</button>
         <div class="scroll-container">
-            <slot></slot>
+            {@render children()}
         </div>
     </div>
 </div>
