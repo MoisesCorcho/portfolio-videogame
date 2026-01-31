@@ -46,5 +46,26 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   update() {
     this.stateMachine.step();
+    // this.handleStepUp();
+  }
+
+  /**
+   * Allows the player to "step up" small obstacles (stairs, rocks)
+   * while running without stopping horizontal momentum.
+   */
+  handleStepUp() {
+    const body = this.body;
+    
+    // Only handle if on floor and blocked by a wall
+    if (!body.blocked.none && body.onFloor()) {
+      const isBlocked = body.blocked.left || body.blocked.right;
+      const isMovingX = Math.abs(body.velocity.x) > 0;
+
+      if (isBlocked && isMovingX) {
+        // Attempt to "lift" the player by a few pixels to clear the step
+        const stepHeight = 6; 
+        this.y -= stepHeight;
+      }
+    }
   }
 }

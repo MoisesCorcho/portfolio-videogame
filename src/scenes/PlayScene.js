@@ -31,6 +31,9 @@ export default class PlayScene extends Phaser.Scene {
     // 6. Interactables
     this.createInteractables();
 
+    // 6.5 manual collisions (Slopes)
+    this.createManualCollisions();
+
     // 5. Input
     this.keys = this.input.keyboard.addKeys({
       e: Phaser.Input.Keyboard.KeyCodes.E,
@@ -60,6 +63,7 @@ export default class PlayScene extends Phaser.Scene {
 
     // 7. Collisions
     this.physics.add.collider(this.player, this.platforms);
+    this.physics.add.collider(this.player, this.manualCollisions);
   }
 
   createParallaxBackground(width, height, visibleWidth, visibleHeight) {
@@ -96,14 +100,27 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   createLevel() {
-    const map = this.make.tilemap({ key: 'level1' });
+    const map = this.make.tilemap({ 
+      key: 'level1',
+      tileWidth: 32,
+      tileHeight: 32,
+    });
+
     this.map = map;
 
-    const tileset = map.addTilesetImage('oak_woods_tileset', 'tiles');
-    const platforms = map.createLayer(MAP_LAYERS.GROUND, tileset, 0, 0);
-    platforms.setCollisionBetween(1, 1000);
+    const floorTileset = map.addTilesetImage('Floor Tiles1', ASSETS.TILES);
+    const decorTileset = map.addTilesetImage('Decoration', ASSETS.DECORATIONS);
+    const gardenTileset = map.addTilesetImage('Garden Decorations', ASSETS.GARDEN_DECORATIONS);
+    const otherTileset = map.addTilesetImage('Other Tiles1', ASSETS.OTHER_TILES);
 
-    this.platforms = platforms;
+    const allTilesets = [floorTileset, decorTileset, gardenTileset, otherTileset];
+
+    // Decoration layer (Background/Props) - No collisions
+    map.createLayer(MAP_LAYERS.DECORATION, allTilesets, 0, 0);
+    
+    // Ground layer (Platforms) - With collisions
+    this.platforms = map.createLayer(MAP_LAYERS.GROUND, allTilesets, 0, 0);
+    this.platforms.setCollisionBetween(1, 2000); // Increased range to cover all tilesets
   }
 
   createPlayer() {
@@ -164,6 +181,45 @@ export default class PlayScene extends Phaser.Scene {
         }
       }
     });
+  }
+
+  createManualCollisions() {
+    this.manualCollisions = this.physics.add.staticGroup();
+    const collisionsLayer = this.map.getObjectLayer(MAP_LAYERS.COLLISIONS);
+    
+    if (collisionsLayer && collisionsLayer.objects) {
+      console.log(`Checking layer: ${MAP_LAYERS.COLLISIONS}`, collisionsLayer.objects.length, "objects found");
+      
+      collisionsLayer.objects.forEach((obj, index) => {
+        // Handle Tiled points/rectangles with 0 size
+        const width = obj.width || 32;
+        const height = obj.height || 32;
+
+        if (index === 0) {
+          console.log("First Object Debug:", {
+            name: obj.name,
+            x: obj.x,
+            y: obj.y,
+            w: obj.width,
+            h: obj.height,
+            calculatedW: width,
+            calculatedH: height
+          });
+        }
+
+        // Create a zone for the collision
+        // In Tiled, (x,y) is top-left. Phaser physics bodies are centered by default.
+        const zone = this.add.zone(obj.x + width / 2, obj.y + height / 2, width, height);
+        
+        // Add physics to the zone (static)
+        this.physics.add.existing(zone, true);
+        
+        // Add to the static group
+        this.manualCollisions.add(zone);
+      });
+    } else {
+      console.warn(`Layer not found: ${MAP_LAYERS.COLLISIONS}. Ensure you exported the JSON and named the layer correctly.`);
+    }
   }
 
   handleInteraction(player, interactable) {

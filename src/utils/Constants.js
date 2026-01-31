@@ -10,15 +10,13 @@ export const SCENES = {
 
 export const ASSETS = {
   // Environment
-  SKY: 'sky_main', // Keeping this if needed, or deprecate later
+  SKY: 'sky_main',
   BG_LAYER_1: 'bg_layer_1',
   BG_LAYER_2: 'bg_layer_2',
   BG_LAYER_3: 'bg_layer_3',
-  TREE_GREEN: 'tree_green',
-  TREE_RED: 'tree_red',
-  TREE_YELLOW: 'tree_yellow',
-  TREE_DARK: 'tree_dark',
-  TREE_GOLDEN: 'tree_golden',
+  DECORATIONS: 'decorations_tileset',
+  GARDEN_DECORATIONS: 'garden_decorations',
+  OTHER_TILES: 'other_tiles',
 
   // Characters
   PLAYER: 'player',
@@ -53,8 +51,10 @@ export const EVENTS = {
 
 export const MAP_LAYERS = {
   GROUND: 'Ground',
+  DECORATION: 'Decoration',
   OBJECTS: 'Objects',
   START: 'Start',
+  COLLISIONS: 'Collisions',
 };
 
 export const OBJECT_NAMES = {

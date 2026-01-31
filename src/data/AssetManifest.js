@@ -7,11 +7,6 @@ export const ASSET_MANIFEST = [
   { type: 'image', key: ASSETS.BG_LAYER_1, path: 'assets/background/background_layer_1.png' },
   { type: 'image', key: ASSETS.BG_LAYER_2, path: 'assets/background/background_layer_2.png' },
   { type: 'image', key: ASSETS.BG_LAYER_3, path: 'assets/background/background_layer_3.png' },
-  { type: 'image', key: ASSETS.TREE_GREEN, path: 'assets/legacyFantasy/Trees/Green-Tree.png' },
-  { type: 'image', key: ASSETS.TREE_RED, path: 'assets/legacyFantasy/Trees/Red-Tree.png' },
-  { type: 'image', key: ASSETS.TREE_YELLOW, path: 'assets/legacyFantasy/Trees/Yellow-Tree.png' },
-  { type: 'image', key: ASSETS.TREE_DARK, path: 'assets/legacyFantasy/Trees/Dark-Tree.png' },
-  { type: 'image', key: ASSETS.TREE_GOLDEN, path: 'assets/legacyFantasy/Trees/Golden-Tree.png' },
 
   // Characters
   { 
@@ -35,14 +30,28 @@ export const ASSET_MANIFEST = [
 
   // Tilesets & Maps
   { 
-    type: 'spritesheet', 
+    type: 'image', 
     key: ASSETS.TILES, 
-    path: 'assets/tilesets/oak_woods_tileset.png', 
-    config: SPRITE_CONFIG.TILES 
+    path: 'assets/GandalfHardcore/Floor Tiles1.png' 
+  },
+  { 
+    type: 'image', 
+    key: ASSETS.DECORATIONS, 
+    path: 'assets/GandalfHardcore/Decor.png' 
+  },
+  { 
+    type: 'image', 
+    key: ASSETS.GARDEN_DECORATIONS, 
+    path: 'assets/GandalfHardcore/Garden Decorations.png' 
+  },
+  { 
+    type: 'image', 
+    key: ASSETS.OTHER_TILES, 
+    path: 'assets/GandalfHardcore/Other Tiles1.png' 
   },
   { 
     type: 'tilemapTiledJSON', 
     key: ASSETS.LEVEL_1_MAP, 
-    path: ASSETS.LEVEL_1_JSON // Note: Constants currently holds the path for JSON, we can reuse it or refactor later
+    path: ASSETS.LEVEL_1_JSON 
   },
 ];
