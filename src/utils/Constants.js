@@ -36,6 +36,8 @@ export const ASSETS = {
   ROCK_1: 'rock_1',
   ROCK_2: 'rock_2',
   ROCK_3: 'rock_3',
+  FURNACE: 'furnace',
+  INTEREST_POINTS: 'interest_point',
 };
 
 export const INTERACTION_TYPES = {

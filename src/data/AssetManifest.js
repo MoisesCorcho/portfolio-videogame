@@ -27,6 +27,18 @@ export const ASSET_MANIFEST = [
   { type: 'image', key: ASSETS.ROCK_1, path: 'assets/decorations/rock_1.png' },
   { type: 'image', key: ASSETS.ROCK_2, path: 'assets/decorations/rock_2.png' },
   { type: 'image', key: ASSETS.ROCK_3, path: 'assets/decorations/rock_3.png' },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.FURNACE, 
+    path: 'assets/GandalfHardcore/Pixel Art Furnace and Sawmill.png', 
+    config: SPRITE_CONFIG.FURNACE 
+  },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.INTEREST_POINTS, 
+    path: 'assets/decorations/interest_points.png', 
+    config: SPRITE_CONFIG.INTEREST_POINTS 
+  },
 
   // Tilesets & Maps
   { 

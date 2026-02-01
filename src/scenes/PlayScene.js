@@ -1,5 +1,6 @@
 import Player from '../player/Player';
 import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES } from '../utils/Constants';
+import { FURNACE_ANIMS, INTEREST_ANIMS } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
 
@@ -28,10 +29,13 @@ export default class PlayScene extends Phaser.Scene {
     // 3. Create Player
     this.createPlayer();
 
-    // 6. Interactables
+    // 4. Create Animations (Animations must exist before sprites use them)
+    this.createEnvironmentAnimations();
+
+    // 5. Interactables & Objects
     this.createInteractables();
 
-    // 6.5 manual collisions (Slopes)
+    // 6. manual collisions (Slopes)
     this.createManualCollisions();
 
     // 5. Input
@@ -151,33 +155,80 @@ export default class PlayScene extends Phaser.Scene {
   createInteractables() {
     this.interactables = this.physics.add.staticGroup();
 
-    const objectsLayer = this.map.getObjectLayer(MAP_LAYERS.OBJECTS);
-    if (!objectsLayer) return;
+    // Scan all object layers that might contain interactables or animated props
+    const objectLayerNames = [MAP_LAYERS.OBJECTS, 'Decorations', 'Decoration'];
+    
+    objectLayerNames.forEach(layerName => {
+      const layer = this.map.getObjectLayer(layerName);
+      if (!layer) return;
 
-    objectsLayer.objects.forEach((obj) => {
-      // Get custom properties from Tiled
-      const interactionType = obj.properties?.find((p) => p.name === 'interactionType')?.value;
-      const assetKey = obj.properties?.find((p) => p.name === 'assetKey')?.value || obj.name;
+      layer.objects.forEach((obj) => {
+        // Get custom properties (supporting both Tiled formats)
+        const props = obj.properties || [];
+        const getProp = (name) => props.find(p => p.name === name)?.value;
 
-      if (interactionType) {
-        // It's an interactable object (Physics body + Modal trigger)
-        const item = this.interactables.create(obj.x, obj.y, assetKey);
-        item.setOrigin(0, 1);
-        item.setData('type', interactionType);
-        item.refreshBody();
+        const interactionType = getProp('interactionType');
+        const animationKey = getProp('animation');
+        const assetKey = getProp('assetKey') || obj.name || (animationKey ? 'furnace' : null);
 
-        // Apply custom size if defined in Tiled
-        if (obj.width && obj.height && (obj.width !== item.width || obj.height !== item.height)) {
-          item.setDisplaySize(obj.width, obj.height);
+        if (!assetKey && !animationKey) return;
+
+        let item;
+        if (interactionType) {
+          // Interactable with physics
+          item = this.interactables.create(obj.x, obj.y, assetKey);
+          item.setOrigin(0, 1);
+          item.setData('type', interactionType);
           item.refreshBody();
+        } else if (animationKey) {
+          // Animated Sprite
+          item = this.add.sprite(obj.x, obj.y, assetKey).setOrigin(0, 1);
+          if (this.anims.exists(animationKey)) {
+            item.play(animationKey);
+          } else {
+            console.warn(`Animation key not found: ${animationKey}`);
+          }
+        } else {
+          // Static Image
+          item = this.add.image(obj.x, obj.y, assetKey).setOrigin(0, 1);
         }
-      } else if (obj.name && obj.name !== '') {
-        // It's a decorative object (Static image)
-        const img = this.add.image(obj.x, obj.y, assetKey).setOrigin(0, 1);
+
+        if (item && obj.width && obj.height) {
+          item.setDisplaySize(obj.width, obj.height);
+          if (item.body) item.refreshBody();
+        }
+      });
+    });
+  }
+
+  createEnvironmentAnimations() {
+    // Furnace & Sawmill
+    Object.values(FURNACE_ANIMS).forEach(anim => {
+      if (!this.anims.exists(anim.key)) {
+        this.anims.create({
+          key: anim.key,
+          frames: this.anims.generateFrameNumbers(ASSETS.FURNACE, { start: anim.start, end: anim.end }),
+          frameRate: anim.rate,
+          repeat: anim.repeat
+        });
+      }
+    });
+
+    // Interest Points (Stars, Gems, etc.)
+    Object.values(INTEREST_ANIMS).forEach(anim => {
+      if (!this.anims.exists(anim.key)) {
+        const frames = this.anims.generateFrameNumbers(ASSETS.INTEREST_POINTS, { start: anim.start, end: anim.end });
         
-        // Apply custom size if defined in Tiled
-        if (obj.width && obj.height && (obj.width !== img.width || obj.height !== img.height)) {
-          img.setDisplaySize(obj.width, obj.height);
+        // Only create if we actually found frames
+        if (frames && frames.length > 0) {
+          this.anims.create({
+            key: anim.key,
+            frames: frames,
+            frameRate: anim.rate,
+            repeat: anim.repeat
+          });
+        } else {
+          console.warn(`Could not create animation ${anim.key}: Frames ${anim.start}-${anim.end} not found in ${ASSETS.INTEREST_POINTS}`);
         }
       }
     });
