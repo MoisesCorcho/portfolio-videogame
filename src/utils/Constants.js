@@ -17,6 +17,8 @@ export const ASSETS = {
   DECORATIONS: 'decorations_tileset',
   GARDEN_DECORATIONS: 'garden_decorations',
   OTHER_TILES: 'other_tiles',
+  FLOOR_TILES_1: 'floor_tiles_1',
+  HOUSE_TILES: 'house_tiles',
 
   // Characters
   PLAYER: 'player',

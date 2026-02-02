@@ -14,14 +14,21 @@ export const SPRITE_CONFIG = {
   INTEREST_POINTS: { frameWidth: 32, frameHeight: 32 },
 };
 
+// --- Animation Groups ---
+
 export const FURNACE_ANIMS = {
   BURN: { key: 'furnace_burn', start: 0, end: 5, rate: 10, repeat: -1 },
   SAWMILL: { key: 'sawmill_work', start: 6, end: 11, rate: 10, repeat: -1 },
 };
 
 export const INTEREST_ANIMS = {
-  // Assuming 8 frames per row based on the spritesheet
-  STAR: { key: 'interest_point', start: 40, end: 44, rate: 10, repeat: -1 },
-  GEM_BLUE: { key: 'gem_blue', start: 0, end: 7, rate: 10, repeat: -1 },
-  GEM_ORANGE: { key: 'gem_orange', start: 8, end: 15, rate: 10, repeat: -1 },
+  STAR: { key: 'interest_point', start: 40, end: 44, rate: 7, repeat: -1 },
 };
+
+import { ASSETS } from '../utils/Constants';
+
+export const MASTER_ANIMATIONS_REGISTRY = [
+  { assetKey: ASSETS.FURNACE, anims: FURNACE_ANIMS },
+  { assetKey: ASSETS.INTEREST_POINTS, anims: INTEREST_ANIMS },
+];
+

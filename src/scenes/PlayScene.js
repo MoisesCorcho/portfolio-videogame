@@ -1,6 +1,6 @@
 import Player from '../player/Player';
 import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES } from '../utils/Constants';
-import { FURNACE_ANIMS, INTEREST_ANIMS } from '../data/Animations';
+import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
 
@@ -23,20 +23,19 @@ export default class PlayScene extends Phaser.Scene {
     // 1. Background (Parallax Layers)
     this.createParallaxBackground(width, height, visibleWidth, visibleHeight);
 
-    // 2. Create Layout
-    this.createLevel();
-
-    // 3. Create Player
-    this.createPlayer();
-
-    // 4. Create Animations (Animations must exist before sprites use them)
+    // 2. Create Animations (Animations must exist before sprites use them)
+    // Moved before createLevel so objects can find their animations immediately
     this.createEnvironmentAnimations();
 
-    // 5. Interactables & Objects
-    this.createInteractables();
+    // 3. Create Layout
+    this.createLevel();
 
-    // 6. manual collisions (Slopes)
-    this.createManualCollisions();
+    // 4. Create Player
+    this.createPlayer();
+
+    // 5. Interactables & Objects & Collisions (Handled within createLevel > Dynamic Loading)
+    
+    // 5. Input
 
     // 5. Input
     this.keys = this.input.keyboard.addKeys({
@@ -112,19 +111,105 @@ export default class PlayScene extends Phaser.Scene {
 
     this.map = map;
 
-    const floorTileset = map.addTilesetImage('Floor Tiles1', ASSETS.TILES);
-    const decorTileset = map.addTilesetImage('Decoration', ASSETS.DECORATIONS);
-    const gardenTileset = map.addTilesetImage('Garden Decorations', ASSETS.GARDEN_DECORATIONS);
-    const otherTileset = map.addTilesetImage('Other Tiles1', ASSETS.OTHER_TILES);
+    // Dynamic Tileset Loading with Smart Mapping
+    const tilesetMapping = {
+      'Floor Tiles1': ASSETS.FLOOR_TILES_1,
+      'Floor Tiles2': ASSETS.TILES,
+      'Decoration': ASSETS.DECORATIONS, 
+      'Garden Decorations': ASSETS.GARDEN_DECORATIONS,
+      'House Tiles': ASSETS.HOUSE_TILES,
+      'Other Tiles1': ASSETS.OTHER_TILES,
+      'Pixel Art Furnace and Sawmill': ASSETS.FURNACE,
+      'interest_points': ASSETS.INTEREST_POINTS,
+      // Map other specific tileset names if needed
+    };
 
-    const allTilesets = [floorTileset, decorTileset, gardenTileset, otherTileset];
+    const allTilesets = [];
+    const assetValues = Object.values(ASSETS);
 
-    // Decoration layer (Background/Props) - No collisions
-    map.createLayer(MAP_LAYERS.DECORATION, allTilesets, 0, 0);
-    
-    // Ground layer (Platforms) - With collisions
-    this.platforms = map.createLayer(MAP_LAYERS.GROUND, allTilesets, 0, 0);
-    this.platforms.setCollisionBetween(1, 2000); // Increased range to cover all tilesets
+    map.tilesets.forEach((tileset) => {
+      let assetKey = null;
+
+      // 1. Direct Mapping: Check if tileset name is in our explicit mapping
+      if (tilesetMapping[tileset.name]) {
+        assetKey = tilesetMapping[tileset.name];
+      }
+
+      // 2. Exact Match: Check if tileset name matches a loaded key directly
+      if (!assetKey && this.textures.exists(tileset.name)) {
+        assetKey = tileset.name;
+      }
+
+      // 3. Fuzzy Match: Check if tileset name (often a path) contains a known asset filename
+      if (!assetKey) {
+        // Extract base filename without extension
+        const baseName = tileset.name.split('/').pop().replace(/\.[^/.]+$/, "");
+        
+        // Check if this base name exists as a loaded texture key
+        if (this.textures.exists(baseName)) {
+           assetKey = baseName;
+        } else {
+           // Second try: strict match against ASSETS values
+           const foundKey = assetValues.find(key => key === baseName);
+           if (foundKey) {
+              assetKey = foundKey;
+           }
+        }
+      }
+
+      let ts;
+      if (assetKey) {
+        ts = map.addTilesetImage(tileset.name, assetKey);
+      } else {
+        // Fallback: Try using the name itself if it happens to match a key we missed
+        ts = map.addTilesetImage(tileset.name);
+      }
+
+      if (ts) {
+        allTilesets.push(ts);
+      } else {
+        // Only warn if it's not a trivial/empty tileset
+        if (tileset.name) {
+             console.warn(`Tileset '${tileset.name}' could not be mapped to an asset key. Object layer rendering might be incomplete.`);
+        }
+        // Push the raw tileset as a fallback (some image collections might work if implicit)
+        allTilesets.push(tileset);
+      }
+    });
+
+    // INITIALIZE GROUPS
+    this.interactables = this.physics.add.staticGroup();
+    this.manualCollisions = this.physics.add.staticGroup();
+    this.platforms = null;
+
+    // Load Raw Data to respect Tiled Order
+    const mapData = this.cache.tilemap.get('level1').data;
+
+    mapData.layers.forEach((layerData) => {
+        if (layerData.type === 'tilelayer') {
+            // Create Tile Layer
+            const layer = map.createLayer(layerData.name, allTilesets, 0, 0);
+            
+            // Check for Special Layers (Ground)
+            if (layer && layerData.name === MAP_LAYERS.GROUND) {
+                this.platforms = layer;
+                this.platforms.setCollisionBetween(1, 2000);
+            }
+        } 
+        else if (layerData.type === 'objectgroup') {
+             // Handle Object Layers
+             if (layerData.name === MAP_LAYERS.COLLISIONS) {
+                 this.processManualCollisions(layerData.name);
+             } else {
+                 // General Object Layer (Decorations, Interactables, etc.)
+                 this.processObjectLayer(layerData.name);
+             }
+        }
+    });
+
+    if (!this.platforms) {
+        console.warn('Ground layer not found or not assigned to this.platforms');
+    }
   }
 
   createPlayer() {
@@ -152,91 +237,74 @@ export default class PlayScene extends Phaser.Scene {
     this.player = new Player(this, spawnX, spawnY);
   }
 
-  createInteractables() {
-    this.interactables = this.physics.add.staticGroup();
+  processObjectLayer(layerName) {
+    const layer = this.map.getObjectLayer(layerName);
+    if (!layer) return;
 
-    // Scan all object layers that might contain interactables or animated props
-    const objectLayerNames = [MAP_LAYERS.OBJECTS, 'Decorations', 'Decoration'];
+    // Use Phaser's built-in conversion which handles GIDs and Image Collections automatically
+    const createdObjects = this.map.createFromObjects(layerName, {});
     
-    objectLayerNames.forEach(layerName => {
-      const layer = this.map.getObjectLayer(layerName);
-      if (!layer) return;
+    createdObjects.forEach((obj) => {
+      // Helper to get property (checks Data Manager first, then direct property)
+      const getProp = (key) => {
+          if (obj.getData && obj.getData(key) !== undefined) return obj.getData(key);
+          return null;
+      };
 
-      layer.objects.forEach((obj) => {
-        // Get custom properties (supporting both Tiled formats)
-        const props = obj.properties || [];
-        const getProp = (name) => props.find(p => p.name === name)?.value;
+      const interactionType = getProp('interactionType');
+      const animationKey = getProp('animation');
 
-        const interactionType = getProp('interactionType');
-        const animationKey = getProp('animation');
-        const assetKey = getProp('assetKey') || obj.name || (animationKey ? 'furnace' : null);
-
-        if (!assetKey && !animationKey) return;
-
-        let item;
-        if (interactionType) {
-          // Interactable with physics
-          item = this.interactables.create(obj.x, obj.y, assetKey);
-          item.setOrigin(0, 1);
-          item.setData('type', interactionType);
-          item.refreshBody();
-        } else if (animationKey) {
-          // Animated Sprite
-          item = this.add.sprite(obj.x, obj.y, assetKey).setOrigin(0, 1);
+      // Check for specific "Start" object which is just a point
+      if (obj.name === OBJECT_NAMES.START) {
+          obj.setVisible(false);
+      }
+      
+      // 2. Handle Animations
+      if (animationKey) {
           if (this.anims.exists(animationKey)) {
-            item.play(animationKey);
+              obj.play(animationKey);
           } else {
-            console.warn(`Animation key not found: ${animationKey}`);
+              console.warn(`Animation key not found: ${animationKey}`);
           }
-        } else {
-          // Static Image
-          item = this.add.image(obj.x, obj.y, assetKey).setOrigin(0, 1);
-        }
+      }
 
-        if (item && obj.width && obj.height) {
-          item.setDisplaySize(obj.width, obj.height);
-          if (item.body) item.refreshBody();
+      // 3. Handle Interactions (Physics)
+      if (interactionType) {
+        this.interactables.add(obj);
+        obj.setData('type', interactionType);
+      }
+    });
+  }
+
+  createEnvironmentAnimations() {
+    // Scalable system: automatically loads all animations defined in the registry
+    MASTER_ANIMATIONS_REGISTRY.forEach(group => {
+      const { assetKey, anims } = group;
+
+      Object.values(anims).forEach(anim => {
+        // Safety check: ensure animation doesn't already exist
+        if (!this.anims.exists(anim.key)) {
+          // Generate frames dynamically
+          const frames = this.anims.generateFrameNumbers(assetKey, { start: anim.start, end: anim.end });
+
+          if (frames && frames.length > 0) {
+            this.anims.create({
+              key: anim.key,
+              frames: frames,
+              frameRate: anim.rate,
+              repeat: anim.repeat
+            });
+          } else {
+            console.warn(`[Animation System] Could not create '${anim.key}': Frames ${anim.start}-${anim.end} missing in '${assetKey}'`);
+          }
         }
       });
     });
   }
 
-  createEnvironmentAnimations() {
-    // Furnace & Sawmill
-    Object.values(FURNACE_ANIMS).forEach(anim => {
-      if (!this.anims.exists(anim.key)) {
-        this.anims.create({
-          key: anim.key,
-          frames: this.anims.generateFrameNumbers(ASSETS.FURNACE, { start: anim.start, end: anim.end }),
-          frameRate: anim.rate,
-          repeat: anim.repeat
-        });
-      }
-    });
-
-    // Interest Points (Stars, Gems, etc.)
-    Object.values(INTEREST_ANIMS).forEach(anim => {
-      if (!this.anims.exists(anim.key)) {
-        const frames = this.anims.generateFrameNumbers(ASSETS.INTEREST_POINTS, { start: anim.start, end: anim.end });
-        
-        // Only create if we actually found frames
-        if (frames && frames.length > 0) {
-          this.anims.create({
-            key: anim.key,
-            frames: frames,
-            frameRate: anim.rate,
-            repeat: anim.repeat
-          });
-        } else {
-          console.warn(`Could not create animation ${anim.key}: Frames ${anim.start}-${anim.end} not found in ${ASSETS.INTEREST_POINTS}`);
-        }
-      }
-    });
-  }
-
-  createManualCollisions() {
-    this.manualCollisions = this.physics.add.staticGroup();
-    const collisionsLayer = this.map.getObjectLayer(MAP_LAYERS.COLLISIONS);
+  processManualCollisions(layerName) {
+    // this.manualCollisions is already initialized in createLevel
+    const collisionsLayer = this.map.getObjectLayer(layerName);
     
     if (collisionsLayer && collisionsLayer.objects) {
       console.log(`Checking layer: ${MAP_LAYERS.COLLISIONS}`, collisionsLayer.objects.length, "objects found");
