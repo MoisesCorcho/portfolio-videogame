@@ -1,14 +1,28 @@
+/**
+ * @fileoverview Asset manifest and dynamic asset loading system.
+ * This module uses Vite's import.meta.glob to automatically discover and register
+ * decoration assets, while maintaining manual definitions for assets requiring
+ * specific configurations (spritesheets, tilemaps, etc.).
+ */
+
 import { ASSETS } from '../utils/Constants';
 import { SPRITE_CONFIG } from './Animations';
 
-// ============================================================================
-// DYNAMIC ASSET LOADING
-// ============================================================================
+/**
+ * @typedef {Object} AssetManifestEntry
+ * @property {string} type - Asset type ('image', 'spritesheet', 'tilemapTiledJSON')
+ * @property {string} key - Unique identifier for the asset in Phaser's cache
+ * @property {string} path - File path relative to the public directory
+ * @property {Object} [config] - Optional spritesheet configuration (frameWidth, frameHeight)
+ * @property {string} [_tiledKey] - Internal property for Tiled map compatibility
+ */
 
 /**
- * Dynamically load all PNG files from the decorations directory.
- * Uses Vite's import.meta.glob to scan relative to this file.
- * Path is relative from src/data/ to public/assets/decorations/
+ * Dynamically discovers all PNG files in the decorations directory.
+ * Uses Vite's import.meta.glob with eager loading to scan the file system at build time.
+ * 
+ * @constant
+ * @type {Object.<string, string>}
  */
 const decorationFiles = import.meta.glob('../../public/assets/decorations/**/*.png', { 
   eager: true, 
@@ -16,9 +30,15 @@ const decorationFiles = import.meta.glob('../../public/assets/decorations/**/*.p
 });
 
 /**
- * Normalize file paths to match Tiled's expected keys.
- * Converts: ../../public/assets/decorations/GH/Decoration/img.png
- * To: ../decorations/GH/Decoration/img.png (relative to maps folder)
+ * Converts a Vite file path to a Tiled-compatible relative path.
+ * Tiled maps reference assets relative to the map file location.
+ * 
+ * @param {string} viteFilePath - Vite-generated file path (e.g., "../../public/assets/decorations/...")
+ * @returns {string} Tiled-compatible path (e.g., "../decorations/...")
+ * 
+ * @example
+ * getTiledKey("../../public/assets/decorations/GH/Decoration/img.png")
+ * // Returns: "../decorations/GH/Decoration/img.png"
  */
 function getTiledKey(viteFilePath) {
   const match = viteFilePath.match(/assets\/(.+)/);
@@ -29,9 +49,15 @@ function getTiledKey(viteFilePath) {
 }
 
 /**
- * Get Phaser-compatible path (relative to public folder)
- * Converts: ../../public/assets/decorations/GH/Decoration/img.png
- * To: assets/decorations/GH/Decoration/img.png
+ * Converts a Vite file path to a Phaser-compatible asset path.
+ * Phaser loads assets relative to the public directory root.
+ * 
+ * @param {string} viteFilePath - Vite-generated file path (e.g., "../../public/assets/decorations/...")
+ * @returns {string} Phaser-compatible path (e.g., "assets/decorations/...")
+ * 
+ * @example
+ * getPhaserPath("../../public/assets/decorations/GH/Decoration/img.png")
+ * // Returns: "assets/decorations/GH/Decoration/img.png"
  */
 function getPhaserPath(viteFilePath) {
   const match = viteFilePath.match(/assets\/(.+)/);
@@ -42,27 +68,32 @@ function getPhaserPath(viteFilePath) {
 }
 
 /**
- * Extract a clean key from the file path (filename without extension).
- * Converts: ../decorations/GH/Decoration/bookshelf.png
- * To: bookshelf
- */
-/**
- * Extract a clean key from the file path.
- * To avoid collisions (like multiple 'sign.png' in different folders),
- * we include the parent folder in the key.
- * Converts: ../decorations/GH/Decoration/bookshelf.png
- * To: GH_Decoration_bookshelf
+ * Extracts a unique asset key from a file path by including folder structure.
+ * This prevents naming collisions when multiple files have the same filename
+ * but exist in different directories (e.g., "sign.png" in different folders).
+ * 
+ * @param {string} filePath - File path to process
+ * @returns {string} Unique key with folder structure (e.g., "GH_Decoration_bookshelf")
+ * 
+ * @example
+ * extractKey("../decorations/GH/Decoration/bookshelf.png")
+ * // Returns: "GH_Decoration_bookshelf"
+ * 
+ * extractKey("../decorations/Terraria/Decorations/sign.png")
+ * // Returns: "Terraria_Decorations_sign"
  */
 function extractKey(filePath) {
-  // Remove the initial '../' or 'assets/' parts to get a clean relative structure
   const cleanPath = filePath.replace(/^(\.\.\/|assets\/)decorations\//, '');
-  
-  // Replace slashes with underscores and remove extension
   return cleanPath.replace(/\//g, '_').replace('.png', '');
 }
 
 /**
- * Generate dynamic asset entries from discovered files.
+ * Dynamically generated asset entries from discovered decoration files.
+ * Each entry includes both a simple key for Phaser code usage and a Tiled-compatible
+ * key for map file references.
+ * 
+ * @constant
+ * @type {AssetManifestEntry[]}
  */
 const dynamicDecorations = Object.keys(decorationFiles).map(viteFilePath => {
   const tiledKey = getTiledKey(viteFilePath);
@@ -71,26 +102,26 @@ const dynamicDecorations = Object.keys(decorationFiles).map(viteFilePath => {
   
   return {
     type: 'image',
-    key: cleanKey,           // Simple key like "bookshelf"
-    path: phaserPath,        // Phaser path: "assets/decorations/..."
-    _tiledKey: tiledKey      // Tiled key: "../decorations/..."
+    key: cleanKey,
+    path: phaserPath,
+    _tiledKey: tiledKey
   };
 });
 
-
-// ============================================================================
-// STATIC ASSET MANIFEST (Core assets with specific configurations)
-// ============================================================================
-
+/**
+ * Statically defined assets requiring specific configurations or manual control.
+ * Includes environment backgrounds, character spritesheets, tilesets, and tilemaps.
+ * 
+ * @constant
+ * @type {AssetManifestEntry[]}
+ */
 const STATIC_ASSETS = [
-  // Environment
   { type: 'image', key: ASSETS.SKY, path: 'assets/legacyFantasy/backgound/Background.png' },
   { type: 'image', key: ASSETS.BG_LAYER_1, path: 'assets/background/background_layer_1.png' },
   { type: 'image', key: ASSETS.BG_LAYER_2, path: 'assets/background/background_layer_2.png' },
   { type: 'image', key: ASSETS.BG_LAYER_3, path: 'assets/background/background_layer_3.png' },
   { type: 'image', key: ASSETS.FLOOR_TILES_1, path: 'assets/GandalfHardcore/Floor Tiles1.png' },
 
-  // Characters
   { 
     type: 'spritesheet', 
     key: ASSETS.PLAYER, 
@@ -101,8 +132,6 @@ const STATIC_ASSETS = [
   { type: 'image', key: ASSETS.ROCK_2, path: 'assets/decorations/rock_2.png' },
   { type: 'image', key: ASSETS.ROCK_3, path: 'assets/decorations/rock_3.png' },
   
-
-  // GandalfHardcore / Photoshop (Image Collection Assets)
   { type: 'image', key: 'tree1', path: 'assets/GandalfHardcore/Photoshop/tree1.png' },
   { type: 'image', key: 'tree2', path: 'assets/GandalfHardcore/Photoshop/tree2.png' },
   { type: 'image', key: 'cut_tree', path: 'assets/GandalfHardcore/Photoshop/cut_tree.png' },
@@ -112,11 +141,7 @@ const STATIC_ASSETS = [
   { type: 'image', key: 'tree_base', path: 'assets/GandalfHardcore/Photoshop/tree_base.png' },
   { type: 'image', key: 'tree_tip', path: 'assets/GandalfHardcore/Photoshop/tree_tip.png' },
 
-  // NOTE: All assets in 'assets/decorations/GH/Decoration' are now auto-loaded via import.meta.glob
-  // No need to manually register them here anymore!
-
   
-  // Animated Sprites (loaded as images for tilesets)
   { type: 'image', key: 'Campfire sheet', path: 'assets/GandalfHardcore/Animated Sprites/Campfire sheet.png' },
   { type: 'image', key: 'Campfire with food sheet', path: 'assets/GandalfHardcore/Animated Sprites/Campfire with food sheet.png' },
   { type: 'image', key: 'GandalfHardcore Animated Water Tiles', path: 'assets/GandalfHardcore/Animated Sprites/GandalfHardcore Animated Water Tiles.png' },
@@ -134,7 +159,6 @@ const STATIC_ASSETS = [
     config: SPRITE_CONFIG.INTEREST_POINTS 
   },
 
-  // Tilesets & Maps
   { 
     type: 'image', 
     key: ASSETS.TILES, 
@@ -167,24 +191,29 @@ const STATIC_ASSETS = [
   },
 ];
 
-// ============================================================================
-// EXPORT MERGED MANIFEST
-// ============================================================================
-
 /**
- * Merge static and dynamic assets.
- * Static assets take precedence over dynamic ones to allow manual overrides.
+ * Complete asset manifest combining static and dynamic assets.
  * 
- * Additionally, register Tiled-style path keys (e.g., "../decorations/...") 
- * that point to the same Phaser paths.
+ * This manifest merges manually defined assets with auto-discovered decoration assets.
+ * For each dynamic decoration, two entries are created:
+ * 1. Simple key for Phaser code (e.g., "bookshelf")
+ * 2. Tiled-compatible key for map references (e.g., "../decorations/GH/Decoration/bookshelf.png")
+ * 
+ * @constant
+ * @type {AssetManifestEntry[]}
+ * @example
+ * // Simple Phaser usage
+ * this.add.image(0, 0, 'GH_Decoration_bookshelf');
+ * 
+ * // Tiled automatically references using "../decorations/GH/Decoration/bookshelf.png"
+ * // which also resolves to the same asset
  */
 export const ASSET_MANIFEST = [
   ...STATIC_ASSETS,
   ...dynamicDecorations,
-  // Register Tiled-style keys as aliases pointing to the same Phaser paths
   ...dynamicDecorations.map(asset => ({
     type: 'image',
-    key: asset._tiledKey,      // Tiled key: "../decorations/..."
-    path: asset.path           // Same Phaser path: "assets/decorations/..."
+    key: asset._tiledKey,
+    path: asset.path
   }))
 ];

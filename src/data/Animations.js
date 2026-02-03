@@ -1,3 +1,24 @@
+/**
+ * @fileoverview Animation configurations and sprite definitions for the game.
+ * This module centralizes all animation frame data and spritesheet configurations
+ * used throughout the game, ensuring consistency and maintainability.
+ */
+
+/**
+ * @typedef {Object} AnimationConfig
+ * @property {string} key - Unique identifier for the animation
+ * @property {number} start - Starting frame index in the spritesheet
+ * @property {number} end - Ending frame index in the spritesheet
+ * @property {number} rate - Frame rate (frames per second)
+ * @property {number} repeat - Number of times to repeat animation (-1 for infinite loop)
+ */
+
+/**
+ * Player character animation configurations.
+ * Each animation defines frame ranges and playback settings for character movement.
+ * 
+ * @type {Object.<string, AnimationConfig>}
+ */
 export const PLAYER_ANIMS = {
   IDLE: { key: 'idle', start: 0, end: 5, rate: 8, repeat: -1 },
   RUN: { key: 'run', start: 16, end: 23, rate: 10, repeat: -1 },
@@ -7,6 +28,18 @@ export const PLAYER_ANIMS = {
   ATTACK: { key: 'attack1', start: 8, end: 13, rate: 12, repeat: 0 },
 };
 
+/**
+ * @typedef {Object} SpriteSheetConfig
+ * @property {number} frameWidth - Width of each frame in pixels
+ * @property {number} frameHeight - Height of each frame in pixels
+ */
+
+/**
+ * Spritesheet frame configurations for all sprite-based assets.
+ * Defines the dimensions for slicing spritesheets into individual frames.
+ * 
+ * @type {Object.<string, SpriteSheetConfig>}
+ */
 export const SPRITE_CONFIG = {
   PLAYER: { frameWidth: 56, frameHeight: 56 },
   TILES: { frameWidth: 24, frameHeight: 24 },
@@ -14,19 +47,39 @@ export const SPRITE_CONFIG = {
   INTEREST_POINTS: { frameWidth: 32, frameHeight: 32 },
 };
 
-// --- Animation Groups ---
-
+/**
+ * Furnace and sawmill animation configurations.
+ * 
+ * @type {Object.<string, AnimationConfig>}
+ */
 export const FURNACE_ANIMS = {
   BURN: { key: 'furnace_burn', start: 0, end: 5, rate: 10, repeat: -1 },
   SAWMILL: { key: 'sawmill_work', start: 6, end: 11, rate: 10, repeat: -1 },
 };
 
+/**
+ * Interactive point of interest animation configurations.
+ * 
+ * @type {Object.<string, AnimationConfig>}
+ */
 export const INTEREST_ANIMS = {
   STAR: { key: 'interest_point', start: 40, end: 44, rate: 7, repeat: -1 },
 };
 
 import { ASSETS } from '../utils/Constants';
 
+/**
+ * @typedef {Object} AnimationRegistryEntry
+ * @property {string} assetKey - Asset key from ASSETS constants
+ * @property {Object.<string, AnimationConfig>} anims - Animation configurations for this asset
+ */
+
+/**
+ * Master registry mapping environment assets to their animation configurations.
+ * Used by the scene to automatically create animations for all registered sprites.
+ * 
+ * @type {AnimationRegistryEntry[]}
+ */
 export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.FURNACE, anims: FURNACE_ANIMS },
   { assetKey: ASSETS.INTEREST_POINTS, anims: INTEREST_ANIMS },

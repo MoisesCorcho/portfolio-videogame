@@ -1,48 +1,49 @@
+/**
+ * @fileoverview Main gameplay scene managing the game world, player, and interactions.
+ * Handles level creation, parallax backgrounds, physics, and player interactions.
+ */
+
 import Player from '../player/Player';
 import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES } from '../utils/Constants';
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
 
+/**
+ * Main play scene where the gameplay takes place.
+ * Manages the game world, player character, parallax backgrounds, physics,
+ * and interactive elements loaded from Tiled maps.
+ * 
+ * @extends Phaser.Scene
+ */
 export default class PlayScene extends Phaser.Scene {
+  /**
+   * Creates the play scene instance.
+   */
   constructor() {
     super('PlayScene');
   }
 
+  /**
+   * Initializes the game scene by setting up backgrounds, level, player, physics, and camera.
+   * Automatically called by Phaser when the scene starts.
+   */
   create() {
-    // 0. Background (Parallax)
     const width = this.scale.width;
     const height = this.scale.height;
-
-    // 1. Background (Parallax with TileSprite)
     const zoom = GAME_CONFIG.zoom;
-
     const visibleWidth = width / zoom + 2;
     const visibleHeight = height / zoom + 2;
 
-    // 1. Background (Parallax Layers)
     this.createParallaxBackground(width, height, visibleWidth, visibleHeight);
-
-    // 2. Create Animations (Animations must exist before sprites use them)
-    // Moved before createLevel so objects can find their animations immediately
     this.createEnvironmentAnimations();
-
-    // 3. Create Layout
     this.createLevel();
-
-    // 4. Create Player
     this.createPlayer();
 
-    // 5. Interactables & Objects & Collisions (Handled within createLevel > Dynamic Loading)
-    
-    // 5. Input
-
-    // 5. Input
     this.keys = this.input.keyboard.addKeys({
       e: Phaser.Input.Keyboard.KeyCodes.E,
     });
 
-    // Camera follow behavior
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setZoom(GAME_CONFIG.zoom);
 
@@ -64,11 +65,15 @@ export default class PlayScene extends Phaser.Scene {
       this.cameras.main.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
     }
 
-    // 7. Collisions
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.player, this.manualCollisions);
   }
 
+  /**
+   * Creates a multi-layer parallax background using TileSprites.\n   * Each layer scrolls at a different rate to create depth perception,
+   * with backgrounds fixed to the viewport via setScrollFactor(0).\n   * \n   * @param {number} width - Canvas width in pixels\n   * @param {number} height - Canvas height in pixels\n   * @param {number} visibleWidth - Visible width accounting for zoom\   * @param {number} visibleHeight - Visible height accounting for zoom
+   * @private
+   */
   createParallaxBackground(width, height, visibleWidth, visibleHeight) {
     const layers = [
       { key: ASSETS.BG_LAYER_1, scroll: 0, depth: -12 },
@@ -91,7 +96,7 @@ export default class PlayScene extends Phaser.Scene {
           layer.key
         )
         .setOrigin(0.5, 0.5)
-        .setScrollFactor(0) // Fix to viewport
+        .setScrollFactor(0)
         .setTileScale(scale)
         .setDepth(layer.depth);
 
@@ -102,6 +107,14 @@ export default class PlayScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Loads and initializes the game level from the Tiled tilemap.
+   * Handles tileset mapping using a multi-tier fallback strategy to ensure
+   * compatibility between Tiled map references and Phaser's texture cache.
+   * Creates all tile layers and processes object layers for interactive elements.
+   * 
+   * @private
+   */
   createLevel() {
     const map = this.make.tilemap({ 
       key: 'level1',
@@ -212,6 +225,12 @@ export default class PlayScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Creates and initializes the player character.
+   * Sets up physics properties, spawn position, and interaction mechanics.
+   * 
+   * @private
+   */
   createPlayer() {
     // Find spawn point
     let spawnPoint = null;
@@ -233,19 +252,24 @@ export default class PlayScene extends Phaser.Scene {
       spawnY = spawnPoint.y;
     }
 
-    // Instantiate State Machine Player
     this.player = new Player(this, spawnX, spawnY);
   }
 
+  /**
+   * Processes a Tiled object layer to create interactive game objects.
+   * Automatically creates sprites from object definitions and configures
+   * their animations and interaction properties based on custom Tiled properties.
+   * 
+   * @param {string} layerName - Name of the object layer to process
+   * @private
+   */
   processObjectLayer(layerName) {
     const layer = this.map.getObjectLayer(layerName);
     if (!layer) return;
 
-    // Use Phaser's built-in conversion which handles GIDs and Image Collections automatically
     const createdObjects = this.map.createFromObjects(layerName, {});
     
     createdObjects.forEach((obj) => {
-      // Helper to get property (checks Data Manager first, then direct property)
       const getProp = (key) => {
           if (obj.getData && obj.getData(key) !== undefined) return obj.getData(key);
           return null;
@@ -254,7 +278,6 @@ export default class PlayScene extends Phaser.Scene {
       const interactionType = getProp('interactionType');
       const animationKey = getProp('animation');
 
-      // Check for specific "Start" object which is just a point
       if (obj.name === OBJECT_NAMES.START) {
           obj.setVisible(false);
       }
@@ -276,15 +299,19 @@ export default class PlayScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Creates and plays animations for environment objects like furnaces and sawmills.
+   * Iterates through the master animations registry and starts animations
+   * for all registered sprites in the scene.
+   * 
+   * @private
+   */
   createEnvironmentAnimations() {
-    // Scalable system: automatically loads all animations defined in the registry
     MASTER_ANIMATIONS_REGISTRY.forEach(group => {
       const { assetKey, anims } = group;
 
       Object.values(anims).forEach(anim => {
-        // Safety check: ensure animation doesn't already exist
         if (!this.anims.exists(anim.key)) {
-          // Generate frames dynamically
           const frames = this.anims.generateFrameNumbers(assetKey, { start: anim.start, end: anim.end });
 
           if (frames && frames.length > 0) {
@@ -302,8 +329,15 @@ export default class PlayScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * Processes manual collision objects from a Tiled object layer.
+   * Creates invisible physics bodies for custom collision shapes defined in Tiled,
+   * enabling precise collision boundaries beyond standard tile collisions.
+   * 
+   * @param {string} layerName - Name of the object layer containing collision shapes
+   * @private
+   */
   processManualCollisions(layerName) {
-    // this.manualCollisions is already initialized in createLevel
     const collisionsLayer = this.map.getObjectLayer(layerName);
     
     if (collisionsLayer && collisionsLayer.objects) {
@@ -341,6 +375,15 @@ export default class PlayScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Handles player interaction with interactable objects.
+   * Triggered when the player presses the interaction key near an interactive object.
+   * Dispatches interaction events based on the object's interaction type.
+   * 
+   * @param {Phaser.GameObjects.Sprite} player - The player character
+   * @param {Phaser.GameObjects.Sprite} interactable - The interactive object
+   * @private
+   */
   handleInteraction(player, interactable) {
     if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
       const type = interactable.getData('type');
@@ -348,8 +391,12 @@ export default class PlayScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Updates the scene every frame.
+   * Handles parallax scrolling animation for background layers.
+   * Automatically called by Phaser on each tick.
+   */
   update() {
-    // Update Player State Machine
     this.player.update();
 
     // Update Parallax
@@ -369,6 +416,12 @@ export default class PlayScene extends Phaser.Scene {
     );
   }
 
+  /**
+   * Triggers a UI modal of the specified type.
+   * 
+   * @param {string} type - Type of modal to display
+   * @private
+   */
   triggerModal(type) {
     openModal(type);
   }

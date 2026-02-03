@@ -1,14 +1,33 @@
+/**
+ * @fileoverview Asset preloading scene for the game.
+ * Handles loading all game assets before transitioning to the main play scene.
+ */
+
 import { ASSETS, SCENES } from '../utils/Constants';
 import { PLAYER_ANIMS } from '../data/Animations';
 import { ASSET_MANIFEST } from '../data/AssetManifest';
 
+/**
+ * Preloader scene responsible for loading all game assets and creating player animations.
+ * This scene displays a loading indicator while assets are being fetched,
+ * then automatically transitions to the main game scene once complete.
+ * 
+ * @extends Phaser.Scene
+ */
 export default class Preloader extends Phaser.Scene {
+  /**
+   * Creates the preloader scene instance.
+   */
   constructor() {
     super(SCENES.PRELOADER);
   }
 
+  /**
+   * Loads all game assets defined in the asset manifest.
+   * Displays a centered "Loading..." text while assets are being fetched.
+   * Automatically called by Phaser before create().
+   */
   preload() {
-    // Show loading text
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
@@ -23,28 +42,33 @@ export default class Preloader extends Phaser.Scene {
     });
     loadingText.setOrigin(0.5, 0.5);
 
-    // -- Load Assets from Manifest --
     ASSET_MANIFEST.forEach((asset) => {
       if (asset.type === 'spritesheet') {
         this.load.spritesheet(asset.key, asset.path, asset.config);
       } else if (asset.type === 'tilemapTiledJSON') {
         this.load.tilemapTiledJSON(asset.key, asset.path);
       } else {
-        // Default to image
         this.load.image(asset.key, asset.path);
       }
     });
   }
 
+  /**
+   * Initializes player animations and transitions to the main game scene.
+   * Automatically called by Phaser after all assets have finished loading.
+   */
   create() {
     this.createAnimations();
-    // Start the main game scene
     this.scene.start(SCENES.PLAY);
   }
 
+  /**
+   * Creates all player character animations from the PLAYER_ANIMS configuration.
+   * Generates frame-based animations using the loaded player spritesheet.
+   * 
+   * @private
+   */
   createAnimations() {
-    // Basic animations
-    // Helper to create animations
     Object.values(PLAYER_ANIMS).forEach((anim) => {
       this.anims.create({
         key: anim.key,
