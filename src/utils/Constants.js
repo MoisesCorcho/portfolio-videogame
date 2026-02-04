@@ -30,6 +30,7 @@ export const ASSETS = {
   // Objects
   FURNACE: 'furnace',
   INTEREST_POINTS: 'interest_point',
+  DUMMY: 'dummy',
 };
 
 export const INTERACTION_TYPES = {
@@ -56,4 +57,8 @@ export const OBJECT_NAMES = {
   PROJECTS: 'projects',
   ROCKS: 'rock',
   FENCE: 'fence',
+};
+
+export const ENTITY_TYPES = {
+  DUMMY: 'dummy',
 };

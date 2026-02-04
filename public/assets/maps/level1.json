@@ -354,6 +354,42 @@
                  "width":32,
                  "x":1194.5,
                  "y":608.75
+                }, 
+                {
+                 "gid":564,
+                 "height":32,
+                 "id":179,
+                 "name":"dummy",
+                 "properties":[
+                        {
+                         "name":"entity",
+                         "type":"string",
+                         "value":"dummy"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":830.181818181818,
+                 "y":614.181818181818
+                }, 
+                {
+                 "gid":564,
+                 "height":32,
+                 "id":182,
+                 "name":"dummy",
+                 "properties":[
+                        {
+                         "name":"entity",
+                         "type":"string",
+                         "value":"dummy"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":993.083333333333,
+                 "y":614.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -450,7 +486,7 @@
          "y":0
         }],
  "nextlayerid":17,
- "nextobjectid":177,
+ "nextobjectid":183,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -1833,6 +1869,133 @@
                          "tileid":39
                         }],
                  "id":0
+                }],
+         "tilewidth":32,
+         "transparentcolor":"#eae7da"
+        }, 
+        {
+         "columns":8,
+         "firstgid":548,
+         "image":"..\/sprites\/custom\/training_dummy_v2.png",
+         "imageheight":192,
+         "imagewidth":256,
+         "margin":0,
+         "name":"training_dummy",
+         "spacing":0,
+         "tilecount":48,
+         "tileheight":32,
+         "tiles":[
+                {
+                 "animation":[
+                        {
+                         "duration":100,
+                         "tileid":14
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":15
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":16
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":17
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":18
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":19
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":20
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":21
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":22
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":23
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":24
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":25
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":26
+                        }],
+                 "id":0
+                }, 
+                {
+                 "animation":[
+                        {
+                         "duration":100,
+                         "tileid":16
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":17
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":18
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":19
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":20
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":21
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":22
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":24
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":25
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":26
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":27
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":28
+                        }, 
+                        {
+                         "duration":100,
+                         "tileid":29
+                        }],
+                 "id":13
                 }],
          "tilewidth":32,
          "transparentcolor":"#eae7da"

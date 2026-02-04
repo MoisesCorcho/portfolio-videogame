@@ -24,10 +24,7 @@ import { SPRITE_CONFIG } from './Animations';
  * @constant
  * @type {Object.<string, string>}
  */
-const decorationFiles = import.meta.glob('../../public/assets/decorations/**/*.png', { 
-  eager: true, 
-  as: 'url' 
-});
+const decorationFiles = import.meta.glob('../../public/assets/decorations/**/*.png');
 
 /**
  * Converts a Vite file path to a Tiled-compatible relative path.
@@ -153,6 +150,12 @@ const STATIC_ASSETS = [
     key: ASSETS.INTEREST_POINTS, 
     path: 'assets/sprites/custom/interest_points.png', 
     config: SPRITE_CONFIG.INTEREST_POINTS 
+  },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.DUMMY, 
+    path: 'assets/sprites/custom/training_dummy_v2.png', 
+    config: SPRITE_CONFIG.DUMMY 
   },
 
   { 

@@ -45,6 +45,7 @@ export const SPRITE_CONFIG = {
   TILES: { frameWidth: 24, frameHeight: 24 },
   FURNACE: { frameWidth: 64, frameHeight: 64 },
   INTEREST_POINTS: { frameWidth: 32, frameHeight: 32 },
+  DUMMY: { frameWidth: 32, frameHeight: 32 },
 };
 
 /**
@@ -66,6 +67,16 @@ export const INTEREST_ANIMS = {
   STAR: { key: 'interest_point', start: 40, end: 44, rate: 7, repeat: -1 },
 };
 
+/**
+ * Training Dummy animation configurations.
+ * 
+ * @type {Object.<string, AnimationConfig>}
+ */
+export const DUMMY_ANIMS = {
+  IDLE: { key: 'dummy_idle', start: 0, end: 0, rate: 1, repeat: -1 },
+  HURT: { key: 'dummy_hurt', start: 1, end: 4, rate: 10, repeat: 0 },
+};
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -83,5 +94,6 @@ import { ASSETS } from '../utils/Constants';
 export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.FURNACE, anims: FURNACE_ANIMS },
   { assetKey: ASSETS.INTEREST_POINTS, anims: INTEREST_ANIMS },
+  { assetKey: ASSETS.DUMMY, anims: DUMMY_ANIMS },
 ];
 

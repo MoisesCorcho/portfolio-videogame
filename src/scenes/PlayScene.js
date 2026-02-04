@@ -4,7 +4,8 @@
  */
 
 import Player from '../player/Player';
-import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES } from '../utils/Constants';
+import Dummy from '../entities/Dummy';
+import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES, ENTITY_TYPES } from '../utils/Constants';
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
@@ -35,6 +36,25 @@ export default class PlayScene extends Phaser.Scene {
     const visibleWidth = width / zoom + 2;
     const visibleHeight = height / zoom + 2;
 
+    // Physics groups
+    this.dummies = this.physics.add.group({
+      classType: Dummy,
+      runChildUpdate: true,
+      allowGravity: false,
+      immovable: true
+    });
+    
+    // Persistent Attack Zone (reused) - smaller hitbox for precision
+    this.attackZone = this.add.zone(0, 0, 25, 25);
+    this.physics.add.existing(this.attackZone);
+    this.attackZone.body.setAllowGravity(false);
+    this.attackZone.body.moves = false; // It shouldn't move by physics
+    this.attackZone.body.enable = false; // Disable until attack
+
+    // Debug: Visible representation of the attack zone
+    this.attackZoneDebug = this.add.rectangle(0, 0, 25, 25, 0xff0000, 0.4);
+    this.attackZoneDebug.setVisible(false);
+
     this.createParallaxBackground(width, height, visibleWidth, visibleHeight);
     this.createEnvironmentAnimations();
     this.createLevel();
@@ -42,6 +62,7 @@ export default class PlayScene extends Phaser.Scene {
 
     this.keys = this.input.keyboard.addKeys({
       e: Phaser.Input.Keyboard.KeyCodes.E,
+      j: Phaser.Input.Keyboard.KeyCodes.J,
     });
 
     this.cameras.main.startFollow(this.player);
@@ -67,6 +88,10 @@ export default class PlayScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.player, this.manualCollisions);
+    
+    // Dummy collisions
+    this.physics.add.collider(this.dummies, this.platforms);
+    this.physics.add.collider(this.dummies, this.manualCollisions);
   }
 
   /**
@@ -134,6 +159,7 @@ export default class PlayScene extends Phaser.Scene {
       'Other Tiles1': ASSETS.OTHER_TILES,
       'Pixel Art Furnace and Sawmill': ASSETS.FURNACE,
       'interest_points': ASSETS.INTEREST_POINTS,
+      'training_dummy': ASSETS.DUMMY,
       // Map other specific tileset names if needed
     };
 
@@ -277,11 +303,24 @@ export default class PlayScene extends Phaser.Scene {
 
       const interactionType = getProp('interactionType');
       const animationKey = getProp('animation');
+      const entityType = getProp('entity');
 
       if (obj.name === OBJECT_NAMES.START) {
           obj.setVisible(false);
       }
       
+      // 1. Handle Special Entities (like Dummy)
+      if (entityType === ENTITY_TYPES.DUMMY) {
+        // Spawn a real Dummy entity at this location
+        const dummy = this.dummies.get(obj.x, obj.y, ASSETS.DUMMY);
+        if (dummy) {
+          dummy.setDepth(10);
+        }
+        // Destroy the placeholder object from Tiled
+        obj.destroy();
+        return; // Skip further processing for this object
+      }
+
       // 2. Handle Animations
       if (animationKey) {
           if (this.anims.exists(animationKey)) {
@@ -341,24 +380,11 @@ export default class PlayScene extends Phaser.Scene {
     const collisionsLayer = this.map.getObjectLayer(layerName);
     
     if (collisionsLayer && collisionsLayer.objects) {
-      console.log(`Checking layer: ${MAP_LAYERS.COLLISIONS}`, collisionsLayer.objects.length, "objects found");
       
       collisionsLayer.objects.forEach((obj, index) => {
         // Handle Tiled points/rectangles with 0 size
         const width = obj.width || 32;
         const height = obj.height || 32;
-
-        if (index === 0) {
-          console.log("First Object Debug:", {
-            name: obj.name,
-            x: obj.x,
-            y: obj.y,
-            w: obj.width,
-            h: obj.height,
-            calculatedW: width,
-            calculatedH: height
-          });
-        }
 
         // Create a zone for the collision
         // In Tiled, (x,y) is top-left. Phaser physics bodies are centered by default.
@@ -414,6 +440,15 @@ export default class PlayScene extends Phaser.Scene {
       null,
       this
     );
+
+    // Continuous attack hitbox overlap check (enabled/disabled by AttackState)
+    this.physics.overlap(this.attackZone, this.dummies, (zone, dummy) => {
+      // Check if this is an attack state and if this enemy hasn't been hit yet
+      const attackState = this.player.stateMachine.state;
+      if (attackState && attackState.canDamage && attackState.canDamage(dummy)) {
+        dummy.takeDamage();
+      }
+    });
   }
 
   /**

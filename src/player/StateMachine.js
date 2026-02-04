@@ -18,6 +18,11 @@ export default class StateMachine {
   }
 
   transition(newState, ...enterArgs) {
+    // Call exit on current state if it exists
+    if (this.state && this.state.exit) {
+      this.state.exit(...this.stateArgs);
+    }
+    
     this.state = this.possibleStates[newState];
     this.state.enter(...this.stateArgs, ...enterArgs);
   }
