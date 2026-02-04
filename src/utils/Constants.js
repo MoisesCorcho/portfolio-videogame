@@ -10,7 +10,6 @@ export const SCENES = {
 
 export const ASSETS = {
   // Environment
-  SKY: 'sky_main',
   BG_LAYER_1: 'bg_layer_1',
   BG_LAYER_2: 'bg_layer_2',
   BG_LAYER_3: 'bg_layer_3',
@@ -29,15 +28,6 @@ export const ASSETS = {
   LEVEL_1_JSON: 'assets/maps/level1.json', // Path for preloader
 
   // Objects
-  SHOP: 'shop',
-  SIGN: 'sign',
-  LAMP: 'lamp',
-  LARGE_TENT: 'large_tent',
-  FENCE_1: 'fence_1',
-  FENCE_2: 'fence_2',
-  ROCK_1: 'rock_1',
-  ROCK_2: 'rock_2',
-  ROCK_3: 'rock_3',
   FURNACE: 'furnace',
   INTEREST_POINTS: 'interest_point',
 };

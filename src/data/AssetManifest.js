@@ -116,11 +116,10 @@ const dynamicDecorations = Object.keys(decorationFiles).map(viteFilePath => {
  * @type {AssetManifestEntry[]}
  */
 const STATIC_ASSETS = [
-  { type: 'image', key: ASSETS.SKY, path: 'assets/legacyFantasy/backgound/Background.png' },
   { type: 'image', key: ASSETS.BG_LAYER_1, path: 'assets/background/background_layer_1.png' },
   { type: 'image', key: ASSETS.BG_LAYER_2, path: 'assets/background/background_layer_2.png' },
   { type: 'image', key: ASSETS.BG_LAYER_3, path: 'assets/background/background_layer_3.png' },
-  { type: 'image', key: ASSETS.FLOOR_TILES_1, path: 'assets/GandalfHardcore/Floor Tiles1.png' },
+  { type: 'image', key: ASSETS.FLOOR_TILES_1, path: 'assets/tilesets/GH/floor_tiles1.png' },
 
   { 
     type: 'spritesheet', 
@@ -128,61 +127,48 @@ const STATIC_ASSETS = [
     path: 'assets/character/char_blue.png', 
     config: SPRITE_CONFIG.PLAYER 
   },
-
-  { type: 'image', key: ASSETS.ROCK_2, path: 'assets/decorations/rock_2.png' },
-  { type: 'image', key: ASSETS.ROCK_3, path: 'assets/decorations/rock_3.png' },
   
-  { type: 'image', key: 'tree1', path: 'assets/GandalfHardcore/Photoshop/tree1.png' },
-  { type: 'image', key: 'tree2', path: 'assets/GandalfHardcore/Photoshop/tree2.png' },
-  { type: 'image', key: 'cut_tree', path: 'assets/GandalfHardcore/Photoshop/cut_tree.png' },
-  { type: 'image', key: 'cut_tree_2', path: 'assets/GandalfHardcore/Photoshop/cut_tree_2.png' },
-  { type: 'image', key: 'cut_tree_3', path: 'assets/GandalfHardcore/Photoshop/cut_tree_3.png' },
-  { type: 'image', key: 'medium_tree', path: 'assets/GandalfHardcore/Photoshop/medium_tree.png' },
-  { type: 'image', key: 'tree_base', path: 'assets/GandalfHardcore/Photoshop/tree_base.png' },
-  { type: 'image', key: 'tree_tip', path: 'assets/GandalfHardcore/Photoshop/tree_tip.png' },
+  { type: 'image', key: 'tree1', path: 'assets/decorations/GH/pine1.png' },
+  { type: 'image', key: 'tree2', path: 'assets/decorations/GH/pine2.png' },
+  { type: 'image', key: 'cut_tree', path: 'assets/decorations/GH/cut_tree.png' },
+  { type: 'image', key: 'cut_tree_2', path: 'assets/decorations/GH/cut_tree_2.png' },
+  { type: 'image', key: 'cut_tree_3', path: 'assets/decorations/GH/cut_tree_3.png' },
+  { type: 'image', key: 'medium_tree', path: 'assets/decorations/GH/medium_tree.png' },
+  { type: 'image', key: 'tree_base', path: 'assets/decorations/GH/tree_base.png' },
+  { type: 'image', key: 'tree_tip', path: 'assets/decorations/GH/tree_tip.png' },
 
   
-  { type: 'image', key: 'Campfire sheet', path: 'assets/GandalfHardcore/Animated Sprites/Campfire sheet.png' },
-  { type: 'image', key: 'Campfire with food sheet', path: 'assets/GandalfHardcore/Animated Sprites/Campfire with food sheet.png' },
-  { type: 'image', key: 'GandalfHardcore Animated Water Tiles', path: 'assets/GandalfHardcore/Animated Sprites/GandalfHardcore Animated Water Tiles.png' },
+  { type: 'image', key: 'campfire_sheet', path: 'assets/sprites/GH/campfire_sheet.png' },
+  { type: 'image', key: 'campfire_with_food_sheet', path: 'assets/sprites/GH/campfire_with_food_sheet.png' },
+  { type: 'image', key: 'animated_water_tiles', path: 'assets/sprites/GH/animated_water_tiles.png' },
 
   { 
     type: 'spritesheet', 
     key: ASSETS.FURNACE, 
-    path: 'assets/GandalfHardcore/Pixel Art Furnace and Sawmill.png', 
+    path: 'assets/sprites/GH/furnace_and_sawmill.png', 
     config: SPRITE_CONFIG.FURNACE 
   },
   { 
     type: 'spritesheet', 
     key: ASSETS.INTEREST_POINTS, 
-    path: 'assets/decorations/interest_points.png', 
+    path: 'assets/sprites/custom/interest_points.png', 
     config: SPRITE_CONFIG.INTEREST_POINTS 
   },
 
   { 
     type: 'image', 
     key: ASSETS.TILES, 
-    path: 'assets/GandalfHardcore/Floor Tiles2.png' 
-  },
-  { 
-    type: 'image', 
-    key: ASSETS.DECORATIONS, 
-    path: 'assets/GandalfHardcore/Decor.png' 
-  },
-  { 
-    type: 'image', 
-    key: ASSETS.GARDEN_DECORATIONS, 
-    path: 'assets/GandalfHardcore/Garden Decorations.png' 
+    path: 'assets/tilesets/GH/floor_tiles2.png' 
   },
   { 
     type: 'image', 
     key: ASSETS.OTHER_TILES, 
-    path: 'assets/GandalfHardcore/Other Tiles1.png' 
+    path: 'assets/tilesets/GH/other_tiles1.png' 
   },
   { 
     type: 'image', 
     key: ASSETS.HOUSE_TILES, 
-    path: 'assets/GandalfHardcore/House Tiles.png' 
+    path: 'assets/tilesets/GH/house_tiles.png' 
   },
   { 
     type: 'tilemapTiledJSON', 
