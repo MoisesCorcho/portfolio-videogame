@@ -357,6 +357,12 @@ export default class PlayScene extends Phaser.Scene {
       if (interactionType) {
         this.interactables.add(obj);
         obj.setData('type', interactionType);
+        
+        // Store custom ID if present (for single_experience, etc.)
+        const customId = obj.properties?.find(p => p.name === 'id')?.value;
+        if (customId) {
+          obj.setData('id', customId);
+        }
       }
     });
   }
@@ -436,7 +442,8 @@ export default class PlayScene extends Phaser.Scene {
   handleInteraction(player, interactable) {
     if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
       const type = interactable.getData('type');
-      this.triggerModal(type);
+      const id = interactable.getData('id');
+      this.triggerModal(type, id);
     }
   }
 
@@ -478,9 +485,11 @@ export default class PlayScene extends Phaser.Scene {
    * Triggers a UI modal of the specified type.
    * 
    * @param {string} type - Type of modal to display
+   * @param {string} [id] - Optional ID to pass as data (e.g., experience ID)
    * @private
    */
-  triggerModal(type) {
-    openModal(type);
+  triggerModal(type, id = null) {
+    const data = id ? { id } : null;
+    openModal(type, data);
   }
 }

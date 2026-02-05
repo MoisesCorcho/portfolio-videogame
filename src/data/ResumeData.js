@@ -14,7 +14,7 @@ export const ResumeData = {
   },
   experience: [
     {
-      id: 'exp_flusso',
+      id: 'exp_andrestelocambia',
       role: 'Laravel Backend Developer',
       company: 'andrestelocambia',
       date: 'Diciembre 2025 – Febrero 2026',

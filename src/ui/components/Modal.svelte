@@ -29,8 +29,8 @@
         pointer-events: auto;
         background: var(--modal-bg, rgba(20, 20, 30, 0.95));
         border: 4px solid var(--accent, #ffcc00);
-        width: 80%;
-        max-width: 600px;
+        width: 90%;
+        max-width: 900px;
         max-height: 80vh;
         position: relative;
         border-radius: 8px;
@@ -38,7 +38,6 @@
         display: flex;
         flex-direction: column;
         overflow: hidden; /* Clips children to radius */
-        /* Padding removed from container to let scrollbar extend fully */
     }
 
     .scroll-container {

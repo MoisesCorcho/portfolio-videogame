@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --modal-bg: rgba(20, 20, 30, 0.95);
-  --text-color: #fff;
+  --modal-bg: rgba(15, 15, 25, 0.98);
+  --text-color: #f0f0f0;
   --accent: #ffcc00;
+  --panel-border: #4a4e69;
+  --chip-bg: #22223b;
+  --header-gold: #fbbf24;
 }
 
 * {
@@ -15,10 +18,14 @@
 }
 
 body {
-  font-family: 'Press Start 2P', cursive, sans-serif; /* Placeholder font */
+  font-family: 'Press Start 2P', 'Courier New', monospace;
   background: #000;
   overflow: hidden;
   color: var(--text-color);
+  /* Better rendering for pixel fonts */
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: pixelated;
 }
 
 #app {
@@ -29,6 +36,35 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+/* Pixel Art Layout Components */
+.pixel-panel {
+  background: var(--modal-bg);
+  border: 4px solid #000;
+  box-shadow: 
+    inset -4px -4px 0px 0px rgba(0,0,0,0.5),
+    inset 4px 4px 0px 0px rgba(255,255,255,0.1),
+    0px 8px 0px 0px rgba(0,0,0,0.2);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.pixel-chip {
+  background: var(--chip-bg);
+  border: 2px solid #000;
+  box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.1);
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px;
+  color: #fff;
+}
+
+.metadata-header {
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 
 #ui-layer {
   position: absolute;
@@ -48,9 +84,44 @@ h1,
 h2 {
   color: var(--accent);
   margin-bottom: 1rem;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
 }
 
 p {
-  line-height: 1.6;
+  line-height: 1.8;
   margin-bottom: 1rem;
+  letter-spacing: 0.03em;
 }
+
+/* Utility classes for 8-bit font sizing */
+.text-xs {
+  font-size: 0.5rem;
+  line-height: 1.5;
+}
+
+.text-sm {
+  font-size: 0.625rem;
+  line-height: 1.6;
+}
+
+.text-base {
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.text-lg {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.text-xl {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.text-2xl {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+

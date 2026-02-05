@@ -46,6 +46,7 @@ export const ASSETS = {
 export const INTERACTION_TYPES = {
   PROFILE: 'profile',
   EXPERIENCE: 'experience',
+  SINGLE_EXPERIENCE: 'single_experience',
   SKILLS: 'skills',
   EDUCATION: 'education',
 };

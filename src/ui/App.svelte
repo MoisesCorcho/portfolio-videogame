@@ -6,6 +6,7 @@
     // Views
     import Profile from './components/header/Profile.svelte';
     import Experience from './components/header/Experience.svelte';
+    import SingleExperience from './components/header/SingleExperience.svelte';
     import Skills from './components/header/Skills.svelte';
     import Education from './components/header/Education.svelte';
 
@@ -30,6 +31,8 @@
             <Profile />
         {:else if state.view === INTERACTION_TYPES.EXPERIENCE}
             <Experience />
+        {:else if state.view === INTERACTION_TYPES.SINGLE_EXPERIENCE}
+            <SingleExperience />
         {:else if state.view === INTERACTION_TYPES.SKILLS}
             <Skills />
         {:else if state.view === INTERACTION_TYPES.EDUCATION}
