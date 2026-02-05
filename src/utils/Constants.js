@@ -31,6 +31,16 @@ export const ASSETS = {
   FURNACE: 'furnace',
   INTEREST_POINTS: 'interest_point',
   DUMMY: 'dummy',
+  BEWITCHING_TABLE: 'Terraria_bewitching_table',
+  UNIVERSAL_PYLON: 'Terraria_universal_pylon',
+  SNOW_PYLON: 'Terraria_snow_pylon',
+  OCEAN_PYLON: 'Terraria_ocean_pylon',
+  JUNGLE_PYLON: 'Terraria_jungle_pylon',
+  HALLOW_PYLON: 'Terraria_hallow_pylon',
+  FOREST_PYLON: 'Terraria_forest_pylon',
+  DESERT_PYLON: 'Terraria_desert_pylon',
+  CAVERN_PYLON: 'Terraria_cavern_pylon',
+  MUSHROOM_PYLON: 'Terraria_mushroom_pylon',
 };
 
 export const INTERACTION_TYPES = {

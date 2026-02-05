@@ -18,13 +18,16 @@ import { SPRITE_CONFIG } from './Animations';
  */
 
 /**
- * Dynamically discovers all PNG files in the decorations directory.
+ * Dynamically discovers all PNG files in the decorations and sprites directories.
  * Uses Vite's import.meta.glob with eager loading to scan the file system at build time.
  * 
  * @constant
  * @type {Object.<string, string>}
  */
-const decorationFiles = import.meta.glob('../../public/assets/decorations/**/*.png');
+const dynamicFiles = import.meta.glob([
+  '../../public/assets/decorations/**/*.png',
+  '../../public/assets/sprites/**/*.png'
+], { query: '?url', import: 'default', eager: true });
 
 /**
  * Converts a Vite file path to a Tiled-compatible relative path.
@@ -80,7 +83,8 @@ function getPhaserPath(viteFilePath) {
  * // Returns: "Terraria_Decorations_sign"
  */
 function extractKey(filePath) {
-  const cleanPath = filePath.replace(/^(\.\.\/|assets\/)decorations\//, '');
+  // Remove common prefixes while preserving the subfolder structure
+  const cleanPath = filePath.replace(/^(\.\.\/|assets\/|..\/..\/public\/assets\/)(decorations|sprites)\//, '');
   return cleanPath.replace(/\//g, '_').replace('.png', '');
 }
 
@@ -92,18 +96,20 @@ function extractKey(filePath) {
  * @constant
  * @type {AssetManifestEntry[]}
  */
-const dynamicDecorations = Object.keys(decorationFiles).map(viteFilePath => {
-  const tiledKey = getTiledKey(viteFilePath);
-  const phaserPath = getPhaserPath(viteFilePath);
-  const cleanKey = extractKey(viteFilePath);
-  
-  return {
-    type: 'image',
-    key: cleanKey,
-    path: phaserPath,
-    _tiledKey: tiledKey
-  };
-});
+const dynamicAssets = Object.keys(dynamicFiles)
+  .map(viteFilePath => {
+    const tiledKey = getTiledKey(viteFilePath);
+    const phaserPath = getPhaserPath(viteFilePath);
+    const cleanKey = extractKey(viteFilePath);
+    
+    return {
+      type: 'image',
+      key: cleanKey,
+      path: phaserPath,
+      _tiledKey: tiledKey
+    };
+  })
+  .filter(asset => !Object.values(ASSETS).includes(asset.key));
 
 /**
  * Statically defined assets requiring specific configurations or manual control.
@@ -157,6 +163,75 @@ const STATIC_ASSETS = [
     path: 'assets/sprites/custom/training_dummy_v2.png', 
     config: SPRITE_CONFIG.DUMMY 
   },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.BEWITCHING_TABLE, 
+    path: 'assets/sprites/Terraria/bewitching_table.png', 
+    config: SPRITE_CONFIG.BEWITCHING_TABLE 
+  },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.UNIVERSAL_PYLON, 
+    path: 'assets/sprites/Terraria/universal_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/universal_pylon.png', path: 'assets/sprites/Terraria/universal_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.SNOW_PYLON, 
+    path: 'assets/sprites/Terraria/snow_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/snow_pylon.png', path: 'assets/sprites/Terraria/snow_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.OCEAN_PYLON, 
+    path: 'assets/sprites/Terraria/ocean_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/ocean_pylon.png', path: 'assets/sprites/Terraria/ocean_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.JUNGLE_PYLON, 
+    path: 'assets/sprites/Terraria/jungle_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/jungle_pylon.png', path: 'assets/sprites/Terraria/jungle_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.HALLOW_PYLON, 
+    path: 'assets/sprites/Terraria/hallow_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/hallow_pylon.png', path: 'assets/sprites/Terraria/hallow_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.FOREST_PYLON, 
+    path: 'assets/sprites/Terraria/forest_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/forest_pylon.png', path: 'assets/sprites/Terraria/forest_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.DESERT_PYLON, 
+    path: 'assets/sprites/Terraria/desert_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/desert_pylon.png', path: 'assets/sprites/Terraria/desert_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.CAVERN_PYLON, 
+    path: 'assets/sprites/Terraria/cavern_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/cavern_pylon.png', path: 'assets/sprites/Terraria/cavern_pylon.png', config: SPRITE_CONFIG.PYLONS },
+  { 
+    type: 'spritesheet', 
+    key: ASSETS.MUSHROOM_PYLON, 
+    path: 'assets/sprites/Terraria/mushroom_pylon.png', 
+    config: SPRITE_CONFIG.PYLONS 
+  },
+  { type: 'spritesheet', key: '../sprites/Terraria/mushroom_pylon.png', path: 'assets/sprites/Terraria/mushroom_pylon.png', config: SPRITE_CONFIG.PYLONS },
 
   { 
     type: 'image', 
@@ -199,8 +274,8 @@ const STATIC_ASSETS = [
  */
 export const ASSET_MANIFEST = [
   ...STATIC_ASSETS,
-  ...dynamicDecorations,
-  ...dynamicDecorations.map(asset => ({
+  ...dynamicAssets,
+  ...dynamicAssets.map(asset => ({
     type: 'image',
     key: asset._tiledKey,
     path: asset.path

@@ -46,6 +46,8 @@ export const SPRITE_CONFIG = {
   FURNACE: { frameWidth: 64, frameHeight: 64 },
   INTEREST_POINTS: { frameWidth: 32, frameHeight: 32 },
   DUMMY: { frameWidth: 32, frameHeight: 32 },
+  BEWITCHING_TABLE: { frameWidth: 48, frameHeight: 48 },
+  PYLONS: { frameWidth: 48, frameHeight: 68 },
 };
 
 /**
@@ -66,6 +68,28 @@ export const FURNACE_ANIMS = {
 export const INTEREST_ANIMS = {
   STAR: { key: 'interest_point', start: 40, end: 44, rate: 7, repeat: -1 },
 };
+
+/**
+ * Bewitching Table animation configurations.
+ * 
+ * @type {Object.<string, AnimationConfig>}
+ */
+export const BEWITCHING_TABLE_ANIMS = {
+  IDLE: { key: 'bewitching_table_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+
+/**
+ * Pylon animation configurations.
+ */
+export const UNIVERSAL_PYLON_ANIMS = { IDLE: { key: 'universal_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const SNOW_PYLON_ANIMS = { IDLE: { key: 'snow_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const OCEAN_PYLON_ANIMS = { IDLE: { key: 'ocean_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const JUNGLE_PYLON_ANIMS = { IDLE: { key: 'jungle_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const HALLOW_PYLON_ANIMS = { IDLE: { key: 'hallow_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const FOREST_PYLON_ANIMS = { IDLE: { key: 'forest_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const DESERT_PYLON_ANIMS = { IDLE: { key: 'desert_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const CAVERN_PYLON_ANIMS = { IDLE: { key: 'cavern_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const MUSHROOM_PYLON_ANIMS = { IDLE: { key: 'mushroom_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
 
 /**
  * Training Dummy animation configurations.
@@ -95,5 +119,15 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.FURNACE, anims: FURNACE_ANIMS },
   { assetKey: ASSETS.INTEREST_POINTS, anims: INTEREST_ANIMS },
   { assetKey: ASSETS.DUMMY, anims: DUMMY_ANIMS },
+  { assetKey: ASSETS.BEWITCHING_TABLE, anims: BEWITCHING_TABLE_ANIMS },
+  { assetKey: ASSETS.UNIVERSAL_PYLON, anims: UNIVERSAL_PYLON_ANIMS },
+  { assetKey: ASSETS.SNOW_PYLON, anims: SNOW_PYLON_ANIMS },
+  { assetKey: ASSETS.OCEAN_PYLON, anims: OCEAN_PYLON_ANIMS },
+  { assetKey: ASSETS.JUNGLE_PYLON, anims: JUNGLE_PYLON_ANIMS },
+  { assetKey: ASSETS.HALLOW_PYLON, anims: HALLOW_PYLON_ANIMS },
+  { assetKey: ASSETS.FOREST_PYLON, anims: FOREST_PYLON_ANIMS },
+  { assetKey: ASSETS.DESERT_PYLON, anims: DESERT_PYLON_ANIMS },
+  { assetKey: ASSETS.CAVERN_PYLON, anims: CAVERN_PYLON_ANIMS },
+  { assetKey: ASSETS.MUSHROOM_PYLON, anims: MUSHROOM_PYLON_ANIMS },
 ];
 

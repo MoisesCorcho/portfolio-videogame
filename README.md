@@ -113,3 +113,18 @@ El juego utiliza mapas creados en Tiled (`.json`).
     - `Objects`: Elementos interactivos con propiedades personalizadas (`interactionType`, `animation`).
     - `Collisions`: Formas personalizadas para colisiones precisas.
 - **Propiedades Personalizadas**: Se leen en `PlayScene.js` para asignar lógica (ej. abrir un modal al interactuar).
+
+---
+
+## 🎁 Conversión de GIFs a Sprites (EzGif)
+
+Para integrar animaciones desde archivos GIF en Phaser, es recomendable convertirlos a Spritesheets:
+
+1. **Herramienta**: Utiliza [EzGif - GIF to Sprite Sheet](https://ezgif.com/gif-to-sprite).
+2. **Opciones de Conversión**:
+   - **Tile alignment**: Selecciona `Stack horizontally`.
+   - **Margin around tiles**: `0 px`.
+3. **Cálculo de Dimensiones**:
+   - La página de EzGif indica el alto, ancho y cantidad de frames.
+   - **Desde Windows**: Puedes encontrar el **Alto** en los detalles del archivo. Para el **Ancho** de cada frame, divide el ancho total entre el valor del campo **Profundidad en bits** (o el número de frames).
+   - **Importante**: Necesitamos conocer el **ancho** y **alto** exactos de un frame para poder importar de manera correcta el sprite en el software **Tiled**, asegurando que cada uno se encuadre perfectamente.

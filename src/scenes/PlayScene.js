@@ -184,14 +184,21 @@ export default class PlayScene extends Phaser.Scene {
         // Extract base filename without extension
         const baseName = tileset.name.split('/').pop().replace(/\.[^/.]+$/, "");
         
-        // Check if this base name exists as a loaded texture key
+        // Exact match
         if (this.textures.exists(baseName)) {
            assetKey = baseName;
         } else {
-           // Second try: strict match against ASSETS values
-           const foundKey = assetValues.find(key => key === baseName);
-           if (foundKey) {
-              assetKey = foundKey;
+           // Search for a key that contains the base name (e.g., "Terraria_bewitching_table" matches "bewitching_table")
+           const allKeys = this.textures.getTextureKeys();
+           const match = allKeys.find(key => key.endsWith('_' + baseName) || key === baseName);
+           if (match) {
+             assetKey = match;
+           } else {
+             // Second try: strict match against ASSETS values
+             const foundValue = assetValues.find(val => val === baseName);
+             if (foundValue) {
+                assetKey = foundValue;
+             }
            }
         }
       }
@@ -323,10 +330,26 @@ export default class PlayScene extends Phaser.Scene {
 
       // 2. Handle Animations
       if (animationKey) {
-          if (this.anims.exists(animationKey)) {
-              obj.play(animationKey);
+          let finalKey = animationKey;
+          
+          // Smart resolve for shared names like "pylon_idle"
+          // This makes the system scalable: many pylons can use the same Tiled property
+          if (animationKey === 'pylon_idle' && obj.texture) {
+              // Extract variant (e.g. "forest" from "Terraria_forest_pylon" or "../sprites/Terraria/forest_pylon.png")
+              const textureName = obj.texture.key
+                  .replace('Terraria_', '')
+                  .replace('../sprites/Terraria/', '')
+                  .replace('.png', '');
+              const candidateKey = `${textureName}_idle`;
+              if (this.anims.exists(candidateKey)) {
+                  finalKey = candidateKey;
+              }
+          }
+
+          if (this.anims.exists(finalKey)) {
+              obj.play(finalKey);
           } else {
-              console.warn(`Animation key not found: ${animationKey}`);
+              console.warn(`Animation key not found: ${finalKey}`);
           }
       }
 
