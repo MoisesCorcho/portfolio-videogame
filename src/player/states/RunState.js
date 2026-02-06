@@ -16,10 +16,10 @@ export default class RunState extends State {
     }
 
     // Move Logic
-    if (cursors.left.isDown) {
+    if (cursors.left.isDown || keys.a.isDown) {
       this.player.setVelocityX(-speed);
       this.player.setFlipX(true);
-    } else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown || keys.d.isDown) {
       this.player.setVelocityX(speed);
       this.player.setFlipX(false);
     } else {
@@ -29,7 +29,7 @@ export default class RunState extends State {
     }
 
     // Transition to Jump
-    if (cursors.up.isDown && this.player.body.onFloor()) {
+    if ((cursors.up.isDown || keys.w.isDown) && this.player.body.onFloor()) {
       this.stateMachine.transition('jump');
       return;
     }

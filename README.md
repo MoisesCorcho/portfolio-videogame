@@ -116,6 +116,33 @@ El juego utiliza mapas creados en Tiled (`.json`).
 
 ---
 
+## 🪜 Plataformas Atravesables (One-Way Platforms)
+
+El juego soporta plataformas que permiten saltar a través de ellas desde abajo y pararse encima.
+
+### 🛠️ Detalles Técnicos
+- **Archivos involucrados**:
+    - [`src/scenes/PlayScene.js`]: Contiene la lógica de creación y el loop de actualización.
+    - [`src/utils/Constants.js`]: Define el nombre de la capa (`PLATFORMS`).
+- **Funciones Clave**:
+    - `processOneWayPlatforms(layerName)`: Itera sobre los objetos de Tiled y crea `Phaser.Physics.Arcade.StaticGroup` de zonas invisibles.
+    - `update()`: Gestiona la entrada del teclado para la mecánica de bajada.
+
+### 🧠 ¿Cómo funciona el sistema?
+1.  **Colisiones Unidireccionales**: En Phaser, cada cuerpo físico tiene flags de colisión. Para estas plataformas, configuramos `body.checkCollision.up = true` y el resto (`down`, `left`, `right`) en `false`. Esto permite que el jugador pase a través de ellas desde cualquier dirección excepto desde arriba.
+2.  **Mecánica de Bajada (Drop-Down)**: 
+    - Cuando el jugador está tocando el suelo (`body.touching.down`) y presiona la tecla **Abajo** o **S**, el sistema verifica si está sobre un objeto de la capa `Platforms`.
+    - Si es así, desactivamos temporalmente el colisionador principal (`oneWayCollider.active = false`).
+    - Usamos un `this.time.delayedCall(250, ...)` para reactivar el colisionador después de 250ms, permitiendo que el jugador atraviese la plataforma hacia abajo.
+
+### 🗺️ Configuración en Tiled
+1.  **Nueva Capa de Objetos**: Crea una capa de objetos llamada exactamente `Platforms` (respetando mayúsculas).
+2.  **Creación de Colisiones**: Dibuja rectángulos en esta capa donde quieras que el jugador pueda aterrizar.
+3.  **Invisibilidad**: Por defecto, los objetos en esta capa son invisibles en el juego, actuando solo como límites físicos. Esto permite total flexibilidad para colocar colisiones sobre cualquier decoración.
+
+
+---
+
 ## 🎁 Conversión de GIFs a Sprites (EzGif)
 
 Para integrar animaciones desde archivos GIF en Phaser, es recomendable convertirlos a Spritesheets:

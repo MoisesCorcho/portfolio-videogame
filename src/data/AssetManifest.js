@@ -271,6 +271,11 @@ const STATIC_ASSETS = [
   },
   { 
     type: 'image', 
+    key: ASSETS.BG_DIRT2, 
+    path: 'assets/tilesets/GH/bg_dirt2.png' 
+  },
+  { 
+    type: 'image', 
     key: ASSETS.HOUSE_TILES, 
     path: 'assets/tilesets/GH/house_tiles.png' 
   },

@@ -11,10 +11,10 @@ export default class JumpState extends State {
     const speed = 160;
 
     // Air Control
-    if (cursors.left.isDown) {
+    if (cursors.left.isDown || keys.a.isDown) {
       this.player.setVelocityX(-speed);
       this.player.setFlipX(true);
-    } else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown || keys.d.isDown) {
       this.player.setVelocityX(speed);
       this.player.setFlipX(false);
     } else {

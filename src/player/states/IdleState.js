@@ -16,13 +16,13 @@ export default class IdleState extends State {
     }
 
     // Transition to Jump
-    if (cursors.up.isDown && this.player.body.onFloor()) {
+    if ((cursors.up.isDown || keys.w.isDown) && this.player.body.onFloor()) {
       this.stateMachine.transition('jump');
       return;
     }
 
     // Transition to Run
-    if (cursors.left.isDown || cursors.right.isDown) {
+    if (cursors.left.isDown || cursors.right.isDown || keys.a.isDown || keys.d.isDown) {
       this.stateMachine.transition('run');
       return;
     }

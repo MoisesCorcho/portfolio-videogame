@@ -27,6 +27,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.keys = scene.input.keyboard.addKeys({
       e: Phaser.Input.Keyboard.KeyCodes.E,
       j: Phaser.Input.Keyboard.KeyCodes.J,
+      w: Phaser.Input.Keyboard.KeyCodes.W,
+      a: Phaser.Input.Keyboard.KeyCodes.A,
+      s: Phaser.Input.Keyboard.KeyCodes.S,
+      d: Phaser.Input.Keyboard.KeyCodes.D,
     });
 
     // Valid States

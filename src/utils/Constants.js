@@ -60,6 +60,7 @@ export const ASSETS = {
   DESERT_PYLON: 'Terraria_desert_pylon',
   CAVERN_PYLON: 'Terraria_cavern_pylon',
   MUSHROOM_PYLON: 'Terraria_mushroom_pylon',
+  BG_DIRT2: 'bg_dirt2',
 };
 
 export const INTERACTION_TYPES = {
@@ -80,6 +81,7 @@ export const MAP_LAYERS = {
   OBJECTS: 'Objects',
   START: 'Start',
   COLLISIONS: 'Collisions',
+  PLATFORMS: 'Platforms',
 };
 
 export const OBJECT_NAMES = {

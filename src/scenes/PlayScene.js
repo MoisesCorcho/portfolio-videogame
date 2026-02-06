@@ -63,6 +63,8 @@ export default class PlayScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys({
       e: Phaser.Input.Keyboard.KeyCodes.E,
       j: Phaser.Input.Keyboard.KeyCodes.J,
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+      s: Phaser.Input.Keyboard.KeyCodes.S
     });
 
     this.cameras.main.startFollow(this.player);
@@ -89,6 +91,7 @@ export default class PlayScene extends Phaser.Scene {
 
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.player, this.manualCollisions);
+    this.oneWayCollider = this.physics.add.collider(this.player, this.oneWayPlatforms);
     
     // Dummy collisions
     this.physics.add.collider(this.dummies, this.platforms);
@@ -214,6 +217,7 @@ export default class PlayScene extends Phaser.Scene {
       'Pixel Art Furnace and Sawmill': ASSETS.FURNACE,
       'interest_points': ASSETS.INTEREST_POINTS,
       'training_dummy': ASSETS.DUMMY,
+      'bg_dirt2': ASSETS.BG_DIRT2,
       // Map other specific tileset names if needed
     };
 
@@ -280,6 +284,7 @@ export default class PlayScene extends Phaser.Scene {
     // INITIALIZE GROUPS
     this.interactables = this.physics.add.staticGroup();
     this.manualCollisions = this.physics.add.staticGroup();
+    this.oneWayPlatforms = this.physics.add.staticGroup();
     this.platforms = null;
 
     // Load Raw Data to respect Tiled Order
@@ -300,6 +305,8 @@ export default class PlayScene extends Phaser.Scene {
              // Handle Object Layers
              if (layerData.name === MAP_LAYERS.COLLISIONS) {
                  this.processManualCollisions(layerData.name);
+             } else if (layerData.name === MAP_LAYERS.PLATFORMS) {
+                 this.processOneWayPlatforms(layerData.name);
              } else {
                  // General Object Layer (Decorations, Interactables, etc.)
                  this.processObjectLayer(layerData.name);
@@ -452,6 +459,35 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   /**
+   * Processes one-way platforms from a Tiled object layer.
+   * Creates physics bodies that only collide from the top down,
+   * allowing the player to jump through them from below.
+   * 
+   * @param {string} layerName - Name of the object layer containing platforms
+   * @private
+   */
+  processOneWayPlatforms(layerName) {
+    const layer = this.map.getObjectLayer(layerName);
+    if (!layer || !layer.objects) return;
+
+    layer.objects.forEach((obj) => {
+      const width = obj.width || 32;
+      const height = obj.height || 32;
+      
+      const zone = this.add.zone(obj.x + width / 2, obj.y + height / 2, width, height);
+      this.physics.add.existing(zone, true);
+      
+      // Configure for one-way collision: only collide from the TOP
+      zone.body.checkCollision.down = false;
+      zone.body.checkCollision.left = false;
+      zone.body.checkCollision.right = false;
+      zone.body.checkCollision.up = true;
+      
+      this.oneWayPlatforms.add(zone);
+    });
+  }
+
+  /**
    * Processes manual collision objects from a Tiled object layer.
    * Creates invisible physics bodies for custom collision shapes defined in Tiled,
    * enabling precise collision boundaries beyond standard tile collisions.
@@ -518,6 +554,21 @@ export default class PlayScene extends Phaser.Scene {
 
     // Check for biome zone changes
     this.updateBiome();
+
+    // One-way platform dropdown logic
+    if ((this.keys.down.isDown || this.keys.s.isDown) && this.player.body.touching.down) {
+        // Check if player is on a one-way platform
+        const isOnOneWay = this.oneWayPlatforms.getChildren().some(platform => {
+            return Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), platform.getBounds());
+        });
+
+        if (isOnOneWay) {
+            this.oneWayCollider.active = false;
+            this.time.delayedCall(250, () => {
+                this.oneWayCollider.active = true;
+            });
+        }
+    }
 
     // Interaction Check
     this.physics.overlap(
