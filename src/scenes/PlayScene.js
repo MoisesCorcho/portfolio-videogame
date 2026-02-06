@@ -66,6 +66,7 @@ export default class PlayScene extends Phaser.Scene {
     });
 
     this.cameras.main.startFollow(this.player);
+    this.cameras.main.setFollowOffset(0, 32); // Shows ~64px of ground below player
     this.cameras.main.setZoom(GAME_CONFIG.zoom);
 
     if (this.map) {
@@ -157,6 +158,7 @@ export default class PlayScene extends Phaser.Scene {
       'Garden Decorations': ASSETS.GARDEN_DECORATIONS,
       'House Tiles': ASSETS.HOUSE_TILES,
       'Other Tiles1': ASSETS.OTHER_TILES,
+      'other_tiles2': ASSETS.OTHER_TILES_2,
       'Pixel Art Furnace and Sawmill': ASSETS.FURNACE,
       'interest_points': ASSETS.INTEREST_POINTS,
       'training_dummy': ASSETS.DUMMY,

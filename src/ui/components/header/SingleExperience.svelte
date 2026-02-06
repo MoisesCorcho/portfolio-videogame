@@ -15,36 +15,36 @@
 {#if experience}
     <div class="flex flex-col h-full">
         <!-- Title & Role -->
-        <h2 class="text-xl text-amber-400 mb-6 pixel-text-shadow">{experience.role}</h2>
+        <h2 class="text-2xl text-amber-400 mb-6 pixel-text-shadow">{experience.role}</h2>
         
         <div class="pixel-panel flex-grow">
             <!-- Metadata Section -->
             <div class="metadata-header flex flex-col gap-2 mb-4">
                 <div class="flex items-center gap-2">
-                    <span class="text-amber-500 font-bold text-sm">EMPRESA: </span>
-                    <span class="text-base font-bold text-white tracking-wider">{experience.company}</span>
+                    <span class="text-amber-500 font-bold text-base">EMPRESA: </span>
+                    <span class="text-lg font-bold text-white tracking-wider">{experience.company}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-blue-400 font-bold text-sm">FECHA: </span>
-                    <span class="text-sm text-gray-300 italic">{experience.date}</span>
+                    <span class="text-blue-400 font-bold text-base">FECHA: </span>
+                    <span class="text-base text-gray-300 italic">{experience.date}</span>
                 </div>
             </div>
 
             <!-- Description -->
             <div class="mb-6">
-                <p class="text-sm leading-relaxed text-gray-200">
+                <p class="text-base leading-relaxed text-gray-200">
                     {experience.description}
                 </p>
             </div>
 
             <!-- Skills/Stack -->
             <div class="mt-auto">
-                <div class="text-xs text-amber-500 font-bold mb-3 uppercase tracking-widest border-b border-amber-900/30 pb-1">
+                <div class="text-sm text-amber-500 font-bold mb-3 uppercase tracking-widest border-b border-amber-900/30 pb-1">
                     Tecnologías
                 </div>
                 <div class="flex flex-wrap gap-1">
                     {#each experience.stack as tech}
-                        <span class="pixel-chip text-xs hover:bg-amber-900 transition-colors cursor-default">
+                        <span class="pixel-chip text-sm hover:bg-amber-900 transition-colors cursor-default">
                             {tech}
                         </span>
                     {/each}

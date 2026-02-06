@@ -16,6 +16,7 @@ export const ASSETS = {
   DECORATIONS: 'decorations_tileset',
   GARDEN_DECORATIONS: 'garden_decorations',
   OTHER_TILES: 'other_tiles',
+  OTHER_TILES_2: 'other_tiles2',
   FLOOR_TILES_1: 'floor_tiles_1',
   HOUSE_TILES: 'house_tiles',
 
