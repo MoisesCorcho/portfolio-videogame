@@ -96,18 +96,69 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   /**
+   * Biome zone thresholds based on player X position.
+   * Each zone defines the background layers to use for that biome.
+   */
+  static BIOME_ZONES = [
+    { 
+      name: 'normal', 
+      threshold: 0, 
+      layers: [
+        ASSETS.BG_NORMAL_LAYER_5,  // Furthest back
+        ASSETS.BG_NORMAL_CASTLE,
+        ASSETS.BG_NORMAL_LAYER_4,
+        ASSETS.BG_NORMAL_LAYER_3,
+        ASSETS.BG_NORMAL_LAYER_2,
+        ASSETS.BG_NORMAL_LAYER_1   // Closest to camera
+      ]
+    },
+    { 
+      name: 'autumn', 
+      threshold: 1200, 
+      layers: [
+        ASSETS.BG_AUTUMN_LAYER_5,  // Furthest back
+        ASSETS.BG_AUTUMN_CASTLE,
+        ASSETS.BG_AUTUMN_LAYER_4,
+        ASSETS.BG_AUTUMN_LAYER_3,
+        ASSETS.BG_AUTUMN_LAYER_2,
+        ASSETS.BG_AUTUMN_LAYER_1   // Closest to camera
+      ]
+    },
+    { 
+      name: 'winter', 
+      threshold: 2400, 
+      layers: [
+        ASSETS.BG_WINTER_LAYER_5,  // Furthest back
+        ASSETS.BG_WINTER_CASTLE,
+        ASSETS.BG_WINTER_LAYER_4,
+        ASSETS.BG_WINTER_LAYER_3,
+        ASSETS.BG_WINTER_LAYER_2,
+        ASSETS.BG_WINTER_LAYER_1   // Closest to camera
+      ]
+    }
+  ];
+
+  /**
    * Creates a multi-layer parallax background using TileSprites.\n   * Each layer scrolls at a different rate to create depth perception,
-   * with backgrounds fixed to the viewport via setScrollFactor(0).\n   * \n   * @param {number} width - Canvas width in pixels\n   * @param {number} height - Canvas height in pixels\n   * @param {number} visibleWidth - Visible width accounting for zoom\   * @param {number} visibleHeight - Visible height accounting for zoom
+   * with backgrounds fixed to the viewport via setScrollFactor(0).\n   * 
+   * @param {number} width - Canvas width in pixels\n   * @param {number} height - Canvas height in pixels
+   * @param {number} visibleWidth - Visible width accounting for zoom
+   * @param {number} visibleHeight - Visible height accounting for zoom
    * @private
    */
   createParallaxBackground(width, height, visibleWidth, visibleHeight) {
+    // Define 6 layers: layer_5 (furthest) to castle to layer_1 (closest)
     const layers = [
-      { key: ASSETS.BG_LAYER_1, scroll: 0, depth: -12 },
-      { key: ASSETS.BG_LAYER_2, scroll: 0.1, depth: -11 },
-      { key: ASSETS.BG_LAYER_3, scroll: 0.25, depth: -10 },
+      { key: ASSETS.BG_NORMAL_LAYER_5, scroll: 0.2, depth: -16 },    // Furthest back (reduced from 0.4)
+      { key: ASSETS.BG_NORMAL_CASTLE, scroll: 0, depth: -15 },
+      { key: ASSETS.BG_NORMAL_LAYER_4, scroll: 0.15, depth: -14 },   // Reduced from 0.3
+      { key: ASSETS.BG_NORMAL_LAYER_3, scroll: 0.1, depth: -13 },    // Reduced from 0.2
+      { key: ASSETS.BG_NORMAL_LAYER_2, scroll: 0.05, depth: -12 },   // Reduced from 0.1
+      { key: ASSETS.BG_NORMAL_LAYER_1, scroll: 0, depth: -11 },      // Closest to camera
     ];
 
     this.backgrounds = [];
+    this.currentBiome = 'normal'; // Track current biome
 
     layers.forEach((layer) => {
       const tex = this.textures.get(layer.key).getSourceImage();
@@ -124,7 +175,8 @@ export default class PlayScene extends Phaser.Scene {
         .setOrigin(0.5, 0.5)
         .setScrollFactor(0)
         .setTileScale(scale)
-        .setDepth(layer.depth);
+        .setDepth(layer.depth)
+        .setAlpha(1); // Ensure all layers are visible from start
 
       this.backgrounds.push({
         sprite: bg,
@@ -464,6 +516,9 @@ export default class PlayScene extends Phaser.Scene {
       });
     }
 
+    // Check for biome zone changes
+    this.updateBiome();
+
     // Interaction Check
     this.physics.overlap(
       this.player,
@@ -479,6 +534,47 @@ export default class PlayScene extends Phaser.Scene {
       const attackState = this.player.stateMachine.state;
       if (attackState && attackState.canDamage && attackState.canDamage(dummy)) {
         dummy.takeDamage();
+      }
+    });
+  }
+
+  /**
+   * Checks player position and updates biome backgrounds if entering a new zone.
+   * Uses fade transitions for smooth visual changes between biomes.
+   * @private
+   */
+  updateBiome() {
+    if (!this.player || !this.backgrounds) return;
+
+    // Find the current zone based on player's X position
+    const currentZone = PlayScene.BIOME_ZONES
+      .slice()
+      .reverse()
+      .find(zone => this.player.x >= zone.threshold);
+
+    if (!currentZone || currentZone.name === this.currentBiome) return;
+
+    // Biome has changed, transition backgrounds
+    this.currentBiome = currentZone.name;
+
+    // Fade out current backgrounds
+    this.tweens.add({
+      targets: this.backgrounds.map(bg => bg.sprite),
+      alpha: 0,
+      duration: 500,
+      onComplete: () => {
+        // Change textures to new biome
+        this.backgrounds.forEach((bg, index) => {
+          const newTexture = currentZone.layers[index];
+          bg.sprite.setTexture(newTexture);
+        });
+
+        // Fade in new backgrounds
+        this.tweens.add({
+          targets: this.backgrounds.map(bg => bg.sprite),
+          alpha: 1,
+          duration: 500
+        });
       }
     });
   }

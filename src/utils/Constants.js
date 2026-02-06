@@ -9,10 +9,28 @@ export const SCENES = {
 };
 
 export const ASSETS = {
-  // Environment
-  BG_LAYER_1: 'bg_layer_1',
-  BG_LAYER_2: 'bg_layer_2',
-  BG_LAYER_3: 'bg_layer_3',
+  // Environment - Background Layers (6 layers per biome)
+  // Normal Biome
+  BG_NORMAL_CASTLE: 'bg_normal_castle',
+  BG_NORMAL_LAYER_1: 'bg_normal_layer_1',
+  BG_NORMAL_LAYER_2: 'bg_normal_layer_2',
+  BG_NORMAL_LAYER_3: 'bg_normal_layer_3',
+  BG_NORMAL_LAYER_4: 'bg_normal_layer_4',
+  BG_NORMAL_LAYER_5: 'bg_normal_layer_5',
+  // Autumn Biome
+  BG_AUTUMN_CASTLE: 'bg_autumn_castle',
+  BG_AUTUMN_LAYER_1: 'bg_autumn_layer_1',
+  BG_AUTUMN_LAYER_2: 'bg_autumn_layer_2',
+  BG_AUTUMN_LAYER_3: 'bg_autumn_layer_3',
+  BG_AUTUMN_LAYER_4: 'bg_autumn_layer_4',
+  BG_AUTUMN_LAYER_5: 'bg_autumn_layer_5',
+  // Winter Biome
+  BG_WINTER_CASTLE: 'bg_winter_castle',
+  BG_WINTER_LAYER_1: 'bg_winter_layer_1',
+  BG_WINTER_LAYER_2: 'bg_winter_layer_2',
+  BG_WINTER_LAYER_3: 'bg_winter_layer_3',
+  BG_WINTER_LAYER_4: 'bg_winter_layer_4',
+  BG_WINTER_LAYER_5: 'bg_winter_layer_5',
   DECORATIONS: 'decorations_tileset',
   GARDEN_DECORATIONS: 'garden_decorations',
   OTHER_TILES: 'other_tiles',

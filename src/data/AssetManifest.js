@@ -27,7 +27,7 @@ import { SPRITE_CONFIG } from './Animations';
 const dynamicFiles = import.meta.glob([
   '../../public/assets/decorations/**/*.png',
   '../../public/assets/sprites/**/*.png'
-], { query: '?url', import: 'default', eager: true });
+]);
 
 /**
  * Converts a Vite file path to a Tiled-compatible relative path.
@@ -119,9 +119,30 @@ const dynamicAssets = Object.keys(dynamicFiles)
  * @type {AssetManifestEntry[]}
  */
 const STATIC_ASSETS = [
-  { type: 'image', key: ASSETS.BG_LAYER_1, path: 'assets/background/background_layer_1.png' },
-  { type: 'image', key: ASSETS.BG_LAYER_2, path: 'assets/background/background_layer_2.png' },
-  { type: 'image', key: ASSETS.BG_LAYER_3, path: 'assets/background/background_layer_3.png' },
+  // Normal Biome Backgrounds (6 layers)
+  { type: 'image', key: ASSETS.BG_NORMAL_CASTLE, path: 'assets/background/GH/Normal/castle.png' },
+  { type: 'image', key: ASSETS.BG_NORMAL_LAYER_1, path: 'assets/background/GH/Normal/layer_1.png' },
+  { type: 'image', key: ASSETS.BG_NORMAL_LAYER_2, path: 'assets/background/GH/Normal/layer_2.png' },
+  { type: 'image', key: ASSETS.BG_NORMAL_LAYER_3, path: 'assets/background/GH/Normal/layer_3.png' },
+  { type: 'image', key: ASSETS.BG_NORMAL_LAYER_4, path: 'assets/background/GH/Normal/layer_4.png' },
+  { type: 'image', key: ASSETS.BG_NORMAL_LAYER_5, path: 'assets/background/GH/Normal/layer_5.png' },
+  
+  // Autumn Biome Backgrounds (6 layers)
+  { type: 'image', key: ASSETS.BG_AUTUMN_CASTLE, path: 'assets/background/GH/Autumn/castle_autumn.png' },
+  { type: 'image', key: ASSETS.BG_AUTUMN_LAYER_1, path: 'assets/background/GH/Autumn/layer_1.png' },
+  { type: 'image', key: ASSETS.BG_AUTUMN_LAYER_2, path: 'assets/background/GH/Autumn/layer_2.png' },
+  { type: 'image', key: ASSETS.BG_AUTUMN_LAYER_3, path: 'assets/background/GH/Autumn/layer_3.png' },
+  { type: 'image', key: ASSETS.BG_AUTUMN_LAYER_4, path: 'assets/background/GH/Autumn/layer_4.png' },
+  { type: 'image', key: ASSETS.BG_AUTUMN_LAYER_5, path: 'assets/background/GH/Autumn/layer_5.png' },
+  
+  // Winter Biome Backgrounds (6 layers)
+  { type: 'image', key: ASSETS.BG_WINTER_CASTLE, path: 'assets/background/GH/Winter/castle_winter.png' },
+  { type: 'image', key: ASSETS.BG_WINTER_LAYER_1, path: 'assets/background/GH/Winter/layer_1.png' },
+  { type: 'image', key: ASSETS.BG_WINTER_LAYER_2, path: 'assets/background/GH/Winter/layer_2.png' },
+  { type: 'image', key: ASSETS.BG_WINTER_LAYER_3, path: 'assets/background/GH/Winter/layer_3.png' },
+  { type: 'image', key: ASSETS.BG_WINTER_LAYER_4, path: 'assets/background/GH/Winter/layer_4.png' },
+  { type: 'image', key: ASSETS.BG_WINTER_LAYER_5, path: 'assets/background/GH/Winter/layer_5.png' },
+  
   { type: 'image', key: ASSETS.FLOOR_TILES_1, path: 'assets/tilesets/GH/floor_tiles1.png' },
 
   { 
