@@ -41,10 +41,10 @@ body {
 .pixel-panel {
   background: var(--modal-bg);
   border: 4px solid #000;
-  box-shadow: 
-    inset -4px -4px 0px 0px rgba(0,0,0,0.5),
-    inset 4px 4px 0px 0px rgba(255,255,255,0.1),
-    0px 8px 0px 0px rgba(0,0,0,0.2);
+  box-shadow:
+    inset -4px -4px 0px 0px rgba(0, 0, 0, 0.5),
+    inset 4px 4px 0px 0px rgba(255, 255, 255, 0.1),
+    0px 8px 0px 0px rgba(0, 0, 0, 0.2);
   padding: 1.5rem;
   position: relative;
 }
@@ -52,7 +52,7 @@ body {
 .pixel-chip {
   background: var(--chip-bg);
   border: 2px solid #000;
-  box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.1);
+  box-shadow: 1px 1px 0px 0px rgba(255, 255, 255, 0.1);
   display: inline-block;
   padding: 2px 8px;
   margin: 2px;
@@ -60,11 +60,10 @@ body {
 }
 
 .metadata-header {
-  border-bottom: 2px solid rgba(255,255,255,0.1);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.75rem;
   margin-bottom: 1rem;
 }
-
 
 #ui-layer {
   position: absolute;
@@ -124,4 +123,3 @@ p {
   font-size: 1.25rem;
   line-height: 1.4;
 }
-

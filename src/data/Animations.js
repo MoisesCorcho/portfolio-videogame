@@ -16,7 +16,7 @@
 /**
  * Player character animation configurations.
  * Each animation defines frame ranges and playback settings for character movement.
- * 
+ *
  * @type {Object.<string, AnimationConfig>}
  */
 export const PLAYER_ANIMS = {
@@ -37,7 +37,7 @@ export const PLAYER_ANIMS = {
 /**
  * Spritesheet frame configurations for all sprite-based assets.
  * Defines the dimensions for slicing spritesheets into individual frames.
- * 
+ *
  * @type {Object.<string, SpriteSheetConfig>}
  */
 export const SPRITE_CONFIG = {
@@ -52,7 +52,7 @@ export const SPRITE_CONFIG = {
 
 /**
  * Furnace and sawmill animation configurations.
- * 
+ *
  * @type {Object.<string, AnimationConfig>}
  */
 export const FURNACE_ANIMS = {
@@ -62,7 +62,7 @@ export const FURNACE_ANIMS = {
 
 /**
  * Interactive point of interest animation configurations.
- * 
+ *
  * @type {Object.<string, AnimationConfig>}
  */
 export const INTEREST_ANIMS = {
@@ -71,29 +71,53 @@ export const INTEREST_ANIMS = {
 
 /**
  * Bewitching Table animation configurations.
- * 
+ *
  * @type {Object.<string, AnimationConfig>}
  */
 export const BEWITCHING_TABLE_ANIMS = {
-  IDLE: { key: 'bewitching_table_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+  IDLE: {
+    key: 'bewitching_table_idle',
+    start: 0,
+    end: 7,
+    rate: 10,
+    repeat: -1,
+  },
 };
 
 /**
  * Pylon animation configurations.
  */
-export const UNIVERSAL_PYLON_ANIMS = { IDLE: { key: 'universal_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const SNOW_PYLON_ANIMS = { IDLE: { key: 'snow_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const OCEAN_PYLON_ANIMS = { IDLE: { key: 'ocean_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const JUNGLE_PYLON_ANIMS = { IDLE: { key: 'jungle_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const HALLOW_PYLON_ANIMS = { IDLE: { key: 'hallow_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const FOREST_PYLON_ANIMS = { IDLE: { key: 'forest_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const DESERT_PYLON_ANIMS = { IDLE: { key: 'desert_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const CAVERN_PYLON_ANIMS = { IDLE: { key: 'cavern_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
-export const MUSHROOM_PYLON_ANIMS = { IDLE: { key: 'mushroom_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 } };
+export const UNIVERSAL_PYLON_ANIMS = {
+  IDLE: { key: 'universal_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const SNOW_PYLON_ANIMS = {
+  IDLE: { key: 'snow_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const OCEAN_PYLON_ANIMS = {
+  IDLE: { key: 'ocean_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const JUNGLE_PYLON_ANIMS = {
+  IDLE: { key: 'jungle_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const HALLOW_PYLON_ANIMS = {
+  IDLE: { key: 'hallow_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const FOREST_PYLON_ANIMS = {
+  IDLE: { key: 'forest_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const DESERT_PYLON_ANIMS = {
+  IDLE: { key: 'desert_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const CAVERN_PYLON_ANIMS = {
+  IDLE: { key: 'cavern_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const MUSHROOM_PYLON_ANIMS = {
+  IDLE: { key: 'mushroom_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
 
 /**
  * Training Dummy animation configurations.
- * 
+ *
  * @type {Object.<string, AnimationConfig>}
  */
 export const DUMMY_ANIMS = {
@@ -112,7 +136,7 @@ import { ASSETS } from '../utils/Constants';
 /**
  * Master registry mapping environment assets to their animation configurations.
  * Used by the scene to automatically create animations for all registered sprites.
- * 
+ *
  * @type {AnimationRegistryEntry[]}
  */
 export const MASTER_ANIMATIONS_REGISTRY = [
@@ -130,4 +154,3 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.CAVERN_PYLON, anims: CAVERN_PYLON_ANIMS },
   { assetKey: ASSETS.MUSHROOM_PYLON, anims: MUSHROOM_PYLON_ANIMS },
 ];
-

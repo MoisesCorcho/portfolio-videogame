@@ -5,7 +5,14 @@
 
 import Player from '../player/Player';
 import Dummy from '../entities/Dummy';
-import { ASSETS, EVENTS, INTERACTION_TYPES, MAP_LAYERS, OBJECT_NAMES, ENTITY_TYPES } from '../utils/Constants';
+import {
+  ASSETS,
+  EVENTS,
+  INTERACTION_TYPES,
+  MAP_LAYERS,
+  OBJECT_NAMES,
+  ENTITY_TYPES,
+} from '../utils/Constants';
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
@@ -14,7 +21,7 @@ import { openModal } from '../ui/stores/uiStore';
  * Main play scene where the gameplay takes place.
  * Manages the game world, player character, parallax backgrounds, physics,
  * and interactive elements loaded from Tiled maps.
- * 
+ *
  * @extends Phaser.Scene
  */
 export default class PlayScene extends Phaser.Scene {
@@ -41,9 +48,9 @@ export default class PlayScene extends Phaser.Scene {
       classType: Dummy,
       runChildUpdate: true,
       allowGravity: false,
-      immovable: true
+      immovable: true,
     });
-    
+
     // Persistent Attack Zone (reused) - smaller hitbox for precision
     this.attackZone = this.add.zone(0, 0, 25, 25);
     this.physics.add.existing(this.attackZone);
@@ -64,7 +71,7 @@ export default class PlayScene extends Phaser.Scene {
       e: Phaser.Input.Keyboard.KeyCodes.E,
       j: Phaser.Input.Keyboard.KeyCodes.J,
       down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-      s: Phaser.Input.Keyboard.KeyCodes.S
+      s: Phaser.Input.Keyboard.KeyCodes.S,
     });
 
     this.cameras.main.startFollow(this.player);
@@ -85,14 +92,27 @@ export default class PlayScene extends Phaser.Scene {
         this.map.heightInPixels
       );
     } else {
-      this.physics.world.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
-      this.cameras.main.setBounds(0, 0, GAME_CONFIG.worldWidth, GAME_CONFIG.worldHeight);
+      this.physics.world.setBounds(
+        0,
+        0,
+        GAME_CONFIG.worldWidth,
+        GAME_CONFIG.worldHeight
+      );
+      this.cameras.main.setBounds(
+        0,
+        0,
+        GAME_CONFIG.worldWidth,
+        GAME_CONFIG.worldHeight
+      );
     }
 
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.player, this.manualCollisions);
-    this.oneWayCollider = this.physics.add.collider(this.player, this.oneWayPlatforms);
-    
+    this.oneWayCollider = this.physics.add.collider(
+      this.player,
+      this.oneWayPlatforms
+    );
+
     // Dummy collisions
     this.physics.add.collider(this.dummies, this.platforms);
     this.physics.add.collider(this.dummies, this.manualCollisions);
@@ -103,47 +123,47 @@ export default class PlayScene extends Phaser.Scene {
    * Each zone defines the background layers to use for that biome.
    */
   static BIOME_ZONES = [
-    { 
-      name: 'normal', 
-      threshold: 0, 
+    {
+      name: 'normal',
+      threshold: 0,
       layers: [
-        ASSETS.BG_NORMAL_LAYER_5,  // Furthest back
+        ASSETS.BG_NORMAL_LAYER_5, // Furthest back
         ASSETS.BG_NORMAL_CASTLE,
         ASSETS.BG_NORMAL_LAYER_4,
         ASSETS.BG_NORMAL_LAYER_3,
         ASSETS.BG_NORMAL_LAYER_2,
-        ASSETS.BG_NORMAL_LAYER_1   // Closest to camera
-      ]
+        ASSETS.BG_NORMAL_LAYER_1, // Closest to camera
+      ],
     },
-    { 
-      name: 'autumn', 
-      threshold: 1200, 
+    {
+      name: 'autumn',
+      threshold: 1200,
       layers: [
-        ASSETS.BG_AUTUMN_LAYER_5,  // Furthest back
+        ASSETS.BG_AUTUMN_LAYER_5, // Furthest back
         ASSETS.BG_AUTUMN_CASTLE,
         ASSETS.BG_AUTUMN_LAYER_4,
         ASSETS.BG_AUTUMN_LAYER_3,
         ASSETS.BG_AUTUMN_LAYER_2,
-        ASSETS.BG_AUTUMN_LAYER_1   // Closest to camera
-      ]
+        ASSETS.BG_AUTUMN_LAYER_1, // Closest to camera
+      ],
     },
-    { 
-      name: 'winter', 
-      threshold: 2400, 
+    {
+      name: 'winter',
+      threshold: 2400,
       layers: [
-        ASSETS.BG_WINTER_LAYER_5,  // Furthest back
+        ASSETS.BG_WINTER_LAYER_5, // Furthest back
         ASSETS.BG_WINTER_CASTLE,
         ASSETS.BG_WINTER_LAYER_4,
         ASSETS.BG_WINTER_LAYER_3,
         ASSETS.BG_WINTER_LAYER_2,
-        ASSETS.BG_WINTER_LAYER_1   // Closest to camera
-      ]
-    }
+        ASSETS.BG_WINTER_LAYER_1, // Closest to camera
+      ],
+    },
   ];
 
   /**
    * Creates a multi-layer parallax background using TileSprites.\n   * Each layer scrolls at a different rate to create depth perception,
-   * with backgrounds fixed to the viewport via setScrollFactor(0).\n   * 
+   * with backgrounds fixed to the viewport via setScrollFactor(0).\n   *
    * @param {number} width - Canvas width in pixels\n   * @param {number} height - Canvas height in pixels
    * @param {number} visibleWidth - Visible width accounting for zoom
    * @param {number} visibleHeight - Visible height accounting for zoom
@@ -152,12 +172,12 @@ export default class PlayScene extends Phaser.Scene {
   createParallaxBackground(width, height, visibleWidth, visibleHeight) {
     // Define 6 layers: layer_5 (furthest) to castle to layer_1 (closest)
     const layers = [
-      { key: ASSETS.BG_NORMAL_LAYER_5, scroll: 0.2, depth: -16 },    // Furthest back (reduced from 0.4)
+      { key: ASSETS.BG_NORMAL_LAYER_5, scroll: 0.2, depth: -16 }, // Furthest back (reduced from 0.4)
       { key: ASSETS.BG_NORMAL_CASTLE, scroll: 0, depth: -15 },
-      { key: ASSETS.BG_NORMAL_LAYER_4, scroll: 0.15, depth: -14 },   // Reduced from 0.3
-      { key: ASSETS.BG_NORMAL_LAYER_3, scroll: 0.1, depth: -13 },    // Reduced from 0.2
-      { key: ASSETS.BG_NORMAL_LAYER_2, scroll: 0.05, depth: -12 },   // Reduced from 0.1
-      { key: ASSETS.BG_NORMAL_LAYER_1, scroll: 0, depth: -11 },      // Closest to camera
+      { key: ASSETS.BG_NORMAL_LAYER_4, scroll: 0.15, depth: -14 }, // Reduced from 0.3
+      { key: ASSETS.BG_NORMAL_LAYER_3, scroll: 0.1, depth: -13 }, // Reduced from 0.2
+      { key: ASSETS.BG_NORMAL_LAYER_2, scroll: 0.05, depth: -12 }, // Reduced from 0.1
+      { key: ASSETS.BG_NORMAL_LAYER_1, scroll: 0, depth: -11 }, // Closest to camera
     ];
 
     this.backgrounds = [];
@@ -183,7 +203,7 @@ export default class PlayScene extends Phaser.Scene {
 
       this.backgrounds.push({
         sprite: bg,
-        ratio: layer.scroll
+        ratio: layer.scroll,
       });
     });
   }
@@ -193,11 +213,11 @@ export default class PlayScene extends Phaser.Scene {
    * Handles tileset mapping using a multi-tier fallback strategy to ensure
    * compatibility between Tiled map references and Phaser's texture cache.
    * Creates all tile layers and processes object layers for interactive elements.
-   * 
+   *
    * @private
    */
   createLevel() {
-    const map = this.make.tilemap({ 
+    const map = this.make.tilemap({
       key: 'level1',
       tileWidth: 32,
       tileHeight: 32,
@@ -209,15 +229,15 @@ export default class PlayScene extends Phaser.Scene {
     const tilesetMapping = {
       'Floor Tiles1': ASSETS.FLOOR_TILES_1,
       'Floor Tiles2': ASSETS.TILES,
-      'Decoration': ASSETS.DECORATIONS, 
+      Decoration: ASSETS.DECORATIONS,
       'Garden Decorations': ASSETS.GARDEN_DECORATIONS,
       'House Tiles': ASSETS.HOUSE_TILES,
       'Other Tiles1': ASSETS.OTHER_TILES,
-      'other_tiles2': ASSETS.OTHER_TILES_2,
+      other_tiles2: ASSETS.OTHER_TILES_2,
       'Pixel Art Furnace and Sawmill': ASSETS.FURNACE,
-      'interest_points': ASSETS.INTEREST_POINTS,
-      'training_dummy': ASSETS.DUMMY,
-      'bg_dirt2': ASSETS.BG_DIRT2,
+      interest_points: ASSETS.INTEREST_POINTS,
+      training_dummy: ASSETS.DUMMY,
+      bg_dirt2: ASSETS.BG_DIRT2,
       // Map other specific tileset names if needed
     };
 
@@ -240,24 +260,29 @@ export default class PlayScene extends Phaser.Scene {
       // 3. Fuzzy Match: Check if tileset name (often a path) contains a known asset filename
       if (!assetKey) {
         // Extract base filename without extension
-        const baseName = tileset.name.split('/').pop().replace(/\.[^/.]+$/, "");
-        
+        const baseName = tileset.name
+          .split('/')
+          .pop()
+          .replace(/\.[^/.]+$/, '');
+
         // Exact match
         if (this.textures.exists(baseName)) {
-           assetKey = baseName;
+          assetKey = baseName;
         } else {
-           // Search for a key that contains the base name (e.g., "Terraria_bewitching_table" matches "bewitching_table")
-           const allKeys = this.textures.getTextureKeys();
-           const match = allKeys.find(key => key.endsWith('_' + baseName) || key === baseName);
-           if (match) {
-             assetKey = match;
-           } else {
-             // Second try: strict match against ASSETS values
-             const foundValue = assetValues.find(val => val === baseName);
-             if (foundValue) {
-                assetKey = foundValue;
-             }
-           }
+          // Search for a key that contains the base name (e.g., "Terraria_bewitching_table" matches "bewitching_table")
+          const allKeys = this.textures.getTextureKeys();
+          const match = allKeys.find(
+            (key) => key.endsWith('_' + baseName) || key === baseName
+          );
+          if (match) {
+            assetKey = match;
+          } else {
+            // Second try: strict match against ASSETS values
+            const foundValue = assetValues.find((val) => val === baseName);
+            if (foundValue) {
+              assetKey = foundValue;
+            }
+          }
         }
       }
 
@@ -274,7 +299,9 @@ export default class PlayScene extends Phaser.Scene {
       } else {
         // Only warn if it's not a trivial/empty tileset
         if (tileset.name) {
-             console.warn(`Tileset '${tileset.name}' could not be mapped to an asset key. Object layer rendering might be incomplete.`);
+          console.warn(
+            `Tileset '${tileset.name}' could not be mapped to an asset key. Object layer rendering might be incomplete.`
+          );
         }
         // Push the raw tileset as a fallback (some image collections might work if implicit)
         allTilesets.push(tileset);
@@ -291,38 +318,37 @@ export default class PlayScene extends Phaser.Scene {
     const mapData = this.cache.tilemap.get('level1').data;
 
     mapData.layers.forEach((layerData) => {
-        if (layerData.type === 'tilelayer') {
-            // Create Tile Layer
-            const layer = map.createLayer(layerData.name, allTilesets, 0, 0);
-            
-            // Check for Special Layers (Ground)
-            if (layer && layerData.name === MAP_LAYERS.GROUND) {
-                this.platforms = layer;
-                this.platforms.setCollisionBetween(1, 2000);
-            }
-        } 
-        else if (layerData.type === 'objectgroup') {
-             // Handle Object Layers
-             if (layerData.name === MAP_LAYERS.COLLISIONS) {
-                 this.processManualCollisions(layerData.name);
-             } else if (layerData.name === MAP_LAYERS.PLATFORMS) {
-                 this.processOneWayPlatforms(layerData.name);
-             } else {
-                 // General Object Layer (Decorations, Interactables, etc.)
-                 this.processObjectLayer(layerData.name);
-             }
+      if (layerData.type === 'tilelayer') {
+        // Create Tile Layer
+        const layer = map.createLayer(layerData.name, allTilesets, 0, 0);
+
+        // Check for Special Layers (Ground)
+        if (layer && layerData.name === MAP_LAYERS.GROUND) {
+          this.platforms = layer;
+          this.platforms.setCollisionBetween(1, 2000);
         }
+      } else if (layerData.type === 'objectgroup') {
+        // Handle Object Layers
+        if (layerData.name === MAP_LAYERS.COLLISIONS) {
+          this.processManualCollisions(layerData.name);
+        } else if (layerData.name === MAP_LAYERS.PLATFORMS) {
+          this.processOneWayPlatforms(layerData.name);
+        } else {
+          // General Object Layer (Decorations, Interactables, etc.)
+          this.processObjectLayer(layerData.name);
+        }
+      }
     });
 
     if (!this.platforms) {
-        console.warn('Ground layer not found or not assigned to this.platforms');
+      console.warn('Ground layer not found or not assigned to this.platforms');
     }
   }
 
   /**
    * Creates and initializes the player character.
    * Sets up physics properties, spawn position, and interaction mechanics.
-   * 
+   *
    * @private
    */
   createPlayer() {
@@ -332,10 +358,14 @@ export default class PlayScene extends Phaser.Scene {
     const objectsLayer = this.map.getObjectLayer(MAP_LAYERS.OBJECTS);
 
     if (startLayer && startLayer.objects) {
-      spawnPoint = startLayer.objects.find((obj) => obj.name === OBJECT_NAMES.START);
+      spawnPoint = startLayer.objects.find(
+        (obj) => obj.name === OBJECT_NAMES.START
+      );
     }
     if (!spawnPoint && objectsLayer && objectsLayer.objects) {
-      spawnPoint = objectsLayer.objects.find((obj) => obj.name === OBJECT_NAMES.START);
+      spawnPoint = objectsLayer.objects.find(
+        (obj) => obj.name === OBJECT_NAMES.START
+      );
     }
 
     let spawnX = 100;
@@ -353,7 +383,7 @@ export default class PlayScene extends Phaser.Scene {
    * Processes a Tiled object layer to create interactive game objects.
    * Automatically creates sprites from object definitions and configures
    * their animations and interaction properties based on custom Tiled properties.
-   * 
+   *
    * @param {string} layerName - Name of the object layer to process
    * @private
    */
@@ -362,11 +392,12 @@ export default class PlayScene extends Phaser.Scene {
     if (!layer) return;
 
     const createdObjects = this.map.createFromObjects(layerName, {});
-    
+
     createdObjects.forEach((obj) => {
       const getProp = (key) => {
-          if (obj.getData && obj.getData(key) !== undefined) return obj.getData(key);
-          return null;
+        if (obj.getData && obj.getData(key) !== undefined)
+          return obj.getData(key);
+        return null;
       };
 
       const interactionType = getProp('interactionType');
@@ -374,9 +405,9 @@ export default class PlayScene extends Phaser.Scene {
       const entityType = getProp('entity');
 
       if (obj.name === OBJECT_NAMES.START) {
-          obj.setVisible(false);
+        obj.setVisible(false);
       }
-      
+
       // 1. Handle Special Entities (like Dummy)
       if (entityType === ENTITY_TYPES.DUMMY) {
         // Spawn a real Dummy entity at this location
@@ -391,36 +422,36 @@ export default class PlayScene extends Phaser.Scene {
 
       // 2. Handle Animations
       if (animationKey) {
-          let finalKey = animationKey;
-          
-          // Smart resolve for shared names like "pylon_idle"
-          // This makes the system scalable: many pylons can use the same Tiled property
-          if (animationKey === 'pylon_idle' && obj.texture) {
-              // Extract variant (e.g. "forest" from "Terraria_forest_pylon" or "../sprites/Terraria/forest_pylon.png")
-              const textureName = obj.texture.key
-                  .replace('Terraria_', '')
-                  .replace('../sprites/Terraria/', '')
-                  .replace('.png', '');
-              const candidateKey = `${textureName}_idle`;
-              if (this.anims.exists(candidateKey)) {
-                  finalKey = candidateKey;
-              }
-          }
+        let finalKey = animationKey;
 
-          if (this.anims.exists(finalKey)) {
-              obj.play(finalKey);
-          } else {
-              console.warn(`Animation key not found: ${finalKey}`);
+        // Smart resolve for shared names like "pylon_idle"
+        // This makes the system scalable: many pylons can use the same Tiled property
+        if (animationKey === 'pylon_idle' && obj.texture) {
+          // Extract variant (e.g. "forest" from "Terraria_forest_pylon" or "../sprites/Terraria/forest_pylon.png")
+          const textureName = obj.texture.key
+            .replace('Terraria_', '')
+            .replace('../sprites/Terraria/', '')
+            .replace('.png', '');
+          const candidateKey = `${textureName}_idle`;
+          if (this.anims.exists(candidateKey)) {
+            finalKey = candidateKey;
           }
+        }
+
+        if (this.anims.exists(finalKey)) {
+          obj.play(finalKey);
+        } else {
+          console.warn(`Animation key not found: ${finalKey}`);
+        }
       }
 
       // 3. Handle Interactions (Physics)
       if (interactionType) {
         this.interactables.add(obj);
         obj.setData('type', interactionType);
-        
+
         // Store custom ID if present (for single_experience, etc.)
-        const customId = obj.properties?.find(p => p.name === 'id')?.value;
+        const customId = obj.properties?.find((p) => p.name === 'id')?.value;
         if (customId) {
           obj.setData('id', customId);
         }
@@ -432,26 +463,31 @@ export default class PlayScene extends Phaser.Scene {
    * Creates and plays animations for environment objects like furnaces and sawmills.
    * Iterates through the master animations registry and starts animations
    * for all registered sprites in the scene.
-   * 
+   *
    * @private
    */
   createEnvironmentAnimations() {
-    MASTER_ANIMATIONS_REGISTRY.forEach(group => {
+    MASTER_ANIMATIONS_REGISTRY.forEach((group) => {
       const { assetKey, anims } = group;
 
-      Object.values(anims).forEach(anim => {
+      Object.values(anims).forEach((anim) => {
         if (!this.anims.exists(anim.key)) {
-          const frames = this.anims.generateFrameNumbers(assetKey, { start: anim.start, end: anim.end });
+          const frames = this.anims.generateFrameNumbers(assetKey, {
+            start: anim.start,
+            end: anim.end,
+          });
 
           if (frames && frames.length > 0) {
             this.anims.create({
               key: anim.key,
               frames: frames,
               frameRate: anim.rate,
-              repeat: anim.repeat
+              repeat: anim.repeat,
             });
           } else {
-            console.warn(`[Animation System] Could not create '${anim.key}': Frames ${anim.start}-${anim.end} missing in '${assetKey}'`);
+            console.warn(
+              `[Animation System] Could not create '${anim.key}': Frames ${anim.start}-${anim.end} missing in '${assetKey}'`
+            );
           }
         }
       });
@@ -462,7 +498,7 @@ export default class PlayScene extends Phaser.Scene {
    * Processes one-way platforms from a Tiled object layer.
    * Creates physics bodies that only collide from the top down,
    * allowing the player to jump through them from below.
-   * 
+   *
    * @param {string} layerName - Name of the object layer containing platforms
    * @private
    */
@@ -473,16 +509,21 @@ export default class PlayScene extends Phaser.Scene {
     layer.objects.forEach((obj) => {
       const width = obj.width || 32;
       const height = obj.height || 32;
-      
-      const zone = this.add.zone(obj.x + width / 2, obj.y + height / 2, width, height);
+
+      const zone = this.add.zone(
+        obj.x + width / 2,
+        obj.y + height / 2,
+        width,
+        height
+      );
       this.physics.add.existing(zone, true);
-      
+
       // Configure for one-way collision: only collide from the TOP
       zone.body.checkCollision.down = false;
       zone.body.checkCollision.left = false;
       zone.body.checkCollision.right = false;
       zone.body.checkCollision.up = true;
-      
+
       this.oneWayPlatforms.add(zone);
     });
   }
@@ -491,15 +532,14 @@ export default class PlayScene extends Phaser.Scene {
    * Processes manual collision objects from a Tiled object layer.
    * Creates invisible physics bodies for custom collision shapes defined in Tiled,
    * enabling precise collision boundaries beyond standard tile collisions.
-   * 
+   *
    * @param {string} layerName - Name of the object layer containing collision shapes
    * @private
    */
   processManualCollisions(layerName) {
     const collisionsLayer = this.map.getObjectLayer(layerName);
-    
+
     if (collisionsLayer && collisionsLayer.objects) {
-      
       collisionsLayer.objects.forEach((obj, index) => {
         // Handle Tiled points/rectangles with 0 size
         const width = obj.width || 32;
@@ -507,16 +547,23 @@ export default class PlayScene extends Phaser.Scene {
 
         // Create a zone for the collision
         // In Tiled, (x,y) is top-left. Phaser physics bodies are centered by default.
-        const zone = this.add.zone(obj.x + width / 2, obj.y + height / 2, width, height);
-        
+        const zone = this.add.zone(
+          obj.x + width / 2,
+          obj.y + height / 2,
+          width,
+          height
+        );
+
         // Add physics to the zone (static)
         this.physics.add.existing(zone, true);
-        
+
         // Add to the static group
         this.manualCollisions.add(zone);
       });
     } else {
-      console.warn(`Layer not found: ${MAP_LAYERS.COLLISIONS}. Ensure you exported the JSON and named the layer correctly.`);
+      console.warn(
+        `Layer not found: ${MAP_LAYERS.COLLISIONS}. Ensure you exported the JSON and named the layer correctly.`
+      );
     }
   }
 
@@ -524,7 +571,7 @@ export default class PlayScene extends Phaser.Scene {
    * Handles player interaction with interactable objects.
    * Triggered when the player presses the interaction key near an interactive object.
    * Dispatches interaction events based on the object's interaction type.
-   * 
+   *
    * @param {Phaser.GameObjects.Sprite} player - The player character
    * @param {Phaser.GameObjects.Sprite} interactable - The interactive object
    * @private
@@ -548,7 +595,8 @@ export default class PlayScene extends Phaser.Scene {
     // Update Parallax
     if (this.backgrounds) {
       this.backgrounds.forEach((bg) => {
-        bg.sprite.tilePositionX = (this.cameras.main.scrollX * bg.ratio) / bg.sprite.tileScaleX;
+        bg.sprite.tilePositionX =
+          (this.cameras.main.scrollX * bg.ratio) / bg.sprite.tileScaleX;
       });
     }
 
@@ -556,18 +604,24 @@ export default class PlayScene extends Phaser.Scene {
     this.updateBiome();
 
     // One-way platform dropdown logic
-    if ((this.keys.down.isDown || this.keys.s.isDown) && this.player.body.touching.down) {
-        // Check if player is on a one-way platform
-        const isOnOneWay = this.oneWayPlatforms.getChildren().some(platform => {
-            return Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), platform.getBounds());
-        });
+    if (
+      (this.keys.down.isDown || this.keys.s.isDown) &&
+      this.player.body.touching.down
+    ) {
+      // Check if player is on a one-way platform
+      const isOnOneWay = this.oneWayPlatforms.getChildren().some((platform) => {
+        return Phaser.Geom.Intersects.RectangleToRectangle(
+          this.player.getBounds(),
+          platform.getBounds()
+        );
+      });
 
-        if (isOnOneWay) {
-            this.oneWayCollider.active = false;
-            this.time.delayedCall(250, () => {
-                this.oneWayCollider.active = true;
-            });
-        }
+      if (isOnOneWay) {
+        this.oneWayCollider.active = false;
+        this.time.delayedCall(250, () => {
+          this.oneWayCollider.active = true;
+        });
+      }
     }
 
     // Interaction Check
@@ -583,7 +637,11 @@ export default class PlayScene extends Phaser.Scene {
     this.physics.overlap(this.attackZone, this.dummies, (zone, dummy) => {
       // Check if this is an attack state and if this enemy hasn't been hit yet
       const attackState = this.player.stateMachine.state;
-      if (attackState && attackState.canDamage && attackState.canDamage(dummy)) {
+      if (
+        attackState &&
+        attackState.canDamage &&
+        attackState.canDamage(dummy)
+      ) {
         dummy.takeDamage();
       }
     });
@@ -598,10 +656,9 @@ export default class PlayScene extends Phaser.Scene {
     if (!this.player || !this.backgrounds) return;
 
     // Find the current zone based on player's X position
-    const currentZone = PlayScene.BIOME_ZONES
-      .slice()
+    const currentZone = PlayScene.BIOME_ZONES.slice()
       .reverse()
-      .find(zone => this.player.x >= zone.threshold);
+      .find((zone) => this.player.x >= zone.threshold);
 
     if (!currentZone || currentZone.name === this.currentBiome) return;
 
@@ -610,7 +667,7 @@ export default class PlayScene extends Phaser.Scene {
 
     // Fade out current backgrounds
     this.tweens.add({
-      targets: this.backgrounds.map(bg => bg.sprite),
+      targets: this.backgrounds.map((bg) => bg.sprite),
       alpha: 0,
       duration: 500,
       onComplete: () => {
@@ -622,17 +679,17 @@ export default class PlayScene extends Phaser.Scene {
 
         // Fade in new backgrounds
         this.tweens.add({
-          targets: this.backgrounds.map(bg => bg.sprite),
+          targets: this.backgrounds.map((bg) => bg.sprite),
           alpha: 1,
-          duration: 500
+          duration: 500,
         });
-      }
+      },
     });
   }
 
   /**
    * Triggers a UI modal of the specified type.
-   * 
+   *
    * @param {string} type - Type of modal to display
    * @param {string} [id] - Optional ID to pass as data (e.g., experience ID)
    * @private

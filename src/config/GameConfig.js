@@ -1,5 +1,5 @@
 export const GAME_CONFIG = {
-  width: 1024,  // 1024/2 = 512px o 1024/4 = 256px
+  width: 1024, // 1024/2 = 512px o 1024/4 = 256px
   height: 576,
   gravity: 1000,
   bgColor: '#5c94fc', // Classic Mario sky blue

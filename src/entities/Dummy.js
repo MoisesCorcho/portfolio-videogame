@@ -1,12 +1,11 @@
-
 import { DUMMY_ANIMS } from '../data/Animations';
 
 export default class Dummy extends Phaser.Physics.Arcade.Sprite {
   /**
-   * @param {Phaser.Scene} scene 
-   * @param {number} x 
-   * @param {number} y 
-   * @param {string} texture 
+   * @param {Phaser.Scene} scene
+   * @param {number} x
+   * @param {number} y
+   * @param {string} texture
    */
   constructor(scene, x, y, texture) {
     super(scene, x, y, texture);
@@ -18,7 +17,7 @@ export default class Dummy extends Phaser.Physics.Arcade.Sprite {
     // Physics config
     this.setImmovable(true);
     // Adjust size if needed, based on 32x32 sprite but maybe purely for hit box
-    this.setSize(20, 32); 
+    this.setSize(20, 32);
     this.setOffset(6, 0);
 
     // State
@@ -36,7 +35,7 @@ export default class Dummy extends Phaser.Physics.Arcade.Sprite {
 
     this.isHurt = true;
     this.play(DUMMY_ANIMS.HURT.key);
-    
+
     // floating text or sound effect here can be added here
   }
 

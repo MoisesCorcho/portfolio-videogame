@@ -22,7 +22,7 @@ export default class StateMachine {
     if (this.state && this.state.exit) {
       this.state.exit(...this.stateArgs);
     }
-    
+
     this.state = this.possibleStates[newState];
     this.state.enter(...this.stateArgs, ...enterArgs);
   }

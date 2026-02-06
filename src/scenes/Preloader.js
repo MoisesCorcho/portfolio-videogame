@@ -11,7 +11,7 @@ import { ASSET_MANIFEST } from '../data/AssetManifest';
  * Preloader scene responsible for loading all game assets and creating player animations.
  * This scene displays a loading indicator while assets are being fetched,
  * then automatically transitions to the main game scene once complete.
- * 
+ *
  * @extends Phaser.Scene
  */
 export default class Preloader extends Phaser.Scene {
@@ -65,7 +65,7 @@ export default class Preloader extends Phaser.Scene {
   /**
    * Creates all player character animations from the PLAYER_ANIMS configuration.
    * Generates frame-based animations using the loaded player spritesheet.
-   * 
+   *
    * @private
    */
   createAnimations() {

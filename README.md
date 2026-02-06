@@ -21,10 +21,13 @@ El proyecto está organizado de manera modular para separar la configuración, l
 ## ⚙️ Configuración e Inicialización
 
 ### `src/main.js`
+
 Es el punto de entrada. Inicializa la instancia de `Phaser.Game` utilizando la configuración definida y monta la interfaz de usuario (Svelte) sobre el canvas del juego.
 
 ### `src/config/GameConfig.js`
+
 Define las constantes globales de configuración:
+
 - Dimensiones del renderizado.
 - Gravedad y físicas Arcade.
 - Colores de fondo.
@@ -38,7 +41,9 @@ Define las constantes globales de configuración:
 El sistema de assets es híbrido, combinando cargas dinámicas automáticas con definiciones manuales para assets complejos.
 
 ### `src/data/AssetManifest.js`
+
 Este archivo es el corazón de la gestión de assets.
+
 1.  **Carga Dinámica**: Utiliza `import.meta.glob` de Vite para descubrir automáticamente todos los archivos `.png` en `public/assets/decorations/`.
 2.  **Normalización de Claves**:
     - Genera claves únicas para Phaser (ej. `GH_Decoration_bookshelf`) para evitar colisiones de nombres.
@@ -46,12 +51,15 @@ Este archivo es el corazón de la gestión de assets.
 3.  **Assets Estáticos**: Define manualmente spritesheets (`PLAYER`, `FURNACE`), tilemaps (`level1.json`) y fondos parallax.
 
 ### `src/scenes/Preloader.js`
+
 Se encarga de cargar todos los recursos antes de iniciar el juego.
+
 - Itera sobre el `ASSET_MANIFEST` generado.
 - Carga imágenes, spritesheets y mapas JSON.
 - Crea las animaciones globales del jugador una vez finalizada la carga (`createAnimations()`).
 
 ### `src/utils/Constants.js`
+
 Centraliza todas las cadenas de texto mágicas (mágic strings) para claves de assets, nombres de escenas, capas de mapas y tipos de eventos, previniendo errores de tipografía.
 
 ---
@@ -59,17 +67,19 @@ Centraliza todas las cadenas de texto mágicas (mágic strings) para claves de a
 ## 🎮 Lógica del Juego (Escenas)
 
 ### `src/scenes/PlayScene.js`
+
 Es la escena principal donde ocurre toda la jugabilidad.
+
 - **`create()`**: Orquesta la inicialización del nivel en orden:
-    1.  **Fondo Parallax**: `createParallaxBackground()`. Capas con diferente velocidad de desplazamiento (`setScrollFactor`).
-    2.  **Animaciones de Entorno**: `createEnvironmentAnimations()`.
-    3.  **Nivel (Tilemap)**: `createLevel()`. Carga el mapa de Tiled, gestiona capas de tiles y objetos.
-    4.  **Jugador**: `createPlayer()`. Instancia la clase `Player`.
-    5.  **Cámara**: Configura el seguimiento (`startFollow`) y límites del mundo.
+  1.  **Fondo Parallax**: `createParallaxBackground()`. Capas con diferente velocidad de desplazamiento (`setScrollFactor`).
+  2.  **Animaciones de Entorno**: `createEnvironmentAnimations()`.
+  3.  **Nivel (Tilemap)**: `createLevel()`. Carga el mapa de Tiled, gestiona capas de tiles y objetos.
+  4.  **Jugador**: `createPlayer()`. Instancia la clase `Player`.
+  5.  **Cámara**: Configura el seguimiento (`startFollow`) y límites del mundo.
 - **Integración con Tiled**:
-    - **Mapeo de Tilesets**: Lógica inteligente para asociar tilesets de Tiled con texturas de Phaser (coincidencia exacta o difusa).
-    - **Capas de Objetos**: `processObjectLayer()` convierte objetos de Tiled en elementos interactivos o puntos de spawn.
-    - **Colisiones Manuales**: `processManualCollisions()` crea cuerpos físicos invisibles basados en formas dibujadas en Tiled.
+  - **Mapeo de Tilesets**: Lógica inteligente para asociar tilesets de Tiled con texturas de Phaser (coincidencia exacta o difusa).
+  - **Capas de Objetos**: `processObjectLayer()` convierte objetos de Tiled en elementos interactivos o puntos de spawn.
+  - **Colisiones Manuales**: `processManualCollisions()` crea cuerpos físicos invisibles basados en formas dibujadas en Tiled.
 
 ---
 
@@ -78,18 +88,23 @@ Es la escena principal donde ocurre toda la jugabilidad.
 El jugador utiliza una Máquina de Estados Finitos (FSM) para gestionar su comportamiento complejo.
 
 ### `src/player/Player.js`
+
 Extiende `Phaser.Physics.Arcade.Sprite`.
+
 - Configura físicas (rebote, colisiones con el mundo, tamaño del cuerpo).
 - Inicializa los inputs (teclado).
 - Instancia la `StateMachine`.
 - Define los estados posibles (`idle`, `run`, `jump`, `fall`, `landing`, `attack`).
 
 ### `src/player/StateMachine.js`
+
 Clase genérica que gestiona las transiciones entre estados.
+
 - **`transition(newState)`**: Cambia el estado actual y llama a los métodos `enter()`/`exit()`.
 - **`step()`**: Ejecuta el método `update()` del estado activo en cada frame.
 
 ### `src/player/states/`
+
 Cada archivo representa un comportamiento aislado (ej. `JumpState.js`, `RunState.js`), lo que facilita la adición de nuevas mecánicas sin ensuciar la clase `Player`.
 
 ---
@@ -97,7 +112,9 @@ Cada archivo representa un comportamiento aislado (ej. `JumpState.js`, `RunState
 ## 🎨 Animaciones
 
 ### `src/data/Animations.js`
+
 Registro central de todas las configuraciones de animación.
+
 - **`PLAYER_ANIMS`**: Define rangos de frames (start/end), frameRate y repetición para el personaje.
 - **`SPRITE_CONFIG`**: Define las dimensiones de los frames para spritesheets.
 - **`MASTER_ANIMATIONS_REGISTRY`**: Relaciona assets (como el horno) con sus configuraciones de animación para que se creen automáticamente en la escena.
@@ -107,11 +124,12 @@ Registro central de todas las configuraciones de animación.
 ## 🗺️ Mapa y Niveles (Tiled)
 
 El juego utiliza mapas creados en Tiled (`.json`).
+
 - **Capas de Tiles**: Renderizan el suelo y decoraciones estáticas.
 - **Capas de Objetos**:
-    - `Ground`: Colisiones principales.
-    - `Objects`: Elementos interactivos con propiedades personalizadas (`interactionType`, `animation`).
-    - `Collisions`: Formas personalizadas para colisiones precisas.
+  - `Ground`: Colisiones principales.
+  - `Objects`: Elementos interactivos con propiedades personalizadas (`interactionType`, `animation`).
+  - `Collisions`: Formas personalizadas para colisiones precisas.
 - **Propiedades Personalizadas**: Se leen en `PlayScene.js` para asignar lógica (ej. abrir un modal al interactuar).
 
 ---
@@ -121,25 +139,27 @@ El juego utiliza mapas creados en Tiled (`.json`).
 El juego soporta plataformas que permiten saltar a través de ellas desde abajo y pararse encima.
 
 ### 🛠️ Detalles Técnicos
+
 - **Archivos involucrados**:
-    - [`src/scenes/PlayScene.js`]: Contiene la lógica de creación y el loop de actualización.
-    - [`src/utils/Constants.js`]: Define el nombre de la capa (`PLATFORMS`).
+  - [`src/scenes/PlayScene.js`]: Contiene la lógica de creación y el loop de actualización.
+  - [`src/utils/Constants.js`]: Define el nombre de la capa (`PLATFORMS`).
 - **Funciones Clave**:
-    - `processOneWayPlatforms(layerName)`: Itera sobre los objetos de Tiled y crea `Phaser.Physics.Arcade.StaticGroup` de zonas invisibles.
-    - `update()`: Gestiona la entrada del teclado para la mecánica de bajada.
+  - `processOneWayPlatforms(layerName)`: Itera sobre los objetos de Tiled y crea `Phaser.Physics.Arcade.StaticGroup` de zonas invisibles.
+  - `update()`: Gestiona la entrada del teclado para la mecánica de bajada.
 
 ### 🧠 ¿Cómo funciona el sistema?
+
 1.  **Colisiones Unidireccionales**: En Phaser, cada cuerpo físico tiene flags de colisión. Para estas plataformas, configuramos `body.checkCollision.up = true` y el resto (`down`, `left`, `right`) en `false`. Esto permite que el jugador pase a través de ellas desde cualquier dirección excepto desde arriba.
-2.  **Mecánica de Bajada (Drop-Down)**: 
+2.  **Mecánica de Bajada (Drop-Down)**:
     - Cuando el jugador está tocando el suelo (`body.touching.down`) y presiona la tecla **Abajo** o **S**, el sistema verifica si está sobre un objeto de la capa `Platforms`.
     - Si es así, desactivamos temporalmente el colisionador principal (`oneWayCollider.active = false`).
     - Usamos un `this.time.delayedCall(250, ...)` para reactivar el colisionador después de 250ms, permitiendo que el jugador atraviese la plataforma hacia abajo.
 
 ### 🗺️ Configuración en Tiled
+
 1.  **Nueva Capa de Objetos**: Crea una capa de objetos llamada exactamente `Platforms` (respetando mayúsculas).
 2.  **Creación de Colisiones**: Dibuja rectángulos en esta capa donde quieras que el jugador pueda aterrizar.
 3.  **Invisibilidad**: Por defecto, los objetos en esta capa son invisibles en el juego, actuando solo como límites físicos. Esto permite total flexibilidad para colocar colisiones sobre cualquier decoración.
-
 
 ---
 

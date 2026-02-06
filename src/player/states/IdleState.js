@@ -22,7 +22,12 @@ export default class IdleState extends State {
     }
 
     // Transition to Run
-    if (cursors.left.isDown || cursors.right.isDown || keys.a.isDown || keys.d.isDown) {
+    if (
+      cursors.left.isDown ||
+      cursors.right.isDown ||
+      keys.a.isDown ||
+      keys.d.isDown
+    ) {
       this.stateMachine.transition('run');
       return;
     }
