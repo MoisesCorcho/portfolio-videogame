@@ -82,6 +82,7 @@ export const MAP_LAYERS = {
   START: 'Start',
   COLLISIONS: 'Collisions',
   PLATFORMS: 'Platforms',
+  BIOMES: 'Biomes',
 };
 
 export const OBJECT_NAMES = {

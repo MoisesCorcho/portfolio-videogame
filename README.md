@@ -157,9 +157,20 @@ El juego soporta plataformas que permiten saltar a través de ellas desde abajo 
 
 ### 🗺️ Configuración en Tiled
 
+#### One-Way Platforms
+
 1.  **Nueva Capa de Objetos**: Crea una capa de objetos llamada exactamente `Platforms` (respetando mayúsculas).
-2.  **Creación de Colisiones**: Dibuja rectángulos en esta capa donde quieras que el jugador pueda aterrizar.
-3.  **Invisibilidad**: Por defecto, los objetos en esta capa son invisibles en el juego, actuando solo como límites físicos. Esto permite total flexibilidad para colocar colisiones sobre cualquier decoración.
+2.  **Rectángulos**: Dibuja rectángulos en esta capa donde quieras que el jugador pueda aterrizar/atravesar.
+3.  **Invisibilidad**: Los objetos son invisibles en el juego, solo actúan como límites físicos.
+
+#### Zonas de Biomas
+
+1.  **Capa de Objetos**: Crea una capa de objetos llamada `Biomes`.
+2.  **Rectángulos**: Dibuja rectángulos que cubran el área total de cada bioma (soporta profundidad Y).
+3.  **Propiedad Personalizada**:
+    - **Nombre**: `biome` (tipo string).
+    - **Valor**: El nombre del bioma (ej: `normal`, `autumn`, `winter`). Debe coincidir con los nombres definidos en `PlayScene.js` (BIOME_ZONES).
+4.  **Prioridad**: Si el jugador está dentro de varios rectángulos, se activará el primero que encuentre en la lista de objetos de Tiled.
 
 ---
 

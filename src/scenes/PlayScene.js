@@ -125,7 +125,7 @@ export default class PlayScene extends Phaser.Scene {
   static BIOME_ZONES = [
     {
       name: 'normal',
-      threshold: 0,
+      thresholdX: 0,
       layers: [
         ASSETS.BG_NORMAL_LAYER_5, // Furthest back
         ASSETS.BG_NORMAL_CASTLE,
@@ -137,7 +137,7 @@ export default class PlayScene extends Phaser.Scene {
     },
     {
       name: 'autumn',
-      threshold: 1200,
+      thresholdX: 1200,
       layers: [
         ASSETS.BG_AUTUMN_LAYER_5, // Furthest back
         ASSETS.BG_AUTUMN_CASTLE,
@@ -149,7 +149,7 @@ export default class PlayScene extends Phaser.Scene {
     },
     {
       name: 'winter',
-      threshold: 2400,
+      thresholdX: 2400,
       layers: [
         ASSETS.BG_WINTER_LAYER_5, // Furthest back
         ASSETS.BG_WINTER_CASTLE,
@@ -333,6 +333,8 @@ export default class PlayScene extends Phaser.Scene {
           this.processManualCollisions(layerData.name);
         } else if (layerData.name === MAP_LAYERS.PLATFORMS) {
           this.processOneWayPlatforms(layerData.name);
+        } else if (layerData.name === MAP_LAYERS.BIOMES) {
+          this.processBiomeLayer(layerData.name);
         } else {
           // General Object Layer (Decorations, Interactables, etc.)
           this.processObjectLayer(layerData.name);
@@ -648,22 +650,74 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   /**
+   * Processes the Biomes object layer from Tiled.
+   * Parses rectangle objects with a 'biome' custom property.
+   * @private
+   */
+  processBiomeLayer(layerName) {
+    const objectLayer = this.map.getObjectLayer(layerName);
+    if (!objectLayer || !objectLayer.objects) return;
+
+    this.biomeZones = [];
+
+    objectLayer.objects.forEach((obj) => {
+      const biomeName = obj.properties?.find((p) => p.name === 'biome')?.value;
+      if (biomeName) {
+        this.biomeZones.push({
+          x: obj.x,
+          y: obj.y,
+          width: obj.width,
+          height: obj.height,
+          biomeName: biomeName,
+        });
+      }
+    });
+
+    // Fallback: If no biomes are defined in Tiled, generate from legacy BIOME_ZONES
+    if (this.biomeZones.length === 0 && this.map) {
+      const mapHeight = this.map.heightInPixels;
+      PlayScene.BIOME_ZONES.forEach((zone) => {
+        const xThreshold = zone.thresholdX ?? zone.threshold ?? 0;
+        const yThreshold = zone.thresholdY ?? 0;
+
+        // Generate a large rectangle from the threshold to the edge of the map
+        this.biomeZones.push({
+          x: xThreshold,
+          y: yThreshold,
+          width: this.map.widthInPixels - xThreshold,
+          height: mapHeight - yThreshold,
+          biomeName: zone.name,
+          layers: zone.layers, // Store layers for direct lookup
+        });
+      });
+    }
+  }
+
+  /**
    * Checks player position and updates biome backgrounds if entering a new zone.
    * Uses fade transitions for smooth visual changes between biomes.
    * @private
    */
   updateBiome() {
-    if (!this.player || !this.backgrounds) return;
+    if (!this.player || !this.backgrounds || !this.biomeZones) return;
 
-    // Find the current zone based on player's X position
-    const currentZone = PlayScene.BIOME_ZONES.slice()
-      .reverse()
-      .find((zone) => this.player.x >= zone.threshold);
+    // Find the current zone based on player position overlapping biome rectangles
+    const currentZone = this.biomeZones.find((zone) => {
+      const playerCenterX = this.player.x;
+      const playerCenterY = this.player.y;
 
-    if (!currentZone || currentZone.name === this.currentBiome) return;
+      return (
+        playerCenterX >= zone.x &&
+        playerCenterX <= zone.x + zone.width &&
+        playerCenterY >= zone.y &&
+        playerCenterY <= zone.y + zone.height
+      );
+    });
+
+    if (!currentZone || currentZone.biomeName === this.currentBiome) return;
 
     // Biome has changed, transition backgrounds
-    this.currentBiome = currentZone.name;
+    this.currentBiome = currentZone.biomeName;
 
     // Fade out current backgrounds
     this.tweens.add({
@@ -671,9 +725,22 @@ export default class PlayScene extends Phaser.Scene {
       alpha: 0,
       duration: 500,
       onComplete: () => {
+        // Get layers array: either from fallback zone or lookup from BIOME_ZONES
+        const layers =
+          currentZone.layers ||
+          PlayScene.BIOME_ZONES.find((z) => z.name === currentZone.biomeName)
+            ?.layers;
+
+        if (!layers) {
+          console.warn(
+            `No background layers found for biome: ${currentZone.biomeName}`
+          );
+          return;
+        }
+
         // Change textures to new biome
         this.backgrounds.forEach((bg, index) => {
-          const newTexture = currentZone.layers[index];
+          const newTexture = layers[index];
           bg.sprite.setTexture(newTexture);
         });
 
