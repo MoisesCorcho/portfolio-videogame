@@ -73,37 +73,34 @@ export const ResumeData = {
     },
   ],
   skills: {
-    languages: [
-      'PHP (Avanzado)',
-      'JavaScript (Intermedio)',
-      'HTML5',
-      'Java (Básico)',
-      'SQL',
-    ],
-    frameworks: [
-      'Laravel (Avanzado)',
-      'Livewire',
-      'Filament',
-      'TailwindCSS',
-      'Bootstrap',
-      'jQuery',
-    ],
-    tools: [
-      'Git/GitHub',
-      'Docker',
-      'Composer',
-      'Postman',
-      'SQL Server',
-      'MySQL',
-      'PostgreSQL',
-    ],
-    concepts: [
-      'MVC',
-      'SOLID',
-      'Clean Code',
-      'REST APIs',
-      'Unit Testing (PHPUnit/Pest)',
-    ],
+    programming: {
+      advanced: ['PHP'],
+      intermediate: ['JavaScript', 'HTML5'],
+      basic: ['Java'],
+    },
+    frameworksAndTools: {
+      advanced: ['Laravel', 'MVC'],
+      intermediate: [
+        'Livewire',
+        'Filament',
+        'Git',
+        'GitHub',
+        'PHPUnit',
+        'Pest',
+        'TailwindCSS',
+        'SOLID',
+        'Clean Code',
+        'jQuery',
+      ],
+      basic: ['Docker', 'Basecamp'],
+    },
+    databases: {
+      intermediate: ['MySQL', 'PostgreSQL', 'SQL Server'],
+    },
+    languages: {
+      native: ['Español'],
+      advanced: ['Inglés (C1 Advanced)'],
+    },
   },
   education: [
     {

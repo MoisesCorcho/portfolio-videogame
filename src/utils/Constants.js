@@ -63,6 +63,9 @@ export const ASSETS = {
   BG_DIRT2: 'bg_dirt2',
   BOOKS_FLYING: 'books_flying',
   ALCHEMY_TABLE: 'Terraria_alchemy_table',
+  CAMPFIRE: 'campfire_sheet',
+  CAMPFIRE_WITH_FOOD: 'campfire_with_food_sheet',
+  KEYBOARD: 'custom_keyboard_letters_and_symbols',
 };
 
 export const INTERACTION_TYPES = {

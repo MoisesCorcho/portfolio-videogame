@@ -7,8 +7,9 @@
 /**
  * @typedef {Object} AnimationConfig
  * @property {string} key - Unique identifier for the animation
- * @property {number} start - Starting frame index in the spritesheet
- * @property {number} end - Ending frame index in the spritesheet
+ * @property {number} [start] - Starting frame index in the spritesheet
+ * @property {number} [end] - Ending frame index in the spritesheet
+ * @property {number[]} [frames] - Specific frame indices (overrides start/end)
  * @property {number} rate - Frame rate (frames per second)
  * @property {number} repeat - Number of times to repeat animation (-1 for infinite loop)
  */
@@ -50,6 +51,8 @@ export const SPRITE_CONFIG = {
   PYLONS: { frameWidth: 48, frameHeight: 68 },
   BOOKS_FLYING: { frameWidth: 51, frameHeight: 44 },
   ALCHEMY_TABLE: { frameWidth: 48, frameHeight: 48 },
+  CAMPFIRE: { frameWidth: 32, frameHeight: 32 },
+  KEYBOARD: { frameWidth: 16, frameHeight: 16 },
 };
 
 /**
@@ -123,6 +126,25 @@ export const BOOKS_FLYING_ANIMS = {
   FLY_1: { key: 'books_flying_1', start: 0, end: 4, rate: 10, repeat: -1 },
   FLY_2: { key: 'books_flying_2', start: 15, end: 19, rate: 10, repeat: -1 },
 };
+export const CAMPFIRE_ANIMS = {
+  IDLE: { key: 'campfire_idle', start: 0, end: 39, rate: 10, repeat: -1 },
+};
+export const CAMPFIRE_WITH_FOOD_ANIMS = {
+  IDLE: {
+    key: 'campfire_with_food_idle',
+    start: 0,
+    end: 39,
+    rate: 10,
+    repeat: -1,
+  },
+};
+
+/**
+ * Keyboard animation configurations.
+ */
+export const KEYBOARD_ANIMS = {
+  PRESS_E: { key: 'keyboard_e_press', frames: [20, 76], rate: 2, repeat: -1 },
+};
 
 /**
  * Training Dummy animation configurations.
@@ -164,4 +186,7 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.MUSHROOM_PYLON, anims: MUSHROOM_PYLON_ANIMS },
   { assetKey: ASSETS.BOOKS_FLYING, anims: BOOKS_FLYING_ANIMS },
   { assetKey: ASSETS.ALCHEMY_TABLE, anims: ALCHEMY_TABLE_ANIMS },
+  { assetKey: ASSETS.CAMPFIRE, anims: CAMPFIRE_ANIMS },
+  { assetKey: ASSETS.CAMPFIRE_WITH_FOOD, anims: CAMPFIRE_WITH_FOOD_ANIMS },
+  { assetKey: ASSETS.KEYBOARD, anims: KEYBOARD_ANIMS },
 ];

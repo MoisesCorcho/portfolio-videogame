@@ -265,14 +265,16 @@ const STATIC_ASSETS = [
   },
 
   {
-    type: 'image',
-    key: 'campfire_sheet',
+    type: 'spritesheet',
+    key: ASSETS.CAMPFIRE,
     path: 'assets/sprites/GH/campfire_sheet.png',
+    config: SPRITE_CONFIG.CAMPFIRE,
   },
   {
-    type: 'image',
-    key: 'campfire_with_food_sheet',
+    type: 'spritesheet',
+    key: ASSETS.CAMPFIRE_WITH_FOOD,
     path: 'assets/sprites/GH/campfire_with_food_sheet.png',
+    config: SPRITE_CONFIG.CAMPFIRE,
   },
   {
     type: 'image',
@@ -423,6 +425,12 @@ const STATIC_ASSETS = [
     key: ASSETS.ALCHEMY_TABLE,
     path: 'assets/sprites/Terraria/alchemy_table.png',
     config: SPRITE_CONFIG.ALCHEMY_TABLE,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.KEYBOARD,
+    path: 'assets/sprites/custom/keyboard_letters_and_symbols.png',
+    config: SPRITE_CONFIG.KEYBOARD,
   },
 
   {

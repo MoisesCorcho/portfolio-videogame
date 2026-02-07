@@ -238,6 +238,9 @@ export default class PlayScene extends Phaser.Scene {
       interest_points: ASSETS.INTEREST_POINTS,
       training_dummy: ASSETS.DUMMY,
       bg_dirt2: ASSETS.BG_DIRT2,
+      campfire_sheet: ASSETS.CAMPFIRE,
+      campfire_with_food_sheet: ASSETS.CAMPFIRE_WITH_FOOD,
+      keyboard_letters_and_symbols: ASSETS.KEYBOARD,
       // Map other specific tileset names if needed
     };
 
@@ -474,10 +477,17 @@ export default class PlayScene extends Phaser.Scene {
 
       Object.values(anims).forEach((anim) => {
         if (!this.anims.exists(anim.key)) {
-          const frames = this.anims.generateFrameNumbers(assetKey, {
-            start: anim.start,
-            end: anim.end,
-          });
+          let frames;
+          if (anim.frames) {
+            frames = this.anims.generateFrameNumbers(assetKey, {
+              frames: anim.frames,
+            });
+          } else {
+            frames = this.anims.generateFrameNumbers(assetKey, {
+              start: anim.start,
+              end: anim.end,
+            });
+          }
 
           if (frames && frames.length > 0) {
             this.anims.create({
