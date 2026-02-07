@@ -412,6 +412,18 @@ const STATIC_ASSETS = [
     path: 'assets/sprites/Terraria/mushroom_pylon.png',
     config: SPRITE_CONFIG.PYLONS,
   },
+  {
+    type: 'spritesheet',
+    key: ASSETS.BOOKS_FLYING,
+    path: 'assets/sprites/custom/books_flying.png',
+    config: SPRITE_CONFIG.BOOKS_FLYING,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.ALCHEMY_TABLE,
+    path: 'assets/sprites/Terraria/alchemy_table.png',
+    config: SPRITE_CONFIG.ALCHEMY_TABLE,
+  },
 
   {
     type: 'image',

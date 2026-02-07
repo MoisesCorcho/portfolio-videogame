@@ -48,6 +48,8 @@ export const SPRITE_CONFIG = {
   DUMMY: { frameWidth: 32, frameHeight: 32 },
   BEWITCHING_TABLE: { frameWidth: 48, frameHeight: 48 },
   PYLONS: { frameWidth: 48, frameHeight: 68 },
+  BOOKS_FLYING: { frameWidth: 51, frameHeight: 44 },
+  ALCHEMY_TABLE: { frameWidth: 48, frameHeight: 48 },
 };
 
 /**
@@ -114,6 +116,13 @@ export const CAVERN_PYLON_ANIMS = {
 export const MUSHROOM_PYLON_ANIMS = {
   IDLE: { key: 'mushroom_pylon_idle', start: 0, end: 7, rate: 10, repeat: -1 },
 };
+export const ALCHEMY_TABLE_ANIMS = {
+  IDLE: { key: 'alchemy_table_idle', start: 0, end: 7, rate: 10, repeat: -1 },
+};
+export const BOOKS_FLYING_ANIMS = {
+  FLY_1: { key: 'books_flying_1', start: 0, end: 4, rate: 10, repeat: -1 },
+  FLY_2: { key: 'books_flying_2', start: 15, end: 19, rate: 10, repeat: -1 },
+};
 
 /**
  * Training Dummy animation configurations.
@@ -153,4 +162,6 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.DESERT_PYLON, anims: DESERT_PYLON_ANIMS },
   { assetKey: ASSETS.CAVERN_PYLON, anims: CAVERN_PYLON_ANIMS },
   { assetKey: ASSETS.MUSHROOM_PYLON, anims: MUSHROOM_PYLON_ANIMS },
+  { assetKey: ASSETS.BOOKS_FLYING, anims: BOOKS_FLYING_ANIMS },
+  { assetKey: ASSETS.ALCHEMY_TABLE, anims: ALCHEMY_TABLE_ANIMS },
 ];

@@ -61,6 +61,8 @@ export const ASSETS = {
   CAVERN_PYLON: 'Terraria_cavern_pylon',
   MUSHROOM_PYLON: 'Terraria_mushroom_pylon',
   BG_DIRT2: 'bg_dirt2',
+  BOOKS_FLYING: 'books_flying',
+  ALCHEMY_TABLE: 'Terraria_alchemy_table',
 };
 
 export const INTERACTION_TYPES = {
