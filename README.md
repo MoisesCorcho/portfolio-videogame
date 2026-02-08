@@ -174,6 +174,39 @@ El juego soporta plataformas que permiten saltar a través de ellas desde abajo 
 
 ---
 
+## 🧩 Plugins y Extensiones
+
+### `phaser-animated-tiles`
+
+Este proyecto utiliza el plugin **[phaser-animated-tiles](https://www.npmjs.com/package/phaser-animated-tiles)** para habilitar la reproducción de animaciones definidas en los tilesets de Tiled dentro de Phaser 3.
+
+#### ❓ ¿Por qué es necesario?
+Phaser 3, por defecto, **NO reproduce animaciones de tiles** que se encuentren en las "Capas de Patrones" (Tile Layers) de Tiled. Solo renderiza el primer frame del tile de forma estática. Este plugin llena ese vacío, permitiendo que elementos como agua, fuego, o decoraciones animadas funcionen automáticamente sin necesidad de convertirlos en Sprites (GameObjects).
+
+#### 🛠️ Implementación en el Proyecto
+El plugin se ha instalado vía npm y se inicializa en `src/scenes/PlayScene.js`:
+
+1.  **Importación**: Se importa directamente desde `node_modules`.
+2.  **Carga**: Se carga en el método `preload()` de la escena como un `scenePlugin`.
+3.  **Inicialización**: Se ejecuta `this.sys.animatedTiles.init(this.map)` en el método `create()` una vez que el mapa ha sido generado.
+
+#### 🎨 Uso en Tiled
+Para que un tile se anime en el juego:
+
+1.  **Editor de Tilesets**:
+    - Abre tu tileset en Tiled (`.tsx` o pestaña de tileset).
+    - Selecciona el tile que quieres animar.
+    - Ve al panel de **Animación de Teselas** (Tile Animation Editor).
+    - Arrastra los frames que componen la animación y define la duración de cada uno (en ms).
+
+2.  **Capa de Patrones (Tile Layer)**:
+    - Selecciona una **Capa de Patrones** (NO una Capa de Objetos).
+    - Pinta el mapa con el tile animado que acabas de configurar.
+
+Al exportar el mapa a JSON y ejecutar el juego, el plugin detectará automáticamente estos metadatos y reproducirá la animación.
+
+---
+
 ## 🎁 Conversión de GIFs a Sprites (EzGif)
 
 Para integrar animaciones desde archivos GIF en Phaser, es recomendable convertirlos a Spritesheets:

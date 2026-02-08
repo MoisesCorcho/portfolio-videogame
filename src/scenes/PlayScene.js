@@ -16,6 +16,7 @@ import {
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
 import { openModal } from '../ui/stores/uiStore';
+import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 
 /**
  * Main play scene where the gameplay takes place.
@@ -30,6 +31,18 @@ export default class PlayScene extends Phaser.Scene {
    */
   constructor() {
     super('PlayScene');
+  }
+
+  /**
+   * Preloads the animated tiles plugin.
+   */
+  preload() {
+    this.load.scenePlugin(
+      'animatedTiles',
+      AnimatedTiles,
+      'animatedTiles',
+      'animatedTiles'
+    );
   }
 
   /**
@@ -65,6 +78,14 @@ export default class PlayScene extends Phaser.Scene {
     this.createParallaxBackground(width, height, visibleWidth, visibleHeight);
     this.createEnvironmentAnimations();
     this.createLevel();
+    
+    // Initialize animated tiles plugin
+    if (this.sys.animatedTiles) {
+      this.sys.animatedTiles.init(this.map);
+    } else {
+      console.warn('AnimatedTiles plugin not loaded');
+    }
+
     this.createPlayer();
 
     this.keys = this.input.keyboard.addKeys({
