@@ -36,7 +36,9 @@
         {:else if state.view === INTERACTION_TYPES.SKILLS}
             <Skills />
         {:else if state.view === INTERACTION_TYPES.EDUCATION}
-            <Education />
+            <Education section="education" />
+        {:else if state.view === INTERACTION_TYPES.CERTS}
+            <Education section="certs" />
         {:else}
             <p>Unknown view: {state.view}</p>
         {/if}

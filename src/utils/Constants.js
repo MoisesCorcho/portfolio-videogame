@@ -74,6 +74,7 @@ export const INTERACTION_TYPES = {
   SINGLE_EXPERIENCE: 'single_experience',
   SKILLS: 'skills',
   EDUCATION: 'education',
+  CERTS: 'certs',
 };
 
 export const EVENTS = {
