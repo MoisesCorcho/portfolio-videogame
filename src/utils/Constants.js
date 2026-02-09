@@ -68,6 +68,27 @@ export const ASSETS = {
   KEYBOARD: 'custom_keyboard_letters_and_symbols',
 };
 
+export const AUDIO = {
+  MUSIC: {
+    NORMAL: 'bgm_normal',
+    AUTUMN: 'bgm_autumn',
+    WINTER: 'bgm_winter',
+  },
+  SFX: {
+    STEP_GRASS: 'sfx_step_grass',
+    STEP_STONE: 'sfx_step_stone',
+    JUMP: 'sfx_jump',
+    LAND: 'sfx_land',
+    ATTACK_SWORD: 'sfx_attack_sword',
+  },
+  ENV: {
+    WATERFALL: 'env_waterfall',
+    FIRE_CRACKLE: 'env_fire_crackle',
+    WIND: 'env_wind',
+  },
+};
+
+
 export const INTERACTION_TYPES = {
   PROFILE: 'profile',
   EXPERIENCE: 'experience',

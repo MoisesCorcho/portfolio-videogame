@@ -5,8 +5,10 @@
 
 import Player from '../player/Player';
 import Dummy from '../entities/Dummy';
+import AudioManager from '../utils/AudioManager';
 import {
   ASSETS,
+  AUDIO,
   EVENTS,
   INTERACTION_TYPES,
   MAP_LAYERS,
@@ -57,6 +59,7 @@ export default class PlayScene extends Phaser.Scene {
     const visibleHeight = height / zoom + 2;
 
     // Physics groups
+    this.audioManager = new AudioManager(this);
     this.dummies = this.physics.add.group({
       classType: Dummy,
       runChildUpdate: true,
@@ -202,7 +205,7 @@ export default class PlayScene extends Phaser.Scene {
     ];
 
     this.backgrounds = [];
-    this.currentBiome = 'normal'; // Track current biome
+    this.currentBiome = null; // Track current biome - Start null to force initial update
 
     layers.forEach((layer) => {
       const tex = this.textures.get(layer.key).getSourceImage();
@@ -359,6 +362,8 @@ export default class PlayScene extends Phaser.Scene {
           this.processOneWayPlatforms(layerData.name);
         } else if (layerData.name === MAP_LAYERS.BIOMES) {
           this.processBiomeLayer(layerData.name);
+        } else if (layerData.name === 'Audio') {
+          this.processAudioLayer(layerData.name);
         } else {
           // General Object Layer (Decorations, Interactables, etc.)
           this.processObjectLayer(layerData.name);
@@ -483,6 +488,41 @@ export default class PlayScene extends Phaser.Scene {
         }
       }
     });
+
+  }
+
+  /**
+   * Processes the Audio object layer from Tiled.
+   * Extracts spatial audio data without creating visual sprites.
+   * @param {string} layerName - Name of the audio layer
+   * @private
+   */
+  processAudioLayer(layerName) {
+    const audioLayer = this.map.getObjectLayer(layerName);
+    if (audioLayer && audioLayer.objects) {
+      audioLayer.objects.forEach((obj) => {
+        // Custom properties from Tiled: sound (string), loop (bool), radius (float), volume (float)
+        const soundKey = obj.properties?.find((p) => p.name === 'sound')?.value;
+        const loop = obj.properties?.find((p) => p.name === 'loop')?.value ?? true;
+        const radius = obj.properties?.find((p) => p.name === 'radius')?.value ?? 300;
+        const maxVolume = obj.properties?.find((p) => p.name === 'volume')?.value ?? 0.5;
+
+        if (soundKey) {
+           let finalKey = soundKey;
+           if (AUDIO.ENV[soundKey.toUpperCase()]) {
+             finalKey = AUDIO.ENV[soundKey.toUpperCase()];
+           }
+
+           this.audioManager.addSpatialSound(
+             `spatial_${obj.id}`, 
+             finalKey, 
+             { x: obj.x, y: obj.y },
+             radius,
+             maxVolume
+           );
+        }
+      });
+    }
   }
 
   /**
@@ -624,6 +664,7 @@ export default class PlayScene extends Phaser.Scene {
    */
   update() {
     this.player.update();
+    this.audioManager.updateSpatialSounds(this.player);
 
     // Update Parallax
     if (this.backgrounds) {
@@ -665,6 +706,9 @@ export default class PlayScene extends Phaser.Scene {
       null,
       this
     );
+
+    // Initial check for biome (in case player spawns inside one)
+    this.updateBiome();
 
     // Continuous attack hitbox overlap check (enabled/disabled by AttackState)
     this.physics.overlap(this.attackZone, this.dummies, (zone, dummy) => {
@@ -783,6 +827,24 @@ export default class PlayScene extends Phaser.Scene {
         });
       },
     });
+
+    // Play new biome music
+    const currentBiomeUpper = currentZone.biomeName.toUpperCase();
+    
+    // Check if the key exists in our AUDIO constants, otherwise don't play
+    const audioConst = AUDIO.MUSIC[currentBiomeUpper];
+    
+    if (audioConst) {
+      // Define specific volumes for biomes (default to 0.5 if not set)
+      const BIOME_VOLUMES = {
+        NORMAL: 0.3,
+        AUTUMN: 0.7,
+        WINTER: 0.3,
+      };
+      
+      const volume = BIOME_VOLUMES[currentBiomeUpper] ?? 0.3;
+      this.audioManager.playMusic(audioConst, 1000, volume);
+    }
   }
 
   /**

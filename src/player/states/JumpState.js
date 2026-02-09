@@ -1,8 +1,10 @@
 import State from './State';
+import { AUDIO } from '../../utils/Constants';
 
 export default class JumpState extends State {
   enter() {
     this.player.setVelocityY(-500); // Jump Force
+    this.player.scene.audioManager.playSfx(AUDIO.SFX.JUMP, { volume: 0.4 });
     this.player.anims.play('jump', true);
   }
 

@@ -217,5 +217,62 @@ Para integrar animaciones desde archivos GIF en Phaser, es recomendable converti
    - **Margin around tiles**: `0 px`.
 3. **Cálculo de Dimensiones**:
    - La página de EzGif indica el alto, ancho y cantidad de frames.
-   - **Desde Windows**: Puedes encontrar el **Alto** en los detalles del archivo. Para el **Ancho** de cada frame, divide el ancho total entre el valor del campo **Profundidad en bits** (o el número de frames).
    - **Importante**: Necesitamos conocer el **ancho** y **alto** exactos de un frame para poder importar de manera correcta el sprite en el software **Tiled**, asegurando que cada uno se encuadre perfectamente.
+
+---
+
+## 🔊 Sistema de Audio
+
+El juego implementa un sistema de audio escalable que soporta música de fondo (con transiciones suaves entre biomas), efectos de sonido (SFX) y audio espacial posicional.
+
+### 📂 Estructura de Archivos
+Los archivos de audio deben ubicarse en `public/assets/audio/` siguiendo esta estructura estricta:
+
+```
+public/assets/audio/
+├── music/              # Música de fondo (loops)
+│   ├── bgm_normal.mp3
+│   ├── bgm_autumn.mp3
+│   └── bgm_winter.mp3
+├── sfx/                # Efectos de sonido (one-shot)
+│   ├── step_grass.mp3
+│   ├── step_stone.mp3
+│   ├── jump.mp3
+│   ├── land.mp3
+│   └── attack_sword.mp3
+└── env/                # Sonidos ambientales/espaciales
+    ├── waterfall.mp3
+    ├── fire_crackle.mp3
+    └── wind.mp3
+```
+
+### 🛠️ Configuración en Tiled
+
+#### 1. Música de Biomas
+El sistema reutiliza la capa de objetos `Biomes` existente.
+- **Lógica**: Al entrar en una zona de bioma definida en Tiled, el sistema busca automáticamente un archivo de música coincidente en `Constants.js` (`AUDIO.MUSIC.[BIOME_NAME]`).
+- **Transición**: Se realiza un cross-fade automático de 1 segundo entre pistas.
+
+#### 2. Audio Espacial (Objetos que emiten sonido)
+Para añadir sonidos localizados (ej: una cascada o fuego) que cambian de volumen según la distancia:
+
+1.  **Capa de Objetos**: Crea una capa llamada **`Audio`**.
+2.  **Objeto**: Coloca un punto o rectángulo donde quieras la fuente del sonido.
+3.  **Propiedades Personalizadas (Custom Properties)**:
+    -   `sound` (string): **OBLIGATORIO**. La clave o nombre corto del sonido (ej: `env_waterfall` o `WATERFALL`).
+    -   `loop` (bool): `true` para sonidos continuos (defecto: `true`).
+    -   `radius` (float): Distancia en píxeles hasta donde se escucha el sonido (defecto: `300`).
+    -   `volume` (float): Volumen máximo en el origen (0.0 a 1.0, defecto: `0.5`).
+
+### 💻 Clases Principales
+
+#### `src/utils/AudioManager.js`
+Singleton que orquesta todo el audio.
+- `playMusic(key, fade)`: Gestiona loops y cross-fades.
+- `updateSpatialSounds(player)`: Calcula distancias frame a frame para ajustar volúmenes.
+
+#### `src/scenes/PlayScene.js`
+- Inicializa el `AudioManager`.
+- Parsea la capa `Audio` de Tiled en `createLevel()`.
+- Actualiza el audio espacial en `update()`.
+

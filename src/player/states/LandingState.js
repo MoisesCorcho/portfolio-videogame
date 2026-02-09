@@ -1,8 +1,10 @@
 import State from './State';
+import { AUDIO } from '../../utils/Constants';
 
 export default class LandingState extends State {
   enter() {
     this.player.setVelocityX(0); // Freeze horizontal at start
+    this.player.scene.audioManager.playSfx(AUDIO.SFX.LAND, { volume: 0.5 });
     this.player.anims.play('landing', true);
 
     // Listen for animation complete to exit

@@ -5,7 +5,7 @@
  * specific configurations (spritesheets, tilemaps, etc.).
  */
 
-import { ASSETS } from '../utils/Constants';
+import { ASSETS, AUDIO } from '../utils/Constants';
 import { SPRITE_CONFIG } from './Animations';
 
 /**
@@ -463,7 +463,30 @@ const STATIC_ASSETS = [
     key: ASSETS.LEVEL_1_MAP,
     path: ASSETS.LEVEL_1_JSON,
   },
+
+  // Audio Assets
+  // Music
+  { type: 'audio', key: AUDIO.MUSIC.NORMAL, path: 'assets/audio/music/bgm_normal.mp3' },
+  { type: 'audio', key: AUDIO.MUSIC.AUTUMN, path: 'assets/audio/music/bgm_autumn.mp3' },
+  { type: 'audio', key: AUDIO.MUSIC.WINTER, path: 'assets/audio/music/bgm_winter.mp3' },
+
+  // SFX
+  { type: 'audio', key: AUDIO.SFX.STEP_GRASS, path: 'assets/audio/sfx/step_grass.mp3' },
+  { type: 'audio', key: AUDIO.SFX.STEP_STONE, path: 'assets/audio/sfx/step_stone.mp3' },
+  { type: 'audio', key: AUDIO.SFX.JUMP, path: 'assets/audio/sfx/jump.mp3' },
+  { type: 'audio', key: AUDIO.SFX.LAND, path: 'assets/audio/sfx/land.mp3' },
+  {
+    type: 'audio',
+    key: AUDIO.SFX.ATTACK_SWORD,
+    path: 'assets/audio/sfx/attack_sword.mp3',
+  },
+
+  // Ambience / Env
+  { type: 'audio', key: AUDIO.ENV.WATERFALL, path: 'assets/audio/env/waterfall.mp3' },
+  { type: 'audio', key: AUDIO.ENV.FIRE_CRACKLE, path: 'assets/audio/env/fire_crackle.mp3' },
+  { type: 'audio', key: AUDIO.ENV.WIND, path: 'assets/audio/env/wind.mp3' },
 ];
+
 
 /**
  * Complete asset manifest combining static and dynamic assets.

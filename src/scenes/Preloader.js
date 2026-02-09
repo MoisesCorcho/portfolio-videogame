@@ -47,9 +47,12 @@ export default class Preloader extends Phaser.Scene {
         this.load.spritesheet(asset.key, asset.path, asset.config);
       } else if (asset.type === 'tilemapTiledJSON') {
         this.load.tilemapTiledJSON(asset.key, asset.path);
+      } else if (asset.type === 'audio') {
+        this.load.audio(asset.key, asset.path);
       } else {
         this.load.image(asset.key, asset.path);
       }
+
     });
   }
 
