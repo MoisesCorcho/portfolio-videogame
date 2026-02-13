@@ -156,6 +156,14 @@ export const DUMMY_ANIMS = {
   HURT: { key: 'dummy_hurt', start: 1, end: 4, rate: 10, repeat: 0 },
 };
 
+/**
+ * NPC Animations
+ */
+export const NPC_ANIMS = {
+  FOX_IDLE: { key: 'fox_idle', start: 0, end: 4, rate: 8, repeat: -1 },
+  FOX_RUN: { key: 'fox_run', start: 6, end: 11, rate: 10, repeat: -1 },
+};
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -189,4 +197,6 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.CAMPFIRE, anims: CAMPFIRE_ANIMS },
   { assetKey: ASSETS.CAMPFIRE_WITH_FOOD, anims: CAMPFIRE_WITH_FOOD_ANIMS },
   { assetKey: ASSETS.KEYBOARD, anims: KEYBOARD_ANIMS },
+  // NPC Animations
+  { assetKey: ASSETS.FOX, anims: NPC_ANIMS },
 ];

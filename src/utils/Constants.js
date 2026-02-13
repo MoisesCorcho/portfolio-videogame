@@ -66,6 +66,7 @@ export const ASSETS = {
   CAMPFIRE: 'campfire_sheet',
   CAMPFIRE_WITH_FOOD: 'campfire_with_food_sheet',
   KEYBOARD: 'custom_keyboard_letters_and_symbols',
+  FOX: 'hg_fox',
 };
 
 export const AUDIO = {
@@ -121,4 +122,5 @@ export const OBJECT_NAMES = {
 
 export const ENTITY_TYPES = {
   DUMMY: 'dummy',
+  NPC: 'npc',
 };

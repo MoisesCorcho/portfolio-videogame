@@ -221,58 +221,93 @@ Para integrar animaciones desde archivos GIF en Phaser, es recomendable converti
 
 ---
 
-## 🔊 Sistema de Audio
+## 🔊 Sistema de Audio Avanzado
 
-El juego implementa un sistema de audio escalable que soporta música de fondo (con transiciones suaves entre biomas), efectos de sonido (SFX) y audio espacial posicional.
+El juego implementa un motor de audio robusto y dinámico que sumerge al jugador en el entorno. Gestiona música de fondo adaptativa, efectos de sonido sincronizados con animaciones y audio espacial posicional.
 
-### 📂 Estructura de Archivos
-Los archivos de audio deben ubicarse en `public/assets/audio/` siguiendo esta estructura estricta:
+### 📂 Gestión de Assets de Audio
 
-```
-public/assets/audio/
-├── music/              # Música de fondo (loops)
-│   ├── bgm_normal.mp3
-│   ├── bgm_autumn.mp3
-│   └── bgm_winter.mp3
-├── sfx/                # Efectos de sonido (one-shot)
-│   ├── step_grass.mp3
-│   ├── step_stone.mp3
-│   ├── jump.mp3
-│   ├── land.mp3
-│   └── attack_sword.mp3
-└── env/                # Sonidos ambientales/espaciales
-    ├── waterfall.mp3
-    ├── fire_crackle.mp3
-    └── wind.mp3
-```
+Todos los archivos de audio se encuentran en `public/assets/audio/` y se cargan a través del `AssetManifest.js`.
+
+- **Música (`/music`)**: Pistas en bucle para cada bioma (Normal, Otoño, Invierno).
+- **Ambiente (`/env`)**: Loops de sonidos naturales como cascadas, viento y fuego.
+- **Efectos (`/sfx`)**: Sonidos de acción (pasos, saltos, ataques, aterrizajes).
+
+### 🧠 Arquitectura del Código
+
+#### 1. `src/utils/AudioManager.js` (El Núcleo)
+Un Singleton que centraliza todo el control de audio.
+- **Cross-fading de Música**: Transiciones suaves automáticas entre pistas de biomas. Si el jugador corre de un bioma a otro, la música antigua se desvanece mientras entra la nueva.
+- **Audio Espacial**: Calcula la distancia entre el jugador y las fuentes de sonido (como una fogata) en cada frame. Ajusta el volumen dinámicamente: más fuerte cerca, silencioso lejos.
+- **Control Global**: Métodos para pausar, reanudar y ajustar el volumen maestro.
+
+#### 2. Integración en `PlayScene.js`
+- **Inicialización**: Crea la instancia de `AudioManager` al inicio.
+- **Update Loop**: Llama a `audioManager.updateSpatialSounds(player)` en cada frame para recalcular volúmenes espaciales.
+- **Detección de Biomas**: Monitorea la posición del jugador para disparar cambios de música según la zona del mapa.
+
+#### 3. Estados del Jugador (`src/player/states/`)
+El audio está desacoplado de la lógica visual y se dispara por eventos de estado:
+- **`JumpState.js`**: Reproduce `sfx_jump` al iniciar el salto.
+- **`LandingState.js`**: Reproduce `sfx_land` al tocar el suelo.
+- **`AttackState.js`**: Reproduce `sfx_attack` sincronizado con la animación.
+- **`RunState.js`**: Sistema de pasos inteligente (ver abajo).
+
+### 🛠️ Configuración en Tiled (Guía Detallada)
+
+Para que el sistema funcione, el mapa debe configurarse correctamente en Tiled.
+
+#### A. Música de Biomas
+1.  **Capa de Objetos**: Asegúrate de tener una capa llamada `Biomes`.
+2.  **Zonas**: Dibuja rectángulos cubriendo cada área.
+3.  **Propiedad `biome`**: Asigna el valor `normal`, `autumn` o `winter`. El `AudioManager` sabrá qué pista tocar.
+
+#### B. Audio Espacial (Cascadas, Fogatas)
+1.  **Capa `Audio`**: Crea una Capa de Objetos llamada **exactamente** `Audio`.
+2.  **Objetos de Sonido**: Coloca un punto o rectángulo en la fuente del sonido.
+3.  **Propiedades Personalizadas**:
+    -   `sound` (string): Clave del sonido (ej: `WATERFALL` o `FIRE_CRACKLE`).
+    -   `radius` (float): Distancia en píxeles donde se empieza a escuchar (ej: `400.0`).
+    -   `volume` (float): Volumen máximo al estar encima (0.0 a 1.0).
+    -   `loop` (bool): `true` (por defecto).
+
+> **Nota Técnica**: El código procesa esta capa `Audio` solo para extraer datos. **No crea sprites visuals**, por lo que no verás cajas verdes feas en el juego.
+
+#### C. Pasos Dinámicos (Suelo)
+El juego detecta el tipo de suelo bajo los pies del jugador para cambiar el sonido de los pasos.
+1.  **Editor de Tilesets**: En Tiled, edita tu tileset de suelos.
+2.  **Selección**: Selecciona los tiles de piedra, madera, etc.
+3.  **Propiedad `material`**: Añade una propiedad personalizada llamada `material` (string).
+    -   Valor `stone` -> Reproduce `step_stone`.
+    -   Sin propiedad -> Reproduce `step_grass` (por defecto).
+
+---
+
+## 🤖 Sistema de NPCs (Non-Player Characters)
+
+El juego soporta NPCs con comportamientos básicos como patrullaje, integrados directamente desde Tiled.
 
 ### 🛠️ Configuración en Tiled
 
-#### 1. Música de Biomas
-El sistema reutiliza la capa de objetos `Biomes` existente.
-- **Lógica**: Al entrar en una zona de bioma definida en Tiled, el sistema busca automáticamente un archivo de música coincidente en `Constants.js` (`AUDIO.MUSIC.[BIOME_NAME]`).
-- **Transición**: Se realiza un cross-fade automático de 1 segundo entre pistas.
+Para añadir un NPC al mapa:
 
-#### 2. Audio Espacial (Objetos que emiten sonido)
-Para añadir sonidos localizados (ej: una cascada o fuego) que cambian de volumen según la distancia:
+1.  **Capa de Objetos**: Trabaja sobre la capa `Objects` (o cualquier capa de objetos procesada en `PlayScene`).
+2.  **Insertar Objeto**: Coloca un objeto (Tile Object o Rectángulo) en la posición deseada.
+3.  **Propiedades Personalizadas Obigatorias**:
+    -   **`entity`** (string): Debe ser **`npc`**. Esto identifica al objeto como un personaje no jugable.
 
-1.  **Capa de Objetos**: Crea una capa llamada **`Audio`**.
-2.  **Objeto**: Coloca un punto o rectángulo donde quieras la fuente del sonido.
-3.  **Propiedades Personalizadas (Custom Properties)**:
-    -   `sound` (string): **OBLIGATORIO**. La clave o nombre corto del sonido (ej: `env_waterfall` o `WATERFALL`).
-    -   `loop` (bool): `true` para sonidos continuos (defecto: `true`).
-    -   `radius` (float): Distancia en píxeles hasta donde se escucha el sonido (defecto: `300`).
-    -   `volume` (float): Volumen máximo en el origen (0.0 a 1.0, defecto: `0.5`).
+4.  **Propiedades Opcionales (Configuración)**:
+    -   **`texture`** (string): La clave del asset en Phaser (ej: `hg_fox`, `bird_npc`). *Por defecto: `hg_fox`*.
+    -   **`initialAnim`** (string): La animación que se reproduce al inicio (ej: `fox_idle`, `fox_run`). *Por defecto: `fox_idle`*.
+    -   **`moveRange`** (float): Distancia en píxeles que el NPC patrullará a izquierda y derecha desde su punto de origen. *Por defecto: `100`*.
+    -   **`moveSpeed`** (float): Velocidad de movimiento. *Por defecto: `50`*.
 
-### 💻 Clases Principales
+#### Ejemplo práctico (Zorro):
+Crea un objeto en Tiled y añádele:
+-   `entity`: `npc`
+-   `texture`: `hg_fox`
+-   `initialAnim`: `fox_idle`
+-   `moveRange`: `150`
 
-#### `src/utils/AudioManager.js`
-Singleton que orquesta todo el audio.
-- `playMusic(key, fade)`: Gestiona loops y cross-fades.
-- `updateSpatialSounds(player)`: Calcula distancias frame a frame para ajustar volúmenes.
-
-#### `src/scenes/PlayScene.js`
-- Inicializa el `AudioManager`.
-- Parsea la capa `Audio` de Tiled en `createLevel()`.
-- Actualiza el audio espacial en `update()`.
+> **Nota**: El sistema destruye el objeto visual de Tiled y lo reemplaza por una instancia de la clase `NPC` de Phaser con físicas y lógica de patrulla.
 

@@ -485,6 +485,14 @@ const STATIC_ASSETS = [
   { type: 'audio', key: AUDIO.ENV.WATERFALL, path: 'assets/audio/env/waterfall.mp3' },
   { type: 'audio', key: AUDIO.ENV.FIRE_CRACKLE, path: 'assets/audio/env/fire_crackle.mp3' },
   { type: 'audio', key: AUDIO.ENV.WIND, path: 'assets/audio/env/wind.mp3' },
+  
+  // NPC Assets
+  {
+    type: 'spritesheet',
+    key: ASSETS.FOX,
+    path: 'assets/sprites/npc/GH/fox.png',
+    config: { frameWidth: 32, frameHeight: 32 },
+  },
 ];
 
 

@@ -4,6 +4,7 @@
  */
 
 import Player from '../player/Player';
+import NPC from '../entities/NPC';
 import Dummy from '../entities/Dummy';
 import AudioManager from '../utils/AudioManager';
 import {
@@ -65,6 +66,11 @@ export default class PlayScene extends Phaser.Scene {
       runChildUpdate: true,
       allowGravity: false,
       immovable: true,
+    });
+
+    this.npcs = this.physics.add.group({
+      classType: NPC,
+      runChildUpdate: true,
     });
 
     // Persistent Attack Zone (reused) - smaller hitbox for precision
@@ -140,6 +146,10 @@ export default class PlayScene extends Phaser.Scene {
     // Dummy collisions
     this.physics.add.collider(this.dummies, this.platforms);
     this.physics.add.collider(this.dummies, this.manualCollisions);
+
+    // NPC collisions
+    this.physics.add.collider(this.npcs, this.platforms);
+    this.physics.add.collider(this.npcs, this.manualCollisions);
   }
 
   /**
@@ -449,6 +459,36 @@ export default class PlayScene extends Phaser.Scene {
         // Destroy the placeholder object from Tiled
         obj.destroy();
         return; // Skip further processing for this object
+      }
+
+      // Handle NPCs
+      if (entityType && entityType.toLowerCase() === ENTITY_TYPES.NPC) {
+        // Determine texture: explicit property is preferred
+        let textureKey = getProp('texture');
+        const initialAnim = getProp('initialAnim'); // Can be null/undefined
+
+        // Fallback or derive from animation
+        if (!textureKey) {
+           if (initialAnim) {
+             // If initialAnim is provided, we can rely on it to set the correct texture/frame.
+             // No need to warn; the animation will handle the visual representation.
+           } else {
+             console.warn(`[PlayScene] NPC at ${obj.x},${obj.y} missing 'texture' property and no 'initialAnim'. Using tile texture: ${obj.texture ? obj.texture.key : 'unknown'}`);
+             if (obj.texture) textureKey = obj.texture.key;
+           }
+        }
+
+        const npc = this.npcs.get(obj.x, obj.y, textureKey, initialAnim);
+        if (npc) {
+           // Apply custom properties
+           const moveRange = getProp('moveRange');
+           if (moveRange !== null) npc.moveRange = parseFloat(moveRange);
+           
+           const moveSpeed = getProp('moveSpeed');
+           if (moveSpeed !== null) npc.moveSpeed = parseFloat(moveSpeed);
+        }
+        obj.destroy();
+        return;
       }
 
       // 2. Handle Animations
