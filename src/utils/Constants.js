@@ -67,6 +67,16 @@ export const ASSETS = {
   CAMPFIRE_WITH_FOOD: 'campfire_with_food_sheet',
   KEYBOARD: 'custom_keyboard_letters_and_symbols',
   FOX: 'hg_fox',
+  DOGGY_BLACK_GOLDEN: 'doggy_black_golden',
+  DOGGY_BROWN: 'doggy_brown',
+  BLACKSMITH: 'blacksmith',
+  PRIESTESS: 'priestess',
+  ADVENTURER_05: 'adventurer_05',
+  GYPSY: 'gypsy',
+  FAIRY: 'fairy',
+  ADVENTURER_03: 'adventurer_03',
+  ELDER: 'elder',
+  VILLAGER_01: 'villager_01',
 };
 
 export const AUDIO = {

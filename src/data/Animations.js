@@ -53,6 +53,14 @@ export const SPRITE_CONFIG = {
   ALCHEMY_TABLE: { frameWidth: 48, frameHeight: 48 },
   CAMPFIRE: { frameWidth: 32, frameHeight: 32 },
   KEYBOARD: { frameWidth: 16, frameHeight: 16 },
+  BLACKSMITH: { frameWidth: 96, frameHeight: 96 },
+  PRIESTESS: { frameWidth: 32, frameHeight: 32 },
+  ADVENTURER_05: { frameWidth: 32, frameHeight: 32 },
+  GYPSY: { frameWidth: 34, frameHeight: 34 },
+  FAIRY: { frameWidth: 32, frameHeight: 32 },
+  ADVENTURER_03: { frameWidth: 32, frameHeight: 32 },
+  ELDER: { frameWidth: 32, frameHeight: 32 },
+  VILLAGER_01: { frameWidth: 34, frameHeight: 34 },
 };
 
 /**
@@ -63,6 +71,10 @@ export const SPRITE_CONFIG = {
 export const FURNACE_ANIMS = {
   BURN: { key: 'furnace_burn', start: 0, end: 5, rate: 10, repeat: -1 },
   SAWMILL: { key: 'sawmill_work', start: 6, end: 11, rate: 10, repeat: -1 },
+};
+
+export const BLACKSMITH_ANIMS = {
+  WORK: { key: 'blacksmith_work', start: 0, end: 6, rate: 10, repeat: -1 },
 };
 
 /**
@@ -164,6 +176,39 @@ export const NPC_ANIMS = {
   FOX_RUN: { key: 'fox_run', start: 6, end: 11, rate: 10, repeat: -1 },
 };
 
+export const DOGGY_ANIMS = {
+  IDLE: { key: 'doggy_idle', start: 0, end: 4, rate: 8, repeat: -1 },
+  RUN: { key: 'doggy_run', start: 6, end: 11, rate: 10, repeat: -1 },
+};
+
+export const PRIESTESS_ANIMS = {
+  IDLE: { key: 'priestess_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
+export const ADVENTURER_ANIMS = {
+  IDLE: { key: 'adventurer_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
+export const GYPSY_ANIMS = {
+  IDLE: { key: 'gypsy_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
+export const FAIRY_ANIMS = {
+  IDLE: { key: 'fairy_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
+export const ADVENTURER_03_ANIMS = {
+  IDLE: { key: 'adventurer_03_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
+export const ELDER_ANIMS = {
+  IDLE: { key: 'elder_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
+export const VILLAGER_01_ANIMS = {
+  IDLE: { key: 'villager_01_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+};
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -199,4 +244,14 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.KEYBOARD, anims: KEYBOARD_ANIMS },
   // NPC Animations
   { assetKey: ASSETS.FOX, anims: NPC_ANIMS },
+  { assetKey: ASSETS.DOGGY_BLACK_GOLDEN, anims: DOGGY_ANIMS },
+  { assetKey: ASSETS.DOGGY_BROWN, anims: DOGGY_ANIMS },
+  { assetKey: ASSETS.BLACKSMITH, anims: BLACKSMITH_ANIMS },
+  { assetKey: ASSETS.PRIESTESS, anims: PRIESTESS_ANIMS },
+  { assetKey: ASSETS.ADVENTURER_05, anims: ADVENTURER_ANIMS },
+  { assetKey: ASSETS.GYPSY, anims: GYPSY_ANIMS },
+  { assetKey: ASSETS.FAIRY, anims: FAIRY_ANIMS },
+  { assetKey: ASSETS.ADVENTURER_03, anims: ADVENTURER_03_ANIMS },
+  { assetKey: ASSETS.ELDER, anims: ELDER_ANIMS },
+  { assetKey: ASSETS.VILLAGER_01, anims: VILLAGER_01_ANIMS },
 ];

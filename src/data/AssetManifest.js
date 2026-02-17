@@ -493,6 +493,66 @@ const STATIC_ASSETS = [
     path: 'assets/sprites/npc/GH/fox.png',
     config: { frameWidth: 32, frameHeight: 32 },
   },
+  {
+    type: 'spritesheet',
+    key: ASSETS.DOGGY_BLACK_GOLDEN,
+    path: 'assets/sprites/npc/GH/doggy_black_golden.png',
+    config: { frameWidth: 32, frameHeight: 32 },
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.DOGGY_BROWN,
+    path: 'assets/sprites/npc/GH/doggy_brown.png',
+    config: { frameWidth: 32, frameHeight: 32 },
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.BLACKSMITH,
+    path: 'assets/sprites/npc/custom/blacksmith.png',
+    config: SPRITE_CONFIG.BLACKSMITH,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.PRIESTESS,
+    path: 'assets/sprites/npc/custom/priestess.png',
+    config: SPRITE_CONFIG.PRIESTESS,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.ADVENTURER_05,
+    path: 'assets/sprites/npc/custom/adventurer_05.png',
+    config: SPRITE_CONFIG.ADVENTURER_05,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.GYPSY,
+    path: 'assets/sprites/npc/custom/gypsy.png',
+    config: SPRITE_CONFIG.GYPSY,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.FAIRY,
+    path: 'assets/sprites/npc/custom/fairy.png',
+    config: SPRITE_CONFIG.FAIRY,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.ADVENTURER_03,
+    path: 'assets/sprites/npc/custom/adventurer_03.png',
+    config: SPRITE_CONFIG.ADVENTURER_03,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.ELDER,
+    path: 'assets/sprites/npc/custom/elder.png',
+    config: SPRITE_CONFIG.ELDER,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.VILLAGER_01,
+    path: 'assets/sprites/npc/custom/villager_01.png',
+    config: SPRITE_CONFIG.VILLAGER_01,
+  },
 ];
 
 
