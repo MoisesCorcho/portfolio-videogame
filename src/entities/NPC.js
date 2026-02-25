@@ -26,13 +26,18 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
       this.play(initialAnim);
     }
 
-    // Movement properties
+    // Movement properties — patrol is OFF by default.
+    // Set canMove = true via Tiled custom property for NPCs that should patrol.
     this.moveSpeed = 50;
     this.moveRange = 100;
     this.startX = x;
     this.direction = 1; // 1 for right, -1 for left
-    this.canMove = true;
-    
+    this.canMove = false; // <-- Default: stationary
+
+    // Dialogue properties
+    this.dialogueId = null;       // Set from Tiled custom property
+    this.phraseIndex = 0;         // Tracks which phrase to show next
+
     // Internal state
     this.moveTimer = 0;
   }
@@ -65,5 +70,21 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
     } else if (this.x < this.startX - this.moveRange) {
       this.direction = 1;
     }
+  }
+
+  /**
+   * Returns the next phrase for this NPC and advances the index.
+   * @param {Object} dialogueData - The dialogue entry from NPC_DIALOGUES.
+   * @returns {{ name: string, phrase: string }} The NPC name and current phrase.
+   */
+  getNextPhrase(dialogueData) {
+    if (!dialogueData || !dialogueData.phrases || dialogueData.phrases.length === 0) {
+      return { name: 'NPC', phrase: '...' };
+    }
+
+    const phrase = dialogueData.phrases[this.phraseIndex];
+    this.phraseIndex = (this.phraseIndex + 1) % dialogueData.phrases.length;
+
+    return { name: dialogueData.name, phrase };
   }
 }

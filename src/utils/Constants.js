@@ -91,6 +91,8 @@ export const AUDIO = {
     JUMP: 'sfx_jump',
     LAND: 'sfx_land',
     ATTACK_SWORD: 'sfx_attack_sword',
+    WINDOW_OPEN: 'sfx_window_open',
+    WINDOW_CLOSE: 'sfx_window_close',
   },
   ENV: {
     WATERFALL: 'env_waterfall',
@@ -107,6 +109,8 @@ export const INTERACTION_TYPES = {
   SKILLS: 'skills',
   EDUCATION: 'education',
   CERTS: 'certs',
+  NPC: 'npc',
+  SIGN: 'sign',
 };
 
 export const EVENTS = {

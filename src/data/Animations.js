@@ -53,7 +53,7 @@ export const SPRITE_CONFIG = {
   ALCHEMY_TABLE: { frameWidth: 48, frameHeight: 48 },
   CAMPFIRE: { frameWidth: 32, frameHeight: 32 },
   KEYBOARD: { frameWidth: 16, frameHeight: 16 },
-  BLACKSMITH: { frameWidth: 96, frameHeight: 96 },
+  BLACKSMITH: { frameWidth: 34, frameHeight: 34 },
   PRIESTESS: { frameWidth: 32, frameHeight: 32 },
   ADVENTURER_05: { frameWidth: 32, frameHeight: 32 },
   GYPSY: { frameWidth: 34, frameHeight: 34 },
@@ -74,7 +74,7 @@ export const FURNACE_ANIMS = {
 };
 
 export const BLACKSMITH_ANIMS = {
-  WORK: { key: 'blacksmith_work', start: 0, end: 6, rate: 10, repeat: -1 },
+  WORK: { key: 'blacksmith_work', start: 0, end: 4, rate: 10, repeat: -1 },
 };
 
 /**
@@ -182,31 +182,31 @@ export const DOGGY_ANIMS = {
 };
 
 export const PRIESTESS_ANIMS = {
-  IDLE: { key: 'priestess_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'priestess_idle', start: 0, end: 4, rate: 8, repeat: -1 },
 };
 
 export const ADVENTURER_ANIMS = {
-  IDLE: { key: 'adventurer_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'adventurer_idle', start: 0, end: 3, rate: 8, repeat: -1 },
 };
 
 export const GYPSY_ANIMS = {
-  IDLE: { key: 'gypsy_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'gypsy_idle', start: 0, end: 4, rate: 8, repeat: -1 },
 };
 
 export const FAIRY_ANIMS = {
-  IDLE: { key: 'fairy_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'fairy_idle', start: 0, end: 3, rate: 8, repeat: -1 },
 };
 
 export const ADVENTURER_03_ANIMS = {
-  IDLE: { key: 'adventurer_03_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'adventurer_03_idle', start: 0, end: 3, rate: 8, repeat: -1 },
 };
 
 export const ELDER_ANIMS = {
-  IDLE: { key: 'elder_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'elder_idle', start: 0, end: 3, rate: 8, repeat: -1 },
 };
 
 export const VILLAGER_01_ANIMS = {
-  IDLE: { key: 'villager_01_idle', start: 0, end: 5, rate: 8, repeat: -1 },
+  IDLE: { key: 'villager_01_idle', start: 0, end: 4, rate: 8, repeat: -1 },
 };
 
 import { ASSETS } from '../utils/Constants';

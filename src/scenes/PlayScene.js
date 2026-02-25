@@ -17,9 +17,12 @@ import {
   ENTITY_TYPES,
 } from '../utils/Constants';
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
+import { NPC_DIALOGUES } from '../data/Dialogues';
 import { GAME_CONFIG } from '../config/GameConfig';
-import { openModal } from '../ui/stores/uiStore';
+import { openModal, closeModal, uiStore } from '../ui/stores/uiStore';
 import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
+
+// No module variable needed, we use window for HMR persistence
 
 /**
  * Main play scene where the gameplay takes place.
@@ -28,6 +31,9 @@ import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
  *
  * @extends Phaser.Scene
  */
+// Minimum distance to keep dialogue open
+const DIALOGUE_CLOSE_RANGE = 150;
+
 export default class PlayScene extends Phaser.Scene {
   /**
    * Creates the play scene instance.
@@ -72,6 +78,7 @@ export default class PlayScene extends Phaser.Scene {
       classType: NPC,
       runChildUpdate: true,
     });
+    this.currentInteractingNPC = null;
 
     // Persistent Attack Zone (reused) - smaller hitbox for precision
     this.attackZone = this.add.zone(0, 0, 25, 25);
@@ -150,6 +157,64 @@ export default class PlayScene extends Phaser.Scene {
     // NPC collisions
     this.physics.add.collider(this.npcs, this.platforms);
     this.physics.add.collider(this.npcs, this.manualCollisions);
+
+    // Check distance to current interacting NPC (runs every frame via event)
+    this.events.on('update', () => {
+      if (this.currentInteractingNPC) {
+        const dist = Phaser.Math.Distance.Between(
+          this.player.x,
+          this.player.y,
+          this.currentInteractingNPC.x,
+          this.currentInteractingNPC.y
+        );
+        if (dist > DIALOGUE_CLOSE_RANGE) {
+          closeModal();
+          this.currentInteractingNPC = null;
+        }
+      }
+    });
+
+    // Continuous attack hitbox overlap check (enabled/disabled by AttackState)
+    this.physics.overlap(this.attackZone, this.dummies, (zone, dummy) => {
+      const attackState = this.player.stateMachine.state;
+      if (
+        attackState &&
+        attackState.canDamage &&
+        attackState.canDamage(dummy)
+      ) {
+        dummy.takeDamage();
+      }
+    });
+
+    // Subscribe to UI state to play window sounds (ONCE, in create)
+    if (window.__UI_STORE_UNSUBSCRIBE__) {
+      window.__UI_STORE_UNSUBSCRIBE__();
+    }
+
+    let wasOpen = false;
+    window.__UI_STORE_UNSUBSCRIBE__ = uiStore.subscribe((state) => {
+      const isOpening = state.isOpen && !wasOpen;
+      const isClosing = !state.isOpen && wasOpen;
+      wasOpen = state.isOpen;
+
+      try {
+        if (isOpening) {
+          this.sound.play(AUDIO.SFX.WINDOW_OPEN, { loop: false });
+        } else if (isClosing) {
+          this.sound.play(AUDIO.SFX.WINDOW_CLOSE, { loop: false });
+        }
+      } catch (err) {
+        console.warn('[PlayScene] Audio playback failed:', err);
+      }
+    });
+
+    // Clean up subscription when scene shuts down
+    this.events.on('shutdown', () => {
+      if (window.__UI_STORE_UNSUBSCRIBE__) {
+        window.__UI_STORE_UNSUBSCRIBE__();
+        window.__UI_STORE_UNSUBSCRIBE__ = null;
+      }
+    });
   }
 
   /**
@@ -480,12 +545,24 @@ export default class PlayScene extends Phaser.Scene {
 
         const npc = this.npcs.get(obj.x, obj.y, textureKey, initialAnim);
         if (npc) {
-           // Apply custom properties
+           // Copy dimensions from Tiled object
+           if (obj.displayWidth && obj.displayHeight) {
+             npc.setDisplaySize(obj.displayWidth, obj.displayHeight);
+           }
+
+           // Apply custom movement properties
+           const canMove = getProp('canMove');
+           if (canMove !== null) npc.canMove = canMove === true || canMove === 'true';
+
            const moveRange = getProp('moveRange');
            if (moveRange !== null) npc.moveRange = parseFloat(moveRange);
            
            const moveSpeed = getProp('moveSpeed');
            if (moveSpeed !== null) npc.moveSpeed = parseFloat(moveSpeed);
+
+           // Apply dialogue properties
+           const dialogueId = getProp('dialogueId');
+           if (dialogueId) npc.dialogueId = dialogueId;
         }
         obj.destroy();
         return;
@@ -525,6 +602,12 @@ export default class PlayScene extends Phaser.Scene {
         const customId = obj.properties?.find((p) => p.name === 'id')?.value;
         if (customId) {
           obj.setData('id', customId);
+        }
+
+        // Store custom text if present (for signs, etc.)
+        const customText = obj.properties?.find((p) => p.name === 'text')?.value;
+        if (customText) {
+          obj.setData('text', customText);
         }
       }
     });
@@ -693,8 +776,27 @@ export default class PlayScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
       const type = interactable.getData('type');
       const id = interactable.getData('id');
-      this.triggerModal(type, id);
+      const text = interactable.getData('text');
+      this.triggerModal(type, id, text);
     }
+  }
+
+  /**
+   * Triggers a UI modal of the specified type.
+   *
+   * @param {string} type - Type of modal to display
+   * @param {string} [id] - Optional ID to pass as data (e.g., experience ID)
+   * @param {string} [text] - Optional text to pass as data (e.g., for signs)
+   * @private
+   */
+  triggerModal(type, id = null, text = null) {
+    let data = null;
+    if (id !== null || text !== null) {
+      data = {};
+      if (id !== null) data.id = id;
+      if (text !== null) data.text = text;
+    }
+    openModal(type, data);
   }
 
   /**
@@ -738,7 +840,7 @@ export default class PlayScene extends Phaser.Scene {
       }
     }
 
-    // Interaction Check
+    // Interaction Check (interactables)
     this.physics.overlap(
       this.player,
       this.interactables,
@@ -747,21 +849,15 @@ export default class PlayScene extends Phaser.Scene {
       this
     );
 
-    // Initial check for biome (in case player spawns inside one)
-    this.updateBiome();
+    // NPC Interaction Check
+    this.physics.overlap(
+      this.player,
+      this.npcs,
+      this.handleNPCInteraction,
+      null,
+      this
+    );
 
-    // Continuous attack hitbox overlap check (enabled/disabled by AttackState)
-    this.physics.overlap(this.attackZone, this.dummies, (zone, dummy) => {
-      // Check if this is an attack state and if this enemy hasn't been hit yet
-      const attackState = this.player.stateMachine.state;
-      if (
-        attackState &&
-        attackState.canDamage &&
-        attackState.canDamage(dummy)
-      ) {
-        dummy.takeDamage();
-      }
-    });
   }
 
   /**
@@ -888,14 +984,25 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   /**
-   * Triggers a UI modal of the specified type.
-   *
-   * @param {string} type - Type of modal to display
-   * @param {string} [id] - Optional ID to pass as data (e.g., experience ID)
+   * Handles NPC interaction when the player overlaps with an NPC.
+   * @param {Phaser.GameObjects.Sprite} player
+   * @param {NPC} npc
    * @private
    */
-  triggerModal(type, id = null) {
-    const data = id ? { id } : null;
-    openModal(type, data);
+  handleNPCInteraction(player, npc) {
+    if (!npc.dialogueId) return;
+    if (!Phaser.Input.Keyboard.JustDown(this.keys.e)) return;
+
+    const dialogueData = NPC_DIALOGUES[npc.dialogueId];
+    if (!dialogueData) {
+      console.warn(`[PlayScene] No dialogue found for id: ${npc.dialogueId}`);
+      return;
+    }
+
+    const { name, phrase } = npc.getNextPhrase(dialogueData);
+    openModal(INTERACTION_TYPES.NPC, { name, phrase });
+    this.currentInteractingNPC = npc;
   }
+
+
 }

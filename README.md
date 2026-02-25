@@ -285,29 +285,76 @@ El juego detecta el tipo de suelo bajo los pies del jugador para cambiar el soni
 
 ## 🤖 Sistema de NPCs (Non-Player Characters)
 
-El juego soporta NPCs con comportamientos básicos como patrullaje, integrados directamente desde Tiled.
+El juego soporta NPCs con comportamientos configurables directamente desde Tiled, incluyendo patrullaje opcional y sistema de diálogos interactivos.
 
 ### 🛠️ Configuración en Tiled
 
 Para añadir un NPC al mapa:
 
-1.  **Capa de Objetos**: Trabaja sobre la capa `Objects` (o cualquier capa de objetos procesada en `PlayScene`).
-2.  **Insertar Objeto**: Coloca un objeto (Tile Object o Rectángulo) en la posición deseada.
-3.  **Propiedades Personalizadas Obigatorias**:
-    -   **`entity`** (string): Debe ser **`npc`**. Esto identifica al objeto como un personaje no jugable.
+1.  **Capa de Objetos**: Trabaja sobre la capa `Objects`.
+2.  **Insertar Objeto**: Coloca un Tile Object en la posición deseada.
+3.  **Propiedades**: Añade las siguientes propiedades personalizadas.
 
-4.  **Propiedades Opcionales (Configuración)**:
-    -   **`texture`** (string): La clave del asset en Phaser (ej: `hg_fox`, `bird_npc`). *Por defecto: `hg_fox`*.
-    -   **`initialAnim`** (string): La animación que se reproduce al inicio (ej: `fox_idle`, `fox_run`). *Por defecto: `fox_idle`*.
-    -   **`moveRange`** (float): Distancia en píxeles que el NPC patrullará a izquierda y derecha desde su punto de origen. *Por defecto: `100`*.
-    -   **`moveSpeed`** (float): Velocidad de movimiento. *Por defecto: `50`*.
+#### Propiedades Básicas (Obligatorias)
 
-#### Ejemplo práctico (Zorro):
-Crea un objeto en Tiled y añádele:
+| Propiedad | Tipo | Valor | Descripción |
+| :--- | :--- | :--- | :--- |
+| **`entity`** | `string` | **`npc`** | Identifica al objeto como un NPC. |
+| **`texture`** | `string` | *(ej: `priestess`)* | La clave del sprite en Phaser. |
+| **`initialAnim`** | `string` | *(ej: `priestess_idle`)* | Animación inicial por defecto. |
+
+#### Comportamiento de Movimiento (Opcional)
+
+Por defecto, los NPCs son **estáticos**. Para que se muevan:
+
+| Propiedad | Tipo | Default | Descripción |
+| :--- | :--- | :--- | :--- |
+| **`canMove`** | `bool` | `false` | Si es `true`, el NPC patrullará. |
+| **`moveRange`** | `float` | `100` | Distancia de patrulla (px) desde el origen. |
+| **`moveSpeed`** | `float` | `50` | Velocidad de movimiento. |
+
+#### Sistema de Diálogo (Opcional)
+
+Para que el NPC interactúe con el jugador (tecla **E**):
+
+| Propiedad | Tipo | Ejemplo | Descripción |
+| :--- | :--- | :--- | :--- |
+| **`dialogueId`** | `string` | `priestess_1` | ID único definido en `src/data/Dialogues.js`. |
+
+---
+
+### 📝 Ejemplos de Configuración
+
+#### 1. Perro Guardián (Patrulla, sin diálogo)
+Un NPC que camina de un lado a otro.
+
 -   `entity`: `npc`
--   `texture`: `hg_fox`
--   `initialAnim`: `fox_idle`
+-   `texture`: `doggy_brown`
+-   `initialAnim`: `doggy_run`
+-   `canMove`: `true` (Bool)
 -   `moveRange`: `150`
 
-> **Nota**: El sistema destruye el objeto visual de Tiled y lo reemplaza por una instancia de la clase `NPC` de Phaser con físicas y lógica de patrulla.
+#### 2. Aldeano (Estático, con diálogo)
+Un NPC quieto que habla al pulsar E.
+
+-   `entity`: `npc`
+-   `texture`: `villager_01`
+-   `initialAnim`: `villager_01_idle`
+-   `dialogueId`: `villager_1`
+
+### 🗣️ Configurar Diálogos (`src/data/Dialogues.js`)
+
+Para añadir nuevos textos, edita el archivo `Dialogues.js`:
+
+```javascript
+export const NPC_DIALOGUES = {
+  villager_1: {
+    name: 'Aldeano',
+    phrases: [
+      '¡Bienvenido a nuestro pueblo!',
+      'Ten cuidado con los slimes del bosque.',
+    ],
+  },
+};
+```
 

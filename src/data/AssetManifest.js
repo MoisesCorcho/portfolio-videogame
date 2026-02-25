@@ -480,6 +480,16 @@ const STATIC_ASSETS = [
     key: AUDIO.SFX.ATTACK_SWORD,
     path: 'assets/audio/sfx/attack_sword.mp3',
   },
+  {
+    type: 'audio',
+    key: AUDIO.SFX.WINDOW_OPEN,
+    path: 'assets/audio/sfx/window_open.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.SFX.WINDOW_CLOSE,
+    path: 'assets/audio/sfx/window_close.mp3',
+  },
 
   // Ambience / Env
   { type: 'audio', key: AUDIO.ENV.WATERFALL, path: 'assets/audio/env/waterfall.mp3' },

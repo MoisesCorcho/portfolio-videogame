@@ -65,21 +65,38 @@
     .close-btn {
         position: absolute;
         top: 10px;
-        right: 15px; /* Moved slightly more left */
-        background: red;
-        color: white;
-        border: none;
-        font-family: inherit;
-        font-weight: bold;
+        right: 15px;
+        background: #8b0000; /* Dark red wood color */
+        color: #fdf6e3;
+        border: 3px solid #3b0000;
+        font-family: 'Press Start 2P', 'Courier New', monospace; /* Keep 8bit font */
+        font-size: 0.6rem;
         cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 4px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px; /* Slightly rounded corners for wood block */
         z-index: 20; /* Above scrollbar and content */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        box-shadow: 
+            2px 2px 0px rgba(0,0,0,0.8), /* Hard pixel shadow */
+            inset 2px 2px 0px rgba(255,255,255,0.2), /* Top highlight */
+            inset -2px -2px 0px rgba(0,0,0,0.4); /* Bottom shadow for depth */
+        text-shadow: 1px 1px 0px rgba(0,0,0,1);
+        transition: transform 0.1s steps(2), filter 0.1s;
     }
 
     .close-btn:hover {
-        background: darkred;
-        transform: scale(1.05);
+        filter: brightness(1.2);
+        transform: scale(1.1);
+    }
+
+    .close-btn:active {
+        transform: translateY(2px) translateX(2px);
+        box-shadow: 
+            0px 0px 0px rgba(0,0,0,0.8),
+            inset 2px 2px 0px rgba(0,0,0,0.4),
+            inset -2px -2px 0px rgba(255,255,255,0.2);
     }
 </style>
