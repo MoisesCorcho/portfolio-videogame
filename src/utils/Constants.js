@@ -78,6 +78,7 @@ export const ASSETS = {
   ELDER: 'elder',
   VILLAGER_01: 'villager_01',
   QUEST_MARKER: 'quest_marker',
+  PARTICLE_SNOW: 'particle_snow',
 };
 
 export const AUDIO = {
@@ -99,6 +100,11 @@ export const AUDIO = {
     WATERFALL: 'env_waterfall',
     FIRE_CRACKLE: 'env_fire_crackle',
     WIND: 'env_wind',
+    BLACKSMITH_HAMMER: 'env_blacksmith_hammer',
+    DOG_PANTING: 'env_dog_panting',
+    SWEEPING: 'env_sweeping',
+    BUBBLES: 'env_bubbles',
+    BOOK_FLYING: 'env_book_flying',
   },
 };
 
@@ -126,6 +132,7 @@ export const MAP_LAYERS = {
   COLLISIONS: 'Collisions',
   PLATFORMS: 'Platforms',
   BIOMES: 'Biomes',
+  INDOORS: 'Indoors',
 };
 
 export const OBJECT_NAMES = {

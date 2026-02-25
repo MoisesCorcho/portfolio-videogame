@@ -358,3 +358,39 @@ export const NPC_DIALOGUES = {
 };
 ```
 
+---
+
+## 📐 Guía de Propiedades Personalizadas en Tiled (Referencia Rápida)
+
+Para dar vida a los objetos en Tiled, puedes añadirles **Propiedades Personalizadas** (Custom Properties). El motor (`PlayScene.js`) leerá estas propiedades y les dará funcionalidad automáticamente.
+
+### Propiedades Generales (Cualquier Objeto)
+
+Puedes añadir estas propiedades a cualquier objeto en la capa `Objects`, `Decorations`, etc.
+
+| Propiedad | Tipo | Ejemplo de Valor | Descripción |
+| :--- | :--- | :--- | :--- |
+| **`interactionType`** | `string` | `sign`, `pc` | Convierte el objeto en interactuable. Define qué acción ocurre al pulsar 'E'. |
+| **`animation`** | `string` | `campfire_idle` | Reproduce automáticamente una animación de Phaser sobre el objeto. |
+| **`text`** | `string` | `¡Peligro!` | Texto a mostrar si el `interactionType` es un letrero o requiere lectura. |
+| **`id`** | `string` | `my_unique_id` | Identificador único opcional para lógicas específicas (ej. un cofre único). |
+
+### Propiedades de Audio Espacial (Nuevo)
+
+¡Ahora puedes añadir sonido a **cualquier objeto** (fuentes, fogatas, NPCs), o usar la capa invisible `Audio`!
+
+| Propiedad | Tipo | Ejemplo de Valor | Descripción |
+| :--- | :--- | :--- | :--- |
+| **`sound`** | `string` | `FIRE_CRACKLE` | La clave del sonido a reproducir en bucle (referencia a `AUDIO.ENV`). |
+| **`radius`** | `float` | `300.0` | El radio en píxeles donde el jugador puede escuchar el sonido. |
+| **`volume`** | `float` | `0.8` | El volumen máximo (0.0 a 1.0) cuando el jugador está al lado del objeto. |
+
+*(Nota: Si usas estas propiedades en un tile de cascada en la capa `Objects`, el sonido emanará de él automáticamente sin necesidad de separar el audio en otra capa).*
+
+### Propiedades de Configuración de Mundo
+
+| Capa / Uso | Propiedad | Tipo | Ejemplo de Valor | Descripción |
+| :--- | :--- | :--- | :--- | :--- |
+| **Zonas de Bioma** | `biome` | `string` | `winter` | Se aplica a rectángulos en la capa `Biomes`. Define qué música y fondo se usa. |
+| **Suelos (Tiles)** | `material` | `string` | `stone` | Se aplica a Tiles individuales en el Editor de Tilesets. Cambia el ruido de los pasos. |
+

@@ -495,6 +495,11 @@ const STATIC_ASSETS = [
   { type: 'audio', key: AUDIO.ENV.WATERFALL, path: 'assets/audio/env/waterfall.mp3' },
   { type: 'audio', key: AUDIO.ENV.FIRE_CRACKLE, path: 'assets/audio/env/fire_crackle.mp3' },
   { type: 'audio', key: AUDIO.ENV.WIND, path: 'assets/audio/env/wind.mp3' },
+  { type: 'audio', key: AUDIO.ENV.BLACKSMITH_HAMMER, path: 'assets/audio/env/blacksmith_hammer.mp3' },
+  { type: 'audio', key: AUDIO.ENV.DOG_PANTING, path: 'assets/audio/env/dog_panting.mp3' },
+  { type: 'audio', key: AUDIO.ENV.SWEEPING, path: 'assets/audio/env/sweeping.mp3' },
+  { type: 'audio', key: AUDIO.ENV.BUBBLES, path: 'assets/audio/env/bubbles.mp3' },
+  { type: 'audio', key: AUDIO.ENV.BOOK_FLYING, path: 'assets/audio/env/book_flying.mp3' },
   
   // NPC Assets
   {
@@ -568,6 +573,11 @@ const STATIC_ASSETS = [
     key: ASSETS.QUEST_MARKER,
     path: 'assets/sprites/GH/quest_marker.png',
     config: SPRITE_CONFIG.QUEST_MARKER,
+  },
+  {
+    type: 'image',
+    key: ASSETS.PARTICLE_SNOW,
+    path: 'assets/background/GH/Winter/snow.png',
   },
 ];
 

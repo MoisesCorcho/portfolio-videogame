@@ -143,6 +143,9 @@ export default class PlayScene extends Phaser.Scene {
         GAME_CONFIG.worldHeight
       );
     }
+    
+    // Create Snow Emitter (Initially stopped)
+    this.createSnowEmitter();
 
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.player, this.manualCollisions);
@@ -231,6 +234,29 @@ export default class PlayScene extends Phaser.Scene {
         window.__UI_STORE_UNSUBSCRIBE__ = null;
       }
     });
+  }
+
+  /**
+   * Initializes the particle emitter for the snow effect.
+   * Attached to the camera to ensure it covers the screen.
+   * @private
+   */
+  createSnowEmitter() {
+    this.snowEmitter = this.add.particles(0, 0, ASSETS.PARTICLE_SNOW, {
+      x: { min: 0, max: this.scale.width / GAME_CONFIG.zoom + 100 },
+      y: -50,
+      lifespan: 3000,
+      speedY: { min: 80, max: 150 },
+      speedX: { min: -30, max: 30 },
+      scale: { min: 0.2, max: 0.7 },
+      alpha: { start: 0.6, end: 0 },
+      quantity: 1,
+      frequency: 50,
+      emitting: false,
+    });
+    // Lock emitter to camera
+    this.snowEmitter.setScrollFactor(0);
+    this.snowEmitter.setDepth(100); // Ensures it renders above most elements
   }
 
   /**
@@ -453,6 +479,8 @@ export default class PlayScene extends Phaser.Scene {
           this.processOneWayPlatforms(layerData.name);
         } else if (layerData.name === MAP_LAYERS.BIOMES) {
           this.processBiomeLayer(layerData.name);
+        } else if (layerData.name === MAP_LAYERS.INDOORS) {
+          this.processIndoorZones(layerData.name);
         } else if (layerData.name === 'Audio') {
           this.processAudioLayer(layerData.name);
         } else {
@@ -530,7 +558,29 @@ export default class PlayScene extends Phaser.Scene {
         obj.setVisible(false);
       }
 
-      // 1. Handle Special Entities (like Dummy)
+      // 1. Handle Spatial Audio FIRST (so it applies to NPCs/Dummies before they return)
+      const soundKey = getProp('sound');
+      if (soundKey) {
+        let finalKey = soundKey;
+        if (AUDIO.ENV[soundKey.toUpperCase()]) {
+          finalKey = AUDIO.ENV[soundKey.toUpperCase()];
+        }
+        const radius = parseFloat(getProp('radius') ?? 300);
+        const maxVolume = parseFloat(getProp('volume') ?? 0.5);
+
+        // Optional custom ID for the sound, else use obj.id
+        const objId = obj.id || Phaser.Math.Between(10000, 99999);
+        
+        this.audioManager.addSpatialSound(
+          `spatial_${objId}`,
+          finalKey,
+          { x: obj.x, y: obj.y },
+          radius,
+          maxVolume
+        );
+      }
+
+      // 2. Handle Special Entities (like Dummy)
       if (entityType === ENTITY_TYPES.DUMMY) {
         // Spawn a real Dummy entity at this location
         const dummy = this.dummies.get(obj.x, obj.y, ASSETS.DUMMY);
@@ -609,7 +659,7 @@ export default class PlayScene extends Phaser.Scene {
         }
       }
 
-      // 3. Handle Interactions (Physics)
+      // 4. Handle Interactions (Physics)
       if (interactionType) {
         this.interactables.add(obj);
         obj.setData('type', interactionType);
@@ -835,6 +885,7 @@ export default class PlayScene extends Phaser.Scene {
 
     // Check for biome zone changes
     this.updateBiome();
+    this.updateWeatherEffects();
 
     // One-way platform dropdown logic
     if (
@@ -997,6 +1048,58 @@ export default class PlayScene extends Phaser.Scene {
       
       const volume = BIOME_VOLUMES[currentBiomeUpper] ?? 0.3;
       this.audioManager.playMusic(audioConst, 1000, volume);
+    }
+  }
+
+  /**
+   * Processes the Indoors object layer from Tiled.
+   * Parses rectangles defining areas where weather (like snow) should be hidden.
+   * @private
+   */
+  processIndoorZones(layerName) {
+    const objectLayer = this.map.getObjectLayer(layerName);
+    this.indoorZones = [];
+    if (!objectLayer || !objectLayer.objects) return;
+
+    objectLayer.objects.forEach((obj) => {
+      this.indoorZones.push({
+        x: obj.x,
+        y: obj.y,
+        width: obj.width,
+        height: obj.height,
+      });
+    });
+  }
+
+  /**
+   * Updates weather effects like snow based on current biome and indoor status.
+   * @private
+   */
+  updateWeatherEffects() {
+    if (!this.snowEmitter) return;
+
+    let isIndoors = false;
+    if (this.indoorZones && this.indoorZones.length > 0) {
+      isIndoors = this.indoorZones.some((zone) => {
+        const px = this.player.x;
+        const py = this.player.y;
+        return (
+          px >= zone.x &&
+          px <= zone.x + zone.width &&
+          py >= zone.y &&
+          py <= zone.y + zone.height
+        );
+      });
+    }
+
+    if (this.currentBiome === 'winter' && !isIndoors) {
+      if (!this.snowEmitter.emitting) {
+        this.snowEmitter.start();
+      }
+    } else {
+      if (this.snowEmitter.emitting) {
+        this.snowEmitter.stop();
+      }
     }
   }
 

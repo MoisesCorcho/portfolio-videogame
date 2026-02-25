@@ -101,15 +101,16 @@ export default class AudioManager {
    * @param {number} maxVolume - Maximum volume at the source.
    */
   addSpatialSound(id, key, sourceObj, radius = 300, maxVolume = 0.5) {
-    if (!this.scene.sound.get(key)) {
-        // Create the sound if it doesn't exist instance
-         const sound = this.scene.sound.add(key, {
-            volume: 0,
-            loop: true,
-        });
-        sound.play();
-        this.spatialSounds.set(id, { sound, sourceObj, radius, maxVolume });
-    }
+    // Avoid registering the exact same object twice
+    if (this.spatialSounds.has(id)) return;
+
+    // Create a new sound instance for this specific object
+    const sound = this.scene.sound.add(key, {
+        volume: 0,
+        loop: true,
+    });
+    sound.play();
+    this.spatialSounds.set(id, { sound, sourceObj, radius, maxVolume });
   }
 
   /**
