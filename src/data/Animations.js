@@ -220,8 +220,20 @@ export const VILLAGER_01_ANIMS = {
 };
 
 export const QUEST_MARKER_ANIMS = {
-  QUESTION: { key: 'quest_marker_question', start: 0, end: 15, rate: 8, repeat: -1 },
-  EXCLAMATION: { key: 'quest_marker_exclamation', start: 16, end: 31, rate: 8, repeat: -1 },
+  QUESTION: {
+    key: 'quest_marker_question',
+    start: 0,
+    end: 15,
+    rate: 8,
+    repeat: -1,
+  },
+  EXCLAMATION: {
+    key: 'quest_marker_exclamation',
+    start: 16,
+    end: 31,
+    rate: 8,
+    repeat: -1,
+  },
 };
 
 import { ASSETS } from '../utils/Constants';

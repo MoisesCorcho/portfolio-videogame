@@ -472,13 +472,33 @@ const STATIC_ASSETS = [
 
   // Audio Assets
   // Music
-  { type: 'audio', key: AUDIO.MUSIC.NORMAL, path: 'assets/audio/music/bgm_normal.mp3' },
-  { type: 'audio', key: AUDIO.MUSIC.AUTUMN, path: 'assets/audio/music/bgm_autumn.mp3' },
-  { type: 'audio', key: AUDIO.MUSIC.WINTER, path: 'assets/audio/music/bgm_winter.mp3' },
+  {
+    type: 'audio',
+    key: AUDIO.MUSIC.NORMAL,
+    path: 'assets/audio/music/bgm_normal.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.MUSIC.AUTUMN,
+    path: 'assets/audio/music/bgm_autumn.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.MUSIC.WINTER,
+    path: 'assets/audio/music/bgm_winter.mp3',
+  },
 
   // SFX
-  { type: 'audio', key: AUDIO.SFX.STEP_GRASS, path: 'assets/audio/sfx/step_grass.mp3' },
-  { type: 'audio', key: AUDIO.SFX.STEP_STONE, path: 'assets/audio/sfx/step_stone.mp3' },
+  {
+    type: 'audio',
+    key: AUDIO.SFX.STEP_GRASS,
+    path: 'assets/audio/sfx/step_grass.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.SFX.STEP_STONE,
+    path: 'assets/audio/sfx/step_stone.mp3',
+  },
   { type: 'audio', key: AUDIO.SFX.JUMP, path: 'assets/audio/sfx/jump.mp3' },
   { type: 'audio', key: AUDIO.SFX.LAND, path: 'assets/audio/sfx/land.mp3' },
   {
@@ -498,18 +518,58 @@ const STATIC_ASSETS = [
   },
 
   // Ambience / Env
-  { type: 'audio', key: AUDIO.ENV.WATERFALL, path: 'assets/audio/env/waterfall.mp3' },
-  { type: 'audio', key: AUDIO.ENV.FIRE_CRACKLE, path: 'assets/audio/env/fire_crackle.mp3' },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.WATERFALL,
+    path: 'assets/audio/env/waterfall.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.FIRE_CRACKLE,
+    path: 'assets/audio/env/fire_crackle.mp3',
+  },
   { type: 'audio', key: AUDIO.ENV.WIND, path: 'assets/audio/env/wind.mp3' },
-  { type: 'audio', key: AUDIO.ENV.BLACKSMITH_HAMMER, path: 'assets/audio/env/blacksmith_hammer.mp3' },
-  { type: 'audio', key: AUDIO.ENV.DOG_PANTING, path: 'assets/audio/env/dog_panting.mp3' },
-  { type: 'audio', key: AUDIO.ENV.SWEEPING, path: 'assets/audio/env/sweeping.mp3' },
-  { type: 'audio', key: AUDIO.ENV.BUBBLES, path: 'assets/audio/env/bubbles.mp3' },
-  { type: 'audio', key: AUDIO.ENV.BOOK_FLYING, path: 'assets/audio/env/book_flying.mp3' },
-  { type: 'audio', key: AUDIO.ENV.SAWMILL, path: 'assets/audio/env/sawmill.mp3' },
-  { type: 'audio', key: AUDIO.ENV.LEVITATING, path: 'assets/audio/env/levitating.mp3' },
-  { type: 'audio', key: AUDIO.ENV.MAGIC_SPARKLES, path: 'assets/audio/env/magic_sparkle.mp3' },
-  
+  {
+    type: 'audio',
+    key: AUDIO.ENV.BLACKSMITH_HAMMER,
+    path: 'assets/audio/env/blacksmith_hammer.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.DOG_PANTING,
+    path: 'assets/audio/env/dog_panting.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.SWEEPING,
+    path: 'assets/audio/env/sweeping.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.BUBBLES,
+    path: 'assets/audio/env/bubbles.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.BOOK_FLYING,
+    path: 'assets/audio/env/book_flying.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.SAWMILL,
+    path: 'assets/audio/env/sawmill.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.LEVITATING,
+    path: 'assets/audio/env/levitating.mp3',
+  },
+  {
+    type: 'audio',
+    key: AUDIO.ENV.MAGIC_SPARKLES,
+    path: 'assets/audio/env/magic_sparkle.mp3',
+  },
+
   // NPC Assets
   {
     type: 'spritesheet',
@@ -589,7 +649,6 @@ const STATIC_ASSETS = [
     path: 'assets/background/GH/Winter/snow.png',
   },
 ];
-
 
 /**
  * Complete asset manifest combining static and dynamic assets.

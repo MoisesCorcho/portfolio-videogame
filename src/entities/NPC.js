@@ -18,7 +18,7 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
 
     // Default Physics config
-    this.body.setSize(32, 32); 
+    this.body.setSize(32, 32);
     this.body.setOffset(0, 0);
 
     // Play initial animation if provided
@@ -35,8 +35,8 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
     this.canMove = false; // <-- Default: stationary
 
     // Dialogue properties
-    this.dialogueId = null;       // Set from Tiled custom property
-    this.phraseIndex = 0;         // Tracks which phrase to show next
+    this.dialogueId = null; // Set from Tiled custom property
+    this.phraseIndex = 0; // Tracks which phrase to show next
 
     // Internal state
     this.moveTimer = 0;
@@ -78,7 +78,11 @@ export default class NPC extends Phaser.Physics.Arcade.Sprite {
    * @returns {{ name: string, phrase: string }} The NPC name and current phrase.
    */
   getNextPhrase(dialogueData) {
-    if (!dialogueData || !dialogueData.phrases || dialogueData.phrases.length === 0) {
+    if (
+      !dialogueData ||
+      !dialogueData.phrases ||
+      dialogueData.phrases.length === 0
+    ) {
       return { name: 'NPC', phrase: '...' };
     }
 

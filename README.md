@@ -181,9 +181,11 @@ El juego soporta plataformas que permiten saltar a través de ellas desde abajo 
 Este proyecto utiliza el plugin **[phaser-animated-tiles](https://www.npmjs.com/package/phaser-animated-tiles)** para habilitar la reproducción de animaciones definidas en los tilesets de Tiled dentro de Phaser 3.
 
 #### ❓ ¿Por qué es necesario?
+
 Phaser 3, por defecto, **NO reproduce animaciones de tiles** que se encuentren en las "Capas de Patrones" (Tile Layers) de Tiled. Solo renderiza el primer frame del tile de forma estática. Este plugin llena ese vacío, permitiendo que elementos como agua, fuego, o decoraciones animadas funcionen automáticamente sin necesidad de convertirlos en Sprites (GameObjects).
 
 #### 🛠️ Implementación en el Proyecto
+
 El plugin se ha instalado vía npm y se inicializa en `src/scenes/PlayScene.js`:
 
 1.  **Importación**: Se importa directamente desde `node_modules`.
@@ -191,6 +193,7 @@ El plugin se ha instalado vía npm y se inicializa en `src/scenes/PlayScene.js`:
 3.  **Inicialización**: Se ejecuta `this.sys.animatedTiles.init(this.map)` en el método `create()` una vez que el mapa ha sido generado.
 
 #### 🎨 Uso en Tiled
+
 Para que un tile se anime en el juego:
 
 1.  **Editor de Tilesets**:
@@ -236,18 +239,23 @@ Todos los archivos de audio se encuentran en `public/assets/audio/` y se cargan 
 ### 🧠 Arquitectura del Código
 
 #### 1. `src/utils/AudioManager.js` (El Núcleo)
+
 Un Singleton que centraliza todo el control de audio.
+
 - **Cross-fading de Música**: Transiciones suaves automáticas entre pistas de biomas. Si el jugador corre de un bioma a otro, la música antigua se desvanece mientras entra la nueva.
 - **Audio Espacial**: Calcula la distancia entre el jugador y las fuentes de sonido (como una fogata) en cada frame. Ajusta el volumen dinámicamente: más fuerte cerca, silencioso lejos.
 - **Control Global**: Métodos para pausar, reanudar y ajustar el volumen maestro.
 
 #### 2. Integración en `PlayScene.js`
+
 - **Inicialización**: Crea la instancia de `AudioManager` al inicio.
 - **Update Loop**: Llama a `audioManager.updateSpatialSounds(player)` en cada frame para recalcular volúmenes espaciales.
 - **Detección de Biomas**: Monitorea la posición del jugador para disparar cambios de música según la zona del mapa.
 
 #### 3. Estados del Jugador (`src/player/states/`)
+
 El audio está desacoplado de la lógica visual y se dispara por eventos de estado:
+
 - **`JumpState.js`**: Reproduce `sfx_jump` al iniciar el salto.
 - **`LandingState.js`**: Reproduce `sfx_land` al tocar el suelo.
 - **`AttackState.js`**: Reproduce `sfx_attack` sincronizado con la animación.
@@ -258,28 +266,32 @@ El audio está desacoplado de la lógica visual y se dispara por eventos de esta
 Para que el sistema funcione, el mapa debe configurarse correctamente en Tiled.
 
 #### A. Música de Biomas
+
 1.  **Capa de Objetos**: Asegúrate de tener una capa llamada `Biomes`.
 2.  **Zonas**: Dibuja rectángulos cubriendo cada área.
 3.  **Propiedad `biome`**: Asigna el valor `normal`, `autumn` o `winter`. El `AudioManager` sabrá qué pista tocar.
 
 #### B. Audio Espacial (Cascadas, Fogatas)
+
 1.  **Capa `Audio`**: Crea una Capa de Objetos llamada **exactamente** `Audio`.
 2.  **Objetos de Sonido**: Coloca un punto o rectángulo en la fuente del sonido.
 3.  **Propiedades Personalizadas**:
-    -   `sound` (string): Clave del sonido (ej: `WATERFALL` o `FIRE_CRACKLE`).
-    -   `radius` (float): Distancia en píxeles donde se empieza a escuchar (ej: `400.0`).
-    -   `volume` (float): Volumen máximo al estar encima (0.0 a 1.0).
-    -   `loop` (bool): `true` (por defecto).
+    - `sound` (string): Clave del sonido (ej: `WATERFALL` o `FIRE_CRACKLE`).
+    - `radius` (float): Distancia en píxeles donde se empieza a escuchar (ej: `400.0`).
+    - `volume` (float): Volumen máximo al estar encima (0.0 a 1.0).
+    - `loop` (bool): `true` (por defecto).
 
 > **Nota Técnica**: El código procesa esta capa `Audio` solo para extraer datos. **No crea sprites visuals**, por lo que no verás cajas verdes feas en el juego.
 
 #### C. Pasos Dinámicos (Suelo)
+
 El juego detecta el tipo de suelo bajo los pies del jugador para cambiar el sonido de los pasos.
+
 1.  **Editor de Tilesets**: En Tiled, edita tu tileset de suelos.
 2.  **Selección**: Selecciona los tiles de piedra, madera, etc.
 3.  **Propiedad `material`**: Añade una propiedad personalizada llamada `material` (string).
-    -   Valor `stone` -> Reproduce `step_stone`.
-    -   Sin propiedad -> Reproduce `step_grass` (por defecto).
+    - Valor `stone` -> Reproduce `step_stone`.
+    - Sin propiedad -> Reproduce `step_grass` (por defecto).
 
 ---
 
@@ -297,28 +309,28 @@ Para añadir un NPC al mapa:
 
 #### Propiedades Básicas (Obligatorias)
 
-| Propiedad | Tipo | Valor | Descripción |
-| :--- | :--- | :--- | :--- |
-| **`entity`** | `string` | **`npc`** | Identifica al objeto como un NPC. |
-| **`texture`** | `string` | *(ej: `priestess`)* | La clave del sprite en Phaser. |
-| **`initialAnim`** | `string` | *(ej: `priestess_idle`)* | Animación inicial por defecto. |
+| Propiedad         | Tipo     | Valor                    | Descripción                       |
+| :---------------- | :------- | :----------------------- | :-------------------------------- |
+| **`entity`**      | `string` | **`npc`**                | Identifica al objeto como un NPC. |
+| **`texture`**     | `string` | _(ej: `priestess`)_      | La clave del sprite en Phaser.    |
+| **`initialAnim`** | `string` | _(ej: `priestess_idle`)_ | Animación inicial por defecto.    |
 
 #### Comportamiento de Movimiento (Opcional)
 
 Por defecto, los NPCs son **estáticos**. Para que se muevan:
 
-| Propiedad | Tipo | Default | Descripción |
-| :--- | :--- | :--- | :--- |
-| **`canMove`** | `bool` | `false` | Si es `true`, el NPC patrullará. |
-| **`moveRange`** | `float` | `100` | Distancia de patrulla (px) desde el origen. |
-| **`moveSpeed`** | `float` | `50` | Velocidad de movimiento. |
+| Propiedad       | Tipo    | Default | Descripción                                 |
+| :-------------- | :------ | :------ | :------------------------------------------ |
+| **`canMove`**   | `bool`  | `false` | Si es `true`, el NPC patrullará.            |
+| **`moveRange`** | `float` | `100`   | Distancia de patrulla (px) desde el origen. |
+| **`moveSpeed`** | `float` | `50`    | Velocidad de movimiento.                    |
 
 #### Sistema de Diálogo (Opcional)
 
 Para que el NPC interactúe con el jugador (tecla **E**):
 
-| Propiedad | Tipo | Ejemplo | Descripción |
-| :--- | :--- | :--- | :--- |
+| Propiedad        | Tipo     | Ejemplo       | Descripción                                   |
+| :--------------- | :------- | :------------ | :-------------------------------------------- |
 | **`dialogueId`** | `string` | `priestess_1` | ID único definido en `src/data/Dialogues.js`. |
 
 ---
@@ -326,21 +338,23 @@ Para que el NPC interactúe con el jugador (tecla **E**):
 ### 📝 Ejemplos de Configuración
 
 #### 1. Perro Guardián (Patrulla, sin diálogo)
+
 Un NPC que camina de un lado a otro.
 
--   `entity`: `npc`
--   `texture`: `doggy_brown`
--   `initialAnim`: `doggy_run`
--   `canMove`: `true` (Bool)
--   `moveRange`: `150`
+- `entity`: `npc`
+- `texture`: `doggy_brown`
+- `initialAnim`: `doggy_run`
+- `canMove`: `true` (Bool)
+- `moveRange`: `150`
 
 #### 2. Aldeano (Estático, con diálogo)
+
 Un NPC quieto que habla al pulsar E.
 
--   `entity`: `npc`
--   `texture`: `villager_01`
--   `initialAnim`: `villager_01_idle`
--   `dialogueId`: `villager_1`
+- `entity`: `npc`
+- `texture`: `villager_01`
+- `initialAnim`: `villager_01_idle`
+- `dialogueId`: `villager_1`
 
 ### 🗣️ Configurar Diálogos (`src/data/Dialogues.js`)
 
@@ -368,29 +382,28 @@ Para dar vida a los objetos en Tiled, puedes añadirles **Propiedades Personaliz
 
 Puedes añadir estas propiedades a cualquier objeto en la capa `Objects`, `Decorations`, etc.
 
-| Propiedad | Tipo | Ejemplo de Valor | Descripción |
-| :--- | :--- | :--- | :--- |
-| **`interactionType`** | `string` | `sign`, `pc` | Convierte el objeto en interactuable. Define qué acción ocurre al pulsar 'E'. |
-| **`animation`** | `string` | `campfire_idle` | Reproduce automáticamente una animación de Phaser sobre el objeto. |
-| **`text`** | `string` | `¡Peligro!` | Texto a mostrar si el `interactionType` es un letrero o requiere lectura. |
-| **`id`** | `string` | `my_unique_id` | Identificador único opcional para lógicas específicas (ej. un cofre único). |
+| Propiedad             | Tipo     | Ejemplo de Valor | Descripción                                                                   |
+| :-------------------- | :------- | :--------------- | :---------------------------------------------------------------------------- |
+| **`interactionType`** | `string` | `sign`, `pc`     | Convierte el objeto en interactuable. Define qué acción ocurre al pulsar 'E'. |
+| **`animation`**       | `string` | `campfire_idle`  | Reproduce automáticamente una animación de Phaser sobre el objeto.            |
+| **`text`**            | `string` | `¡Peligro!`      | Texto a mostrar si el `interactionType` es un letrero o requiere lectura.     |
+| **`id`**              | `string` | `my_unique_id`   | Identificador único opcional para lógicas específicas (ej. un cofre único).   |
 
 ### Propiedades de Audio Espacial (Nuevo)
 
 ¡Ahora puedes añadir sonido a **cualquier objeto** (fuentes, fogatas, NPCs), o usar la capa invisible `Audio`!
 
-| Propiedad | Tipo | Ejemplo de Valor | Descripción |
-| :--- | :--- | :--- | :--- |
-| **`sound`** | `string` | `FIRE_CRACKLE` | La clave del sonido a reproducir en bucle (referencia a `AUDIO.ENV`). |
-| **`radius`** | `float` | `300.0` | El radio en píxeles donde el jugador puede escuchar el sonido. |
-| **`volume`** | `float` | `0.8` | El volumen máximo (0.0 a 1.0) cuando el jugador está al lado del objeto. |
+| Propiedad    | Tipo     | Ejemplo de Valor | Descripción                                                              |
+| :----------- | :------- | :--------------- | :----------------------------------------------------------------------- |
+| **`sound`**  | `string` | `FIRE_CRACKLE`   | La clave del sonido a reproducir en bucle (referencia a `AUDIO.ENV`).    |
+| **`radius`** | `float`  | `300.0`          | El radio en píxeles donde el jugador puede escuchar el sonido.           |
+| **`volume`** | `float`  | `0.8`            | El volumen máximo (0.0 a 1.0) cuando el jugador está al lado del objeto. |
 
-*(Nota: Si usas estas propiedades en un tile de cascada en la capa `Objects`, el sonido emanará de él automáticamente sin necesidad de separar el audio en otra capa).*
+_(Nota: Si usas estas propiedades en un tile de cascada en la capa `Objects`, el sonido emanará de él automáticamente sin necesidad de separar el audio en otra capa)._
 
 ### Propiedades de Configuración de Mundo
 
-| Capa / Uso | Propiedad | Tipo | Ejemplo de Valor | Descripción |
-| :--- | :--- | :--- | :--- | :--- |
-| **Zonas de Bioma** | `biome` | `string` | `winter` | Se aplica a rectángulos en la capa `Biomes`. Define qué música y fondo se usa. |
-| **Suelos (Tiles)** | `material` | `string` | `stone` | Se aplica a Tiles individuales en el Editor de Tilesets. Cambia el ruido de los pasos. |
-
+| Capa / Uso         | Propiedad  | Tipo     | Ejemplo de Valor | Descripción                                                                            |
+| :----------------- | :--------- | :------- | :--------------- | :------------------------------------------------------------------------------------- |
+| **Zonas de Bioma** | `biome`    | `string` | `winter`         | Se aplica a rectángulos en la capa `Biomes`. Define qué música y fondo se usa.         |
+| **Suelos (Tiles)** | `material` | `string` | `stone`          | Se aplica a Tiles individuales en el Editor de Tilesets. Cambia el ruido de los pasos. |

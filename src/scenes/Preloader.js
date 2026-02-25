@@ -54,7 +54,6 @@ export default class Preloader extends Phaser.Scene {
       } else {
         this.load.image(asset.key, asset.path);
       }
-
     });
   }
 

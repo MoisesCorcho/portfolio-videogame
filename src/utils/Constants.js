@@ -112,7 +112,6 @@ export const AUDIO = {
   },
 };
 
-
 export const INTERACTION_TYPES = {
   PROFILE: 'profile',
   EXPERIENCE: 'experience',

@@ -95,7 +95,7 @@ export default class PlayScene extends Phaser.Scene {
     this.createParallaxBackground(width, height, visibleWidth, visibleHeight);
     this.createEnvironmentAnimations();
     this.createLevel();
-    
+
     // Initialize animated tiles plugin
     if (this.sys.animatedTiles) {
       this.sys.animatedTiles.init(this.map);
@@ -143,7 +143,7 @@ export default class PlayScene extends Phaser.Scene {
         GAME_CONFIG.worldHeight
       );
     }
-    
+
     // Create Snow Emitter (Initially stopped)
     this.createSnowEmitter();
 
@@ -570,7 +570,7 @@ export default class PlayScene extends Phaser.Scene {
 
         // Optional custom ID for the sound, else use obj.id
         const objId = obj.id || Phaser.Math.Between(10000, 99999);
-        
+
         this.audioManager.addSpatialSound(
           `spatial_${objId}`,
           finalKey,
@@ -600,35 +600,38 @@ export default class PlayScene extends Phaser.Scene {
 
         // Fallback or derive from animation
         if (!textureKey) {
-           if (initialAnim) {
-             // If initialAnim is provided, we can rely on it to set the correct texture/frame.
-             // No need to warn; the animation will handle the visual representation.
-           } else {
-             console.warn(`[PlayScene] NPC at ${obj.x},${obj.y} missing 'texture' property and no 'initialAnim'. Using tile texture: ${obj.texture ? obj.texture.key : 'unknown'}`);
-             if (obj.texture) textureKey = obj.texture.key;
-           }
+          if (initialAnim) {
+            // If initialAnim is provided, we can rely on it to set the correct texture/frame.
+            // No need to warn; the animation will handle the visual representation.
+          } else {
+            console.warn(
+              `[PlayScene] NPC at ${obj.x},${obj.y} missing 'texture' property and no 'initialAnim'. Using tile texture: ${obj.texture ? obj.texture.key : 'unknown'}`
+            );
+            if (obj.texture) textureKey = obj.texture.key;
+          }
         }
 
         const npc = this.npcs.get(obj.x, obj.y, textureKey, initialAnim);
         if (npc) {
-           // Copy dimensions from Tiled object
-           if (obj.displayWidth && obj.displayHeight) {
-             npc.setDisplaySize(obj.displayWidth, obj.displayHeight);
-           }
+          // Copy dimensions from Tiled object
+          if (obj.displayWidth && obj.displayHeight) {
+            npc.setDisplaySize(obj.displayWidth, obj.displayHeight);
+          }
 
-           // Apply custom movement properties
-           const canMove = getProp('canMove');
-           if (canMove !== null) npc.canMove = canMove === true || canMove === 'true';
+          // Apply custom movement properties
+          const canMove = getProp('canMove');
+          if (canMove !== null)
+            npc.canMove = canMove === true || canMove === 'true';
 
-           const moveRange = getProp('moveRange');
-           if (moveRange !== null) npc.moveRange = parseFloat(moveRange);
-           
-           const moveSpeed = getProp('moveSpeed');
-           if (moveSpeed !== null) npc.moveSpeed = parseFloat(moveSpeed);
+          const moveRange = getProp('moveRange');
+          if (moveRange !== null) npc.moveRange = parseFloat(moveRange);
 
-           // Apply dialogue properties
-           const dialogueId = getProp('dialogueId');
-           if (dialogueId) npc.dialogueId = dialogueId;
+          const moveSpeed = getProp('moveSpeed');
+          if (moveSpeed !== null) npc.moveSpeed = parseFloat(moveSpeed);
+
+          // Apply dialogue properties
+          const dialogueId = getProp('dialogueId');
+          if (dialogueId) npc.dialogueId = dialogueId;
         }
         obj.destroy();
         return;
@@ -671,13 +674,14 @@ export default class PlayScene extends Phaser.Scene {
         }
 
         // Store custom text if present (for signs, etc.)
-        const customText = obj.properties?.find((p) => p.name === 'text')?.value;
+        const customText = obj.properties?.find(
+          (p) => p.name === 'text'
+        )?.value;
         if (customText) {
           obj.setData('text', customText);
         }
       }
     });
-
   }
 
   /**
@@ -692,23 +696,26 @@ export default class PlayScene extends Phaser.Scene {
       audioLayer.objects.forEach((obj) => {
         // Custom properties from Tiled: sound (string), loop (bool), radius (float), volume (float)
         const soundKey = obj.properties?.find((p) => p.name === 'sound')?.value;
-        const loop = obj.properties?.find((p) => p.name === 'loop')?.value ?? true;
-        const radius = obj.properties?.find((p) => p.name === 'radius')?.value ?? 300;
-        const maxVolume = obj.properties?.find((p) => p.name === 'volume')?.value ?? 0.5;
+        const loop =
+          obj.properties?.find((p) => p.name === 'loop')?.value ?? true;
+        const radius =
+          obj.properties?.find((p) => p.name === 'radius')?.value ?? 300;
+        const maxVolume =
+          obj.properties?.find((p) => p.name === 'volume')?.value ?? 0.5;
 
         if (soundKey) {
-           let finalKey = soundKey;
-           if (AUDIO.ENV[soundKey.toUpperCase()]) {
-             finalKey = AUDIO.ENV[soundKey.toUpperCase()];
-           }
+          let finalKey = soundKey;
+          if (AUDIO.ENV[soundKey.toUpperCase()]) {
+            finalKey = AUDIO.ENV[soundKey.toUpperCase()];
+          }
 
-           this.audioManager.addSpatialSound(
-             `spatial_${obj.id}`, 
-             finalKey, 
-             { x: obj.x, y: obj.y },
-             radius,
-             maxVolume
-           );
+          this.audioManager.addSpatialSound(
+            `spatial_${obj.id}`,
+            finalKey,
+            { x: obj.x, y: obj.y },
+            radius,
+            maxVolume
+          );
         }
       });
     }
@@ -925,7 +932,6 @@ export default class PlayScene extends Phaser.Scene {
       null,
       this
     );
-
   }
 
   /**
@@ -1034,10 +1040,10 @@ export default class PlayScene extends Phaser.Scene {
 
     // Play new biome music
     const currentBiomeUpper = currentZone.biomeName.toUpperCase();
-    
+
     // Check if the key exists in our AUDIO constants, otherwise don't play
     const audioConst = AUDIO.MUSIC[currentBiomeUpper];
-    
+
     if (audioConst) {
       // Define specific volumes for biomes (default to 0.5 if not set)
       const BIOME_VOLUMES = {
@@ -1045,7 +1051,7 @@ export default class PlayScene extends Phaser.Scene {
         AUTUMN: 0.7,
         WINTER: 0.3,
       };
-      
+
       const volume = BIOME_VOLUMES[currentBiomeUpper] ?? 0.3;
       this.audioManager.playMusic(audioConst, 1000, volume);
     }
@@ -1123,6 +1129,4 @@ export default class PlayScene extends Phaser.Scene {
     openModal(INTERACTION_TYPES.NPC, { name, phrase });
     this.currentInteractingNPC = npc;
   }
-
-
 }

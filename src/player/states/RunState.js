@@ -13,11 +13,12 @@ export default class RunState extends State {
 
     // Footsteps
     this.stepTimer += this.player.scene.game.loop.delta;
-    if (this.stepTimer > 350) { // ~3 steps per second
+    if (this.stepTimer > 350) {
+      // ~3 steps per second
       // Detect material underfoot
       const playerX = this.player.x;
       const playerY = this.player.y + this.player.height / 2 + 2; // Check just below feet
-      
+
       let sfxKey = AUDIO.SFX.STEP_GRASS; // Default
       let volume = 0.2;
 
@@ -26,8 +27,8 @@ export default class RunState extends State {
       if (groundLayer) {
         const tile = groundLayer.getTileAtWorldXY(playerX, playerY);
         if (tile && tile.properties && tile.properties.material === 'stone') {
-             sfxKey = AUDIO.SFX.STEP_STONE;
-             volume = 0.3; // Stone steps often sound clearer
+          sfxKey = AUDIO.SFX.STEP_STONE;
+          volume = 0.3; // Stone steps often sound clearer
         }
       }
 

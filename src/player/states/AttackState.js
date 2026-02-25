@@ -5,7 +5,9 @@ import { AUDIO } from '../../utils/Constants';
 export default class AttackState extends State {
   enter() {
     this.player.setVelocityX(0); // Stop moving
-    this.player.scene.audioManager.playSfx(AUDIO.SFX.ATTACK_SWORD, { volume: 0.5 });
+    this.player.scene.audioManager.playSfx(AUDIO.SFX.ATTACK_SWORD, {
+      volume: 0.5,
+    });
     this.player.anims.play('attack1', true);
 
     // Access scene's attack zone

@@ -16,7 +16,7 @@ export default class AudioManager {
     this.currentMusicKey = null;
     this.sfxVolume = 0.5;
     this.musicVolume = 0.3;
-    
+
     // Store spatial sounds { id: { sound, sourceOb } }
     this.spatialSounds = new Map();
 
@@ -48,7 +48,7 @@ export default class AudioManager {
 
     if (this.currentMusic) {
       const trackToStop = this.currentMusic; // Capture reference to the old track
-      
+
       // Stop any existing fade-in/out tweens on the track we are about to stop
       this.scene.tweens.killTweensOf(trackToStop);
 
@@ -57,9 +57,9 @@ export default class AudioManager {
         volume: 0,
         duration: fadeDuration,
         onComplete: () => {
-          if (trackToStop && trackToStop.duration) { 
-             trackToStop.stop();
-             trackToStop.destroy();
+          if (trackToStop && trackToStop.duration) {
+            trackToStop.stop();
+            trackToStop.destroy();
           }
         },
       });
@@ -106,8 +106,8 @@ export default class AudioManager {
 
     // Create a new sound instance for this specific object
     const sound = this.scene.sound.add(key, {
-        volume: 0,
-        loop: true,
+      volume: 0,
+      loop: true,
     });
     sound.play();
     this.spatialSounds.set(id, { sound, sourceObj, radius, maxVolume });
@@ -130,9 +130,13 @@ export default class AudioManager {
         // Calculate volume based on distance (linear falloff)
         const volume = item.maxVolume * (1 - dist / item.radius);
         item.sound.setVolume(Math.max(0, volume));
-        
+
         // Simple panning (optional)
-        const pan = Phaser.Math.Clamp((item.sourceObj.x - player.x) / item.radius, -1, 1);
+        const pan = Phaser.Math.Clamp(
+          (item.sourceObj.x - player.x) / item.radius,
+          -1,
+          1
+        );
         // item.sound.setPan(pan); // Uncomment if stereo panning is desired
       } else {
         item.sound.setVolume(0);
