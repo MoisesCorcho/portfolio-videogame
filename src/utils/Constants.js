@@ -63,6 +63,7 @@ export const ASSETS = {
   BG_DIRT2: 'bg_dirt2',
   BOOKS_FLYING: 'books_flying',
   ALCHEMY_TABLE: 'Terraria_alchemy_table',
+  BUBBLE_MACHINE: 'Terraria_bubble_machine_placed',
   CAMPFIRE: 'campfire_sheet',
   CAMPFIRE_WITH_FOOD: 'campfire_with_food_sheet',
   KEYBOARD: 'custom_keyboard_letters_and_symbols',
@@ -105,6 +106,9 @@ export const AUDIO = {
     SWEEPING: 'env_sweeping',
     BUBBLES: 'env_bubbles',
     BOOK_FLYING: 'env_book_flying',
+    SAWMILL: 'env_sawmill',
+    LEVITATING: 'env_levitating',
+    MAGIC_SPARKLES: 'env_magic_sparkles',
   },
 };
 

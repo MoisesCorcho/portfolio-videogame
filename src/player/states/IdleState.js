@@ -33,7 +33,7 @@ export default class IdleState extends State {
     }
 
     // Transition to Fall (if platform moves or ground removed)
-    if (!this.player.body.onFloor()) {
+    if (!this.player.body.onFloor() && this.player.body.velocity.y > 10) {
       this.stateMachine.transition('fall');
     }
   }

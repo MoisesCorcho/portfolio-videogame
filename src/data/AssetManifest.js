@@ -428,6 +428,12 @@ const STATIC_ASSETS = [
   },
   {
     type: 'spritesheet',
+    key: ASSETS.BUBBLE_MACHINE,
+    path: 'assets/sprites/Terraria/bubble_machine_placed.png',
+    config: SPRITE_CONFIG.BUBBLE_MACHINE,
+  },
+  {
+    type: 'spritesheet',
     key: ASSETS.KEYBOARD,
     path: 'assets/sprites/custom/keyboard_letters_and_symbols.png',
     config: SPRITE_CONFIG.KEYBOARD,
@@ -500,6 +506,9 @@ const STATIC_ASSETS = [
   { type: 'audio', key: AUDIO.ENV.SWEEPING, path: 'assets/audio/env/sweeping.mp3' },
   { type: 'audio', key: AUDIO.ENV.BUBBLES, path: 'assets/audio/env/bubbles.mp3' },
   { type: 'audio', key: AUDIO.ENV.BOOK_FLYING, path: 'assets/audio/env/book_flying.mp3' },
+  { type: 'audio', key: AUDIO.ENV.SAWMILL, path: 'assets/audio/env/sawmill.mp3' },
+  { type: 'audio', key: AUDIO.ENV.LEVITATING, path: 'assets/audio/env/levitating.mp3' },
+  { type: 'audio', key: AUDIO.ENV.MAGIC_SPARKLES, path: 'assets/audio/env/magic_sparkle.mp3' },
   
   // NPC Assets
   {

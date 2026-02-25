@@ -3,18 +3,20 @@ import { AUDIO } from '../../utils/Constants';
 
 export default class LandingState extends State {
   enter() {
-    this.player.setVelocityX(0); // Freeze horizontal at start
     this.player.scene.audioManager.playSfx(AUDIO.SFX.LAND, { volume: 0.5 });
-    this.player.anims.play('landing', true);
+    
+    const { cursors, keys } = this.player;
 
-    // Listen for animation complete to exit
-    this.player.once('animationcomplete', () => {
-      // Double check we are still in landing state (though FSM prevents conflict usually)
+    if (cursors.up.isDown || keys.w.isDown) {
+      this.stateMachine.transition('jump');
+    } else if (cursors.left.isDown || cursors.right.isDown || keys.a.isDown || keys.d.isDown) {
+      this.stateMachine.transition('run');
+    } else {
       this.stateMachine.transition('idle');
-    });
+    }
   }
 
   update() {
-    // Landing state intentionally blocks input until animation completes.
+    // No action needed as we instantly transition out
   }
 }

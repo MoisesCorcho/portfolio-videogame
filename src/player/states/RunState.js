@@ -61,7 +61,7 @@ export default class RunState extends State {
     }
 
     // Transition to Fall (walked off ledge)
-    if (!this.player.body.onFloor()) {
+    if (!this.player.body.onFloor() && this.player.body.velocity.y > 10) {
       this.stateMachine.transition('fall');
     }
   }

@@ -1023,7 +1023,7 @@
                         {
                          "name":"radius",
                          "type":"float",
-                         "value":220
+                         "value":150
                         }, 
                         {
                          "name":"sound",
@@ -1056,7 +1056,7 @@
                         {
                          "name":"radius",
                          "type":"float",
-                         "value":220
+                         "value":150
                         }, 
                         {
                          "name":"sound",
@@ -1283,6 +1283,18 @@
                  "width":14,
                  "x":481.5,
                  "y":1374.63
+                }, 
+                {
+                 "gid":798,
+                 "height":7.75,
+                 "id":618,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":3547.75,
+                 "y":1088.125
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2694,6 +2706,21 @@
                          "name":"assetKey",
                          "type":"string",
                          "value":"furnace"
+                        }, 
+                        {
+                         "name":"radius",
+                         "type":"float",
+                         "value":220
+                        }, 
+                        {
+                         "name":"sound",
+                         "type":"string",
+                         "value":"env_sawmill"
+                        }, 
+                        {
+                         "name":"volume",
+                         "type":"float",
+                         "value":0.9
                         }],
                  "rotation":0,
                  "type":"",
@@ -4499,12 +4526,27 @@
                          "name":"initialAnim",
                          "type":"string",
                          "value":"gypsy_idle"
+                        }, 
+                        {
+                         "name":"radius",
+                         "type":"float",
+                         "value":50
+                        }, 
+                        {
+                         "name":"sound",
+                         "type":"string",
+                         "value":"env_levitating"
+                        }, 
+                        {
+                         "name":"volume",
+                         "type":"float",
+                         "value":0.2
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":43.2727,
-                 "x":3370.56,
+                 "x":3398.56,
                  "y":1090.43
                 }, 
                 {
@@ -4532,12 +4574,27 @@
                          "name":"initialAnim",
                          "type":"string",
                          "value":"priestess_idle"
+                        }, 
+                        {
+                         "name":"radius",
+                         "type":"float",
+                         "value":80
+                        }, 
+                        {
+                         "name":"sound",
+                         "type":"string",
+                         "value":"env_magic_sparkles"
+                        }, 
+                        {
+                         "name":"volume",
+                         "type":"float",
+                         "value":0.2
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":35.875,
-                 "x":3281.25,
+                 "x":3261.25,
                  "y":1088.25
                 }, 
                 {
@@ -4555,7 +4612,7 @@
                  "type":"",
                  "visible":true,
                  "width":14,
-                 "x":3292.75,
+                 "x":3272.75,
                  "y":1052.31
                 }, 
                 {
@@ -4573,7 +4630,7 @@
                  "type":"",
                  "visible":true,
                  "width":14,
-                 "x":3385.13,
+                 "x":3413.13,
                  "y":1052.25
                 }, 
                 {
@@ -4611,6 +4668,24 @@
                  "width":14,
                  "x":3391,
                  "y":916.25
+                }, 
+                {
+                 "gid":1191,
+                 "height":27.5681818181818,
+                 "id":619,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"animation",
+                         "type":"string",
+                         "value":"bubble_machine_idle"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":42.9545454545455,
+                 "x":3362.75,
+                 "y":1088.25
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -4810,7 +4885,7 @@
          "y":0
         }],
  "nextlayerid":29,
- "nextobjectid":617,
+ "nextobjectid":621,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
