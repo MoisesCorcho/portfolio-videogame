@@ -61,6 +61,7 @@ export const SPRITE_CONFIG = {
   ADVENTURER_03: { frameWidth: 32, frameHeight: 32 },
   ELDER: { frameWidth: 32, frameHeight: 32 },
   VILLAGER_01: { frameWidth: 34, frameHeight: 34 },
+  QUEST_MARKER: { frameWidth: 32, frameHeight: 32 },
 };
 
 /**
@@ -155,6 +156,11 @@ export const CAMPFIRE_WITH_FOOD_ANIMS = {
  * Keyboard animation configurations.
  */
 export const KEYBOARD_ANIMS = {
+  PRESS_W: { key: 'keyboard_w_press', frames: [38, 94], rate: 2, repeat: -1 },
+  PRESS_A: { key: 'keyboard_a_press', frames: [16, 72], rate: 2, repeat: -1 },
+  PRESS_S: { key: 'keyboard_s_press', frames: [34, 90], rate: 2, repeat: -1 },
+  PRESS_D: { key: 'keyboard_d_press', frames: [19, 75], rate: 2, repeat: -1 },
+  PRESS_J: { key: 'keyboard_j_press', frames: [25, 81], rate: 2, repeat: -1 },
   PRESS_E: { key: 'keyboard_e_press', frames: [20, 76], rate: 2, repeat: -1 },
 };
 
@@ -209,6 +215,11 @@ export const VILLAGER_01_ANIMS = {
   IDLE: { key: 'villager_01_idle', start: 0, end: 4, rate: 8, repeat: -1 },
 };
 
+export const QUEST_MARKER_ANIMS = {
+  QUESTION: { key: 'quest_marker_question', start: 0, end: 15, rate: 8, repeat: -1 },
+  EXCLAMATION: { key: 'quest_marker_exclamation', start: 16, end: 31, rate: 8, repeat: -1 },
+};
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -254,4 +265,5 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.ADVENTURER_03, anims: ADVENTURER_03_ANIMS },
   { assetKey: ASSETS.ELDER, anims: ELDER_ANIMS },
   { assetKey: ASSETS.VILLAGER_01, anims: VILLAGER_01_ANIMS },
+  { assetKey: ASSETS.QUEST_MARKER, anims: QUEST_MARKER_ANIMS },
 ];

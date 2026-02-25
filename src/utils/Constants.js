@@ -77,6 +77,7 @@ export const ASSETS = {
   ADVENTURER_03: 'adventurer_03',
   ELDER: 'elder',
   VILLAGER_01: 'villager_01',
+  QUEST_MARKER: 'quest_marker',
 };
 
 export const AUDIO = {

@@ -20,7 +20,7 @@ export const NPC_DIALOGUES = {
   priestess_1: {
     name: 'Sacerdotisa',
     phrases: [
-      'Siento una fuerte presencia de conocimiento en este santuario...',
+      'En la parte alta de este santuario siento una fuerte presencia de conocimiento... Deberias subir a ver.',
       'Moisés ha recolectado muchos pergaminos y certificados en su viaje.',
       'Desde bases de datos completas, frameworks MVC y Laravel, hasta su certificado EF SET de Inglés C1.',
     ],
@@ -36,6 +36,7 @@ export const NPC_DIALOGUES = {
   gypsy_1: {
     name: 'Adivina',
     phrases: [
+      'Los astros me dicen que en la parte alta de este lugar hay información muy valiosa.',
       'Las cartas revelan un historial de aprendizaje constante...',
       'Veo diplomas de SQL Server, PostgreSQL y PHP MVC en su brillante camino.',
       'El conocimiento certificado es un tesoro que nadie te puede robar.',

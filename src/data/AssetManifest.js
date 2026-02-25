@@ -563,6 +563,12 @@ const STATIC_ASSETS = [
     path: 'assets/sprites/npc/custom/villager_01.png',
     config: SPRITE_CONFIG.VILLAGER_01,
   },
+  {
+    type: 'spritesheet',
+    key: ASSETS.QUEST_MARKER,
+    path: 'assets/sprites/GH/quest_marker.png',
+    config: SPRITE_CONFIG.QUEST_MARKER,
+  },
 ];
 
 

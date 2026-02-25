@@ -6,7 +6,7 @@
     <div class="dialogue-box">
         <div class="dialogue-name">{npcName}</div>
         <div class="dialogue-text">{phrase}</div>
-        <button class="dialogue-close" onclick={onclose}>✕</button>
+        <button class="dialogue-close" onclick={onclose}>X</button>
         <!-- <div class="dialogue-hint">Press E or click ✕ to close</div> -->
     </div>
 </div>
@@ -68,8 +68,8 @@
     }
 
     .dialogue-text {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 0.95rem;
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 0.75rem;
         color: #e0dce8;
         line-height: 1.6;
         min-height: 40px;
@@ -77,21 +77,40 @@
 
     .dialogue-close {
         position: absolute;
-        top: 8px;
-        right: 12px;
-        background: transparent;
-        color: rgba(255, 255, 255, 0.4);
-        border: none;
-        font-size: 1rem;
+        top: 10px;
+        right: 10px;
+        background: #8b0000;
+        color: #fdf6e3;
+        border: 3px solid #3b0000;
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 0.6rem;
         cursor: pointer;
-        padding: 4px 8px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 4px;
-        transition: all 0.15s ease;
+        z-index: 20;
+        box-shadow: 
+            2px 2px 0px rgba(0,0,0,0.8),
+            inset 2px 2px 0px rgba(255,255,255,0.2),
+            inset -2px -2px 0px rgba(0,0,0,0.4);
+        text-shadow: 1px 1px 0px rgba(0,0,0,1);
+        transition: transform 0.1s steps(2), filter 0.1s;
     }
 
     .dialogue-close:hover {
-        color: #ff4444;
-        background: rgba(255, 68, 68, 0.1);
+        filter: brightness(1.2);
+        transform: scale(1.1);
+    }
+
+    .dialogue-close:active {
+        transform: translateY(2px) translateX(2px);
+        box-shadow: 
+            0px 0px 0px rgba(0,0,0,0.8),
+            inset 2px 2px 0px rgba(0,0,0,0.4),
+            inset -2px -2px 0px rgba(255,255,255,0.2);
     }
 
     .dialogue-hint {

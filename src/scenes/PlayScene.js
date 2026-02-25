@@ -79,6 +79,7 @@ export default class PlayScene extends Phaser.Scene {
       runChildUpdate: true,
     });
     this.currentInteractingNPC = null;
+    this.currentInteractable = null;
 
     // Persistent Attack Zone (reused) - smaller hitbox for precision
     this.attackZone = this.add.zone(0, 0, 25, 25);
@@ -158,8 +159,9 @@ export default class PlayScene extends Phaser.Scene {
     this.physics.add.collider(this.npcs, this.platforms);
     this.physics.add.collider(this.npcs, this.manualCollisions);
 
-    // Check distance to current interacting NPC (runs every frame via event)
+    // Check distance to current interacting objects (runs every frame via event)
     this.events.on('update', () => {
+      // NPC Distance Check
       if (this.currentInteractingNPC) {
         const dist = Phaser.Math.Distance.Between(
           this.player.x,
@@ -172,10 +174,24 @@ export default class PlayScene extends Phaser.Scene {
           this.currentInteractingNPC = null;
         }
       }
+
+      // Interactable Distance Check
+      if (this.currentInteractable) {
+        const dist = Phaser.Math.Distance.Between(
+          this.player.x,
+          this.player.y,
+          this.currentInteractable.x,
+          this.currentInteractable.y
+        );
+        if (dist > DIALOGUE_CLOSE_RANGE) {
+          closeModal();
+          this.currentInteractable = null;
+        }
+      }
     });
 
     // Continuous attack hitbox overlap check (enabled/disabled by AttackState)
-    this.physics.overlap(this.attackZone, this.dummies, (zone, dummy) => {
+    this.physics.add.overlap(this.attackZone, this.dummies, (zone, dummy) => {
       const attackState = this.player.stateMachine.state;
       if (
         attackState &&
@@ -778,6 +794,7 @@ export default class PlayScene extends Phaser.Scene {
       const id = interactable.getData('id');
       const text = interactable.getData('text');
       this.triggerModal(type, id, text);
+      this.currentInteractable = interactable;
     }
   }
 
