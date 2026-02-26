@@ -74,9 +74,10 @@ export default class Preloader extends Phaser.Scene {
    */
   createAnimations() {
     Object.values(PLAYER_ANIMS).forEach((anim) => {
+      const textureKey = anim.assetKey || ASSETS.PLAYER;
       this.anims.create({
         key: anim.key,
-        frames: this.anims.generateFrameNumbers(ASSETS.PLAYER, {
+        frames: this.anims.generateFrameNumbers(textureKey, {
           start: anim.start,
           end: anim.end,
         }),

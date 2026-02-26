@@ -13,15 +13,40 @@ export default class AttackState extends State {
     // Access scene's attack zone
     const scene = this.player.scene;
 
-    // Track which enemies have been hit during this attack
-    this.hitEnemies = new Set();
+    this.comboStep = 1;
+    this.comboBuffered = false;
+    this.startComboStep(this.comboStep);
 
-    // Position and enable the attack hitbox (closer to player)
+    // Store listener reference for cleanup in exit()
+    this.onAnimComplete = () => {
+      if (this.comboStep === 1 && this.comboBuffered) {
+        this.comboStep = 2;
+        this.comboBuffered = false;
+        this.startComboStep(this.comboStep);
+      } else {
+        this.stateMachine.transition('idle');
+      }
+    };
+    this.player.on('animationcomplete', this.onAnimComplete);
+  }
+
+  startComboStep(step) {
+    const scene = this.player.scene;
+    
+    // Clear the set so the new attack hits again
+    this.hitEnemies = new Set();
+    
+    if (step === 1) {
+      this.player.anims.play('attack1', true);
+    } else if (step === 2) {
+      this.player.scene.audioManager.playSfx(AUDIO.SFX.ATTACK_SWORD, { volume: 0.5 });
+      this.player.anims.play('attack2', true);
+    }
+
+    // Adjust hitbox depending on the step, can be improved later
     const hitboxX = this.player.flipX ? this.player.x - 14 : this.player.x + 14;
     const hitboxY = this.player.y + 10;
-
-    // Use body.reset() to force the physics body to teleport to the new position
-    // This ensures the physics body matches the visual debug box and player position
+    
     scene.attackZone.body.reset(hitboxX, hitboxY);
     scene.attackZone.body.enable = true;
 
@@ -29,12 +54,6 @@ export default class AttackState extends State {
       scene.attackZoneDebug.setPosition(hitboxX, hitboxY);
       scene.attackZoneDebug.setVisible(true);
     }
-
-    // Store listener reference for cleanup in exit()
-    this.onAnimComplete = () => {
-      this.stateMachine.transition('idle');
-    };
-    this.player.once('animationcomplete', this.onAnimComplete);
   }
 
   exit() {
@@ -57,6 +76,13 @@ export default class AttackState extends State {
   }
 
   update() {
+    const { keys } = this.player;
+    
+    // Buffer input for combo if we are at step 1
+    if (this.comboStep === 1 && Phaser.Input.Keyboard.JustDown(keys.j)) {
+      this.comboBuffered = true;
+    }
+
     // Failsafe: If animation finishes or stops for any reason, return to idle
     if (!this.player.anims.isPlaying) {
       this.stateMachine.transition('idle');

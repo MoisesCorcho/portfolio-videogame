@@ -40,6 +40,7 @@ export const ASSETS = {
 
   // Characters
   PLAYER: 'player',
+  PLAYER_2: 'player_2',
 
   // Tiles & Maps
   TILES: 'tiles',

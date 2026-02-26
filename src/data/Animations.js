@@ -27,6 +27,10 @@ export const PLAYER_ANIMS = {
   FALL: { key: 'fall', start: 32, end: 37, rate: 10, repeat: 0 },
   LANDING: { key: 'landing', start: 38, end: 39, rate: 8, repeat: 0 },
   ATTACK: { key: 'attack1', start: 8, end: 13, rate: 12, repeat: 0 },
+  ATTACK2: { key: 'attack2', start: 14, end: 15, rate: 12, repeat: 0 },
+  CRITICAL_ATTACK: { key: 'critical_attack', assetKey: ASSETS.PLAYER_2, start: 32, end: 39, rate: 12, repeat: 0 },
+  SLIDE: { key: 'slide', assetKey: ASSETS.PLAYER_2, start: 16, end: 23, rate: 12, repeat: 0 },
+  SHIELD: { key: 'shield', start: 80, end: 82, rate: 10, repeat: 0 },
 };
 
 /**

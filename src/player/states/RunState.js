@@ -41,6 +41,27 @@ export default class RunState extends State {
       this.stateMachine.transition('attack');
       return;
     }
+    
+    if (Phaser.Input.Keyboard.JustDown(keys.k)) {
+      this.stateMachine.transition('critical_attack');
+      return;
+    }
+
+    if (keys.l.isDown) {
+      // Typically going to guard from a run halts the run instantly
+      this.stateMachine.transition('guard');
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(keys.space)) {
+      const currentTime = this.player.scene.time.now;
+      // You must be genuinely moving (not just pressed key for 1ms) and off cooldown
+      if (Math.abs(this.player.body.velocity.x) > 50 && currentTime - this.player.lastSlideTime > 1200) {
+        this.player.lastSlideTime = currentTime;
+        this.stateMachine.transition('slide');
+        return;
+      }
+    }
 
     // Move Logic
     if (cursors.left.isDown || keys.a.isDown) {

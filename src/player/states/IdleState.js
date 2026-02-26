@@ -9,9 +9,15 @@ export default class IdleState extends State {
   update() {
     const { cursors, keys } = this.player;
 
-    // Transition to Attack
-    if (Phaser.Input.Keyboard.JustDown(keys.j)) {
+    // Transition to Attack, Critical Attack, Guard
+    if (Phaser.Input.Keyboard.JustDown(keys.k)) {
+      this.stateMachine.transition('critical_attack');
+      return;
+    } else if (Phaser.Input.Keyboard.JustDown(keys.j)) {
       this.stateMachine.transition('attack');
+      return;
+    } else if (keys.l.isDown) {
+      this.stateMachine.transition('guard');
       return;
     }
 

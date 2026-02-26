@@ -6,6 +6,9 @@ import JumpState from './states/JumpState';
 import FallState from './states/FallState';
 import LandingState from './states/LandingState';
 import AttackState from './states/AttackState';
+import CriticalAttackState from './states/CriticalAttackState';
+import SlideState from './states/SlideState';
+import GuardState from './states/GuardState';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
@@ -31,6 +34,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       a: Phaser.Input.Keyboard.KeyCodes.A,
       s: Phaser.Input.Keyboard.KeyCodes.S,
       d: Phaser.Input.Keyboard.KeyCodes.D,
+      k: Phaser.Input.Keyboard.KeyCodes.K,
+      l: Phaser.Input.Keyboard.KeyCodes.L,
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
     });
 
     // Valid States
@@ -41,7 +47,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       fall: new FallState(scene, this),
       landing: new LandingState(scene, this),
       attack: new AttackState(scene, this),
+      critical_attack: new CriticalAttackState(scene, this),
+      slide: new SlideState(scene, this),
+      guard: new GuardState(scene, this),
     };
+
+    // For tracking combo state or other time-based variables
+    this.lastSlideTime = 0;
 
     // Initialize State Machine
     this.stateMachine = new StateMachine('idle', this.states, [scene, this]);

@@ -223,11 +223,17 @@ const STATIC_ASSETS = [
     key: ASSETS.FLOOR_TILES_1,
     path: 'assets/tilesets/GH/floor_tiles1.png',
   },
-
+  // Player Assets
   {
     type: 'spritesheet',
     key: ASSETS.PLAYER,
     path: 'assets/character/char_blue.png',
+    config: SPRITE_CONFIG.PLAYER,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.PLAYER_2,
+    path: 'assets/character/char_blue_2.png',
     config: SPRITE_CONFIG.PLAYER,
   },
 
