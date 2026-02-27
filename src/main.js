@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Preloader from './scenes/Preloader';
 import PlayScene from './scenes/PlayScene';
+import Level2Scene from './scenes/Level2Scene';
 import App from './ui/App.svelte';
 
 import { GAME_CONFIG } from './config/GameConfig';
@@ -23,9 +24,12 @@ const config = {
       debug: GAME_CONFIG.debug,
     },
   },
-  scene: [Preloader, PlayScene],
+  scene: [Preloader, PlayScene, Level2Scene],
 };
 
+if (window.gameInstance) {
+  window.gameInstance.destroy(true); // Clean up WebGL context to prevent allocation crash on HMR
+}
 const game = new Phaser.Game(config);
 window.gameInstance = game; // Expose for Svelte to resume
 

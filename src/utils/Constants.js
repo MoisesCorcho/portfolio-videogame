@@ -6,6 +6,7 @@
 export const SCENES = {
   PRELOADER: 'Preloader',
   PLAY: 'PlayScene',
+  LEVEL2: 'Level2Scene',
 };
 
 export const ASSETS = {
@@ -46,6 +47,8 @@ export const ASSETS = {
   TILES: 'tiles',
   LEVEL_1_MAP: 'level1',
   LEVEL_1_JSON: 'assets/maps/level1.json', // Path for preloader
+  LEVEL_2_MAP: 'level2',
+  LEVEL_2_JSON: 'assets/maps/level2.json', // Path for Level 2 preloader
 
   // Objects
   FURNACE: 'furnace',
@@ -122,6 +125,7 @@ export const INTERACTION_TYPES = {
   CERTS: 'certs',
   NPC: 'npc',
   SIGN: 'sign',
+  TELEPORT: 'teleport',
 };
 
 export const EVENTS = {

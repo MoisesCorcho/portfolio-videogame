@@ -667,7 +667,12 @@ export default class PlayScene extends Phaser.Scene {
         this.interactables.add(obj);
         obj.setData('type', interactionType);
 
-        // Store custom ID if present (for single_experience, etc.)
+        // Store custom string if present (for single_experience, sign, teleport, etc.)
+        const customTarget = obj.properties?.find(p => p.name === 'targetScene')?.value;
+        if (customTarget) {
+            obj.setData('targetScene', customTarget);
+        }
+
         const customId = obj.properties?.find((p) => p.name === 'id')?.value;
         if (customId) {
           obj.setData('id', customId);
@@ -848,6 +853,20 @@ export default class PlayScene extends Phaser.Scene {
   handleInteraction(player, interactable) {
     if (Phaser.Input.Keyboard.JustDown(this.keys.e)) {
       const type = interactable.getData('type');
+      
+      if (type === INTERACTION_TYPES.TELEPORT) {
+        if (interactable.getData('triggered')) return;
+        interactable.setData('triggered', true);
+
+        const targetScene = interactable.getData('targetScene') || 'Level2Scene';
+        
+        this.cameras.main.fadeOut(500, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+             this.scene.start(targetScene);
+        });
+        return;
+      }
+
       const id = interactable.getData('id');
       const text = interactable.getData('text');
       this.triggerModal(type, id, text);

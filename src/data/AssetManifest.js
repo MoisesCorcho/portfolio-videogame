@@ -475,6 +475,11 @@ const STATIC_ASSETS = [
     key: ASSETS.LEVEL_1_MAP,
     path: ASSETS.LEVEL_1_JSON,
   },
+  {
+    type: 'tilemapTiledJSON',
+    key: ASSETS.LEVEL_2_MAP,
+    path: ASSETS.LEVEL_2_JSON,
+  },
 
   // Audio Assets
   // Music
