@@ -2,15 +2,18 @@ import State from './State';
 
 export default class SlideState extends State {
   enter() {
+    // Invulnerable for the entire duration of the slide
+    this.player.isInvulnerable = true;
+
     // Determine slide direction
     const direction = this.player.flipX ? -1 : 1;
     const slideSpeed = 300; // Faster than run speed
 
     this.player.setVelocityX(slideSpeed * direction);
-    
+
     // Play a suitable sound, reusing jump or dash if available
     // this.player.scene.audioManager.playSfx(AUDIO.SFX.DASH, { volume: 0.5 });
-    
+
     this.player.anims.play('slide', true);
 
     this.onAnimComplete = () => {
@@ -20,6 +23,8 @@ export default class SlideState extends State {
   }
 
   exit() {
+    this.player.isInvulnerable = false;
+
     if (this.onAnimComplete) {
       this.player.off('animationcomplete', this.onAnimComplete);
       this.onAnimComplete = null;

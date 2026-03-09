@@ -62,6 +62,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // Player stats
     this.maxHealth = 5;
     this.health = 5;
+    this.isInvulnerable = false;
 
     // Initialize State Machine
     this.stateMachine = new StateMachine('idle', this.states, [scene, this]);
@@ -70,15 +71,46 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   /**
    * Applies damage to the player.
-   * Guards against hits while already hurt or dead.
+   * - Invulnerable (slide): damage is fully ignored.
+   * - Guard: damage is halved (floor), player is knocked back, state stays as guard.
+   * - Otherwise: full damage applied; transitions to hurt or dead.
    *
    * @param {number} [amount=1]
    */
   takeDamage(amount = 1) {
+    if (this.isInvulnerable) return;
+
     const currentKey = Object.keys(this.stateMachine.possibleStates).find(
       (k) => this.stateMachine.possibleStates[k] === this.stateMachine.state
     );
     if (currentKey === 'hurt' || currentKey === 'dead') return;
+
+    // Guard: absorb half the damage and apply a small knockback without interrupting the guard pose
+    if (currentKey === 'guard') {
+      const reduced = Math.floor(amount / 2);
+      if (reduced > 0) {
+        this.health = Math.max(0, this.health - reduced);
+        this.scene.events.emit('player-health-changed', this.health, this.maxHealth);
+      }
+
+      // Short knockback away from the direction the player is facing
+      const dir = this.flipX ? 1 : -1;
+      this.setVelocityX(120 * dir);
+      this.scene.time.delayedCall(150, () => {
+        if (this.active) this.setVelocityX(0);
+      });
+
+      // Orange flash to differentiate from a normal hit
+      this.setTint(0xffaa00);
+      this.scene.time.delayedCall(120, () => {
+        if (this.active) this.clearTint();
+      });
+
+      if (this.health <= 0) {
+        this.stateMachine.transition('dead');
+      }
+      return;
+    }
 
     this.health = Math.max(0, this.health - amount);
 

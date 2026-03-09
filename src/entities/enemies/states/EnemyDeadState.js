@@ -1,4 +1,5 @@
 import EnemyState from './EnemyState';
+import { AUDIO } from '../../../utils/Constants';
 
 /**
  * Enemy Dead State.
@@ -11,6 +12,7 @@ export default class EnemyDeadState extends EnemyState {
     enemy.setVelocityX(0);
     enemy.body.enable = false; // Disable physics so nothing else can interact with it
 
+    enemy.scene.audioManager.playSfx(AUDIO.SFX.SLIME_DEATH, { volume: 0.7 });
     enemy.anims.play(enemy.animKeys.death, true);
 
     // Fade out and destroy after the animation finishes

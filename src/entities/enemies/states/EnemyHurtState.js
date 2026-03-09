@@ -1,4 +1,5 @@
 import EnemyState from './EnemyState';
+import { AUDIO } from '../../../utils/Constants';
 
 /**
  * Enemy Hurt State.
@@ -8,6 +9,7 @@ import EnemyState from './EnemyState';
 export default class EnemyHurtState extends EnemyState {
   /** @param {import('../Enemy').default} enemy */
   enter(enemy) {
+    enemy.scene.audioManager.playSfx(AUDIO.SFX.SLIME_IMPACT, { volume: 0.6 });
     // Determine knockback direction
     const force = enemy.lastKnockbackForce || 50; // Fallback to 50 if 0
     let dirX = 1;

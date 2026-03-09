@@ -510,8 +510,10 @@ const STATIC_ASSETS = [
     key: AUDIO.SFX.STEP_STONE,
     path: 'assets/audio/sfx/step_stone.mp3',
   },
-  { type: 'audio', key: AUDIO.SFX.JUMP, path: 'assets/audio/sfx/jump.mp3' },
-  { type: 'audio', key: AUDIO.SFX.LAND, path: 'assets/audio/sfx/land.mp3' },
+  { type: 'audio', key: AUDIO.SFX.JUMP,         path: 'assets/audio/sfx/jump.mp3' },
+  { type: 'audio', key: AUDIO.SFX.LAND,         path: 'assets/audio/sfx/land.mp3' },
+  { type: 'audio', key: AUDIO.SFX.SLIME_IMPACT, path: 'assets/audio/enemies/slime/slime_impact.mp3' },
+  { type: 'audio', key: AUDIO.SFX.SLIME_DEATH,  path: 'assets/audio/enemies/slime/slime_death.mp3' },
   {
     type: 'audio',
     key: AUDIO.SFX.ATTACK_SWORD,

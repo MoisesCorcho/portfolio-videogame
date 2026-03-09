@@ -112,6 +112,8 @@ export const AUDIO = {
     ATTACK_SWORD: 'sfx_attack_sword',
     WINDOW_OPEN: 'sfx_window_open',
     WINDOW_CLOSE: 'sfx_window_close',
+    SLIME_IMPACT: 'sfx_slime_impact',
+    SLIME_DEATH:  'sfx_slime_death',
   },
   ENV: {
     WATERFALL: 'env_waterfall',
