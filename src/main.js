@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Preloader from './scenes/Preloader';
 import PlayScene from './scenes/PlayScene';
 import Level2Scene from './scenes/Level2Scene';
+import UIScene from './scenes/UIScene';
 import App from './ui/App.svelte';
 
 import { GAME_CONFIG } from './config/GameConfig';
@@ -24,7 +25,7 @@ const config = {
       debug: GAME_CONFIG.debug,
     },
   },
-  scene: [Preloader, PlayScene, Level2Scene],
+  scene: [Preloader, PlayScene, Level2Scene, UIScene],
 };
 
 if (window.gameInstance) {

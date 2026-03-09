@@ -659,6 +659,32 @@ const STATIC_ASSETS = [
     key: ASSETS.PARTICLE_SNOW,
     path: 'assets/background/GH/Winter/snow.png',
   },
+
+  // Enemy Spritesheets
+  {
+    type: 'spritesheet',
+    key: ASSETS.SLIME_BLUE,
+    path: 'assets/sprites/enemies/slime_blue.png',
+    config: SPRITE_CONFIG.SLIME,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.SLIME_GREEN,
+    path: 'assets/sprites/enemies/slime_green.png',
+    config: SPRITE_CONFIG.SLIME,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.SLIME_RED,
+    path: 'assets/sprites/enemies/slime_red.png',
+    config: SPRITE_CONFIG.SLIME,
+  },
+
+  // UI - Health Bar assets
+  { type: 'image', key: ASSETS.UI_HP_BAR,    path: 'assets/ui/hpBar/hp_bar.png'    },
+  { type: 'image', key: ASSETS.UI_RED_BAR,   path: 'assets/ui/hpBar/red_bar.png'   },
+  { type: 'image', key: ASSETS.UI_BLUE_BAR,  path: 'assets/ui/hpBar/blue_bar.png'  },
+  { type: 'image', key: ASSETS.UI_YELLOW_BAR,path: 'assets/ui/hpBar/yellow_bar.png'},
 ];
 
 /**

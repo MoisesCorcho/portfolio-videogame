@@ -7,6 +7,7 @@ export const SCENES = {
   PRELOADER: 'Preloader',
   PLAY: 'PlayScene',
   LEVEL2: 'Level2Scene',
+  UI: 'UIScene',
 };
 
 export const ASSETS = {
@@ -84,6 +85,17 @@ export const ASSETS = {
   VILLAGER_01: 'villager_01',
   QUEST_MARKER: 'quest_marker',
   PARTICLE_SNOW: 'particle_snow',
+
+  // Enemies
+  SLIME_BLUE: 'slime_blue',
+  SLIME_GREEN: 'slime_green',
+  SLIME_RED: 'slime_red',
+
+  // UI - Health Bar
+  UI_HP_BAR: 'ui_hp_bar',
+  UI_RED_BAR: 'ui_red_bar',
+  UI_BLUE_BAR: 'ui_blue_bar',
+  UI_YELLOW_BAR: 'ui_yellow_bar',
 };
 
 export const AUDIO = {
@@ -153,4 +165,5 @@ export const OBJECT_NAMES = {
 export const ENTITY_TYPES = {
   DUMMY: 'dummy',
   NPC: 'npc',
+  SLIME: 'slime',
 };

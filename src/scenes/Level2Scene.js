@@ -1,6 +1,7 @@
 import Player from '../player/Player';
 import NPC from '../entities/NPC';
 import Dummy from '../entities/Dummy';
+import Slime from '../entities/enemies/Slime';
 import AudioManager from '../utils/AudioManager';
 import {
   ASSETS,
@@ -10,6 +11,7 @@ import {
   MAP_LAYERS,
   OBJECT_NAMES,
   ENTITY_TYPES,
+  SCENES,
 } from '../utils/Constants';
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
@@ -53,6 +55,11 @@ export default class Level2Scene extends Phaser.Scene {
 
     this.npcs = this.physics.add.group({
       classType: NPC,
+      runChildUpdate: true,
+    });
+
+    // Physics group for all enemies. runChildUpdate delegates update() each frame.
+    this.enemies = this.physics.add.group({
       runChildUpdate: true,
     });
 
@@ -118,6 +125,40 @@ export default class Level2Scene extends Phaser.Scene {
     this.physics.add.collider(this.npcs, this.platforms);
     this.physics.add.collider(this.npcs, this.manualCollisions);
 
+    // Enemy collisions with the world
+    this.physics.add.collider(this.enemies, this.platforms);
+    this.physics.add.collider(this.enemies, this.manualCollisions);
+
+    // Player's attack zone hits enemies
+    this.physics.add.overlap(this.attackZone, this.enemies, (_zone, enemy) => {
+      const attackState = this.player.stateMachine.state;
+      if (attackState?.canDamage?.(enemy)) {
+        
+        // Determine knockback force based on attack type.
+        // AttackState ('J') applies normal knockback.
+        // CriticalAttackState ('K') applies heavy knockback.
+        let force = 80; // Default generic hit
+        
+        // Use constructor name or state name to differentiate
+        if (attackState.constructor.name === 'CriticalAttackState') {
+          force = 150;
+        } else if (attackState.constructor.name === 'AttackState') {
+          // You could also add comboStep logic here to scale knockback for consecutive hits
+          force = 80;
+        }
+
+        // Pass 1 damage, the calculated force, and the player's X as the damage source. 
+        enemy.takeDamage(1, force, this.player.x);
+      }
+    });
+
+    // Enemies deal contact damage to the player
+    this.physics.add.overlap(this.player, this.enemies, (_player, enemy) => {
+      if (this.player.takeDamage) {
+        // Handled inside EnemyAttackState; overlap here is just a safety guard
+      }
+    });
+
     // Distance checks
     this.events.on('update', () => {
       if (this.currentInteractable) {
@@ -148,6 +189,14 @@ export default class Level2Scene extends Phaser.Scene {
 
     // Fade in when scene starts
     this.cameras.main.fadeIn(500, 0, 0, 0);
+
+    // Launch the HUD overlay; pass this scene's key so UIScene knows whose events to listen to
+    this.scene.launch(SCENES.UI, { parentScene: SCENES.LEVEL2 });
+
+    // Tear down the HUD when this scene stops to prevent stale listeners
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.scene.stop(SCENES.UI);
+    });
   }
 
   createParallaxBackground(width, height, visibleWidth, visibleHeight) {
@@ -330,6 +379,28 @@ export default class Level2Scene extends Phaser.Scene {
       if (entityType === ENTITY_TYPES.DUMMY) {
         const dummy = this.dummies.get(obj.x, obj.y, ASSETS.DUMMY);
         if (dummy) dummy.setDepth(10);
+        obj.destroy();
+        return;
+      }
+
+      // Spawn slime enemies — the 'variant' Tiled property controls color (blue/green/red)
+      if (entityType === ENTITY_TYPES.SLIME) {
+        const variant = getProp('variant') ?? 'blue';
+
+        // Immediately hide the Phaser tile-preview sprite so it never renders as a frame artifact
+        obj.setVisible(false).setActive(false);
+
+        const w = obj.displayWidth;
+        const h = obj.displayHeight;
+
+        // For gid tile objects, createFromObjects gives x/y relative to the object's origin.
+        // Tiled sets the origin of `gid` objects to the bottom-left corner (0, 1).
+        // Therefore, obj.x is the LEFT edge, and obj.y is the BOTTOM edge.
+        const spawnX = obj.x + w / 2;
+        const spawnY = obj.y - h / 2;
+
+        const slime = new Slime(this, spawnX, spawnY, w, h, variant);
+        this.enemies.add(slime, true);
         obj.destroy();
         return;
       }

@@ -21,16 +21,18 @@
  * @type {Object.<string, AnimationConfig>}
  */
 export const PLAYER_ANIMS = {
-  IDLE: { key: 'idle', start: 0, end: 5, rate: 8, repeat: -1 },
-  RUN: { key: 'run', start: 16, end: 23, rate: 10, repeat: -1 },
-  JUMP: { key: 'jump', start: 24, end: 31, rate: 10, repeat: 0 },
-  FALL: { key: 'fall', start: 32, end: 37, rate: 10, repeat: 0 },
-  LANDING: { key: 'landing', start: 38, end: 39, rate: 8, repeat: 0 },
-  ATTACK: { key: 'attack1', start: 8, end: 13, rate: 12, repeat: 0 },
-  ATTACK2: { key: 'attack2', start: 14, end: 15, rate: 12, repeat: 0 },
+  IDLE:            { key: 'idle',            start: 0,  end: 5,  rate: 8,  repeat: -1 },
+  RUN:             { key: 'run',             start: 16, end: 23, rate: 10, repeat: -1 },
+  JUMP:            { key: 'jump',            start: 24, end: 31, rate: 10, repeat: 0  },
+  FALL:            { key: 'fall',            start: 32, end: 37, rate: 10, repeat: 0  },
+  LANDING:         { key: 'landing',         start: 38, end: 39, rate: 8,  repeat: 0  },
+  ATTACK:          { key: 'attack1',         start: 8,  end: 13, rate: 12, repeat: 0  },
+  ATTACK2:         { key: 'attack2',         start: 14, end: 15, rate: 12, repeat: 0  },
   CRITICAL_ATTACK: { key: 'critical_attack', assetKey: ASSETS.PLAYER_2, start: 32, end: 39, rate: 12, repeat: 0 },
-  SLIDE: { key: 'slide', assetKey: ASSETS.PLAYER_2, start: 16, end: 23, rate: 12, repeat: 0 },
-  SHIELD: { key: 'shield', start: 80, end: 82, rate: 10, repeat: 0 },
+  SLIDE:           { key: 'slide',           assetKey: ASSETS.PLAYER_2, start: 16, end: 23, rate: 12, repeat: 0 },
+  SHIELD:          { key: 'shield',          start: 80, end: 82, rate: 10, repeat: 0  },
+  HURT:            { key: 'hurt',            start: 40, end: 44, rate: 10, repeat: 0  },
+  DEAD:            { key: 'dead',            start: 48, end: 59, rate: 10, repeat: 0 },
 };
 
 /**
@@ -67,6 +69,8 @@ export const SPRITE_CONFIG = {
   ELDER: { frameWidth: 32, frameHeight: 32 },
   VILLAGER_01: { frameWidth: 34, frameHeight: 34 },
   QUEST_MARKER: { frameWidth: 32, frameHeight: 32 },
+  // Enemies
+  SLIME: { frameWidth: 32, frameHeight: 32 },
 };
 
 /**
@@ -240,6 +244,26 @@ export const QUEST_MARKER_ANIMS = {
   },
 };
 
+/**
+ * Slime enemy animations.
+ * Row 0 = Idle (frames 0-7), Row 1 = Move (frames 8-15), Row 2 = Death (frames 16-23).
+ * Each variant gets uniquely-keyed animations so they can all coexist in the global registry.
+ *
+ * @param {'blue'|'green'|'red'} variant
+ * @returns {Object.<string, AnimationConfig>}
+ */
+function buildSlimeAnims(variant) {
+  return {
+    IDLE:  { key: `slime_${variant}_idle`,  start: 0,  end: 4,  rate: 8,  repeat: -1 },
+    MOVE:  { key: `slime_${variant}_move`,  start: 8,  end: 15, rate: 10, repeat: -1 },
+    DEATH: { key: `slime_${variant}_death`, start: 16, end: 20, rate: 10, repeat: 0  },
+  };
+}
+
+export const SLIME_BLUE_ANIMS  = buildSlimeAnims('blue');
+export const SLIME_GREEN_ANIMS = buildSlimeAnims('green');
+export const SLIME_RED_ANIMS   = buildSlimeAnims('red');
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -287,4 +311,8 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.ELDER, anims: ELDER_ANIMS },
   { assetKey: ASSETS.VILLAGER_01, anims: VILLAGER_01_ANIMS },
   { assetKey: ASSETS.QUEST_MARKER, anims: QUEST_MARKER_ANIMS },
+  // Enemy Animations
+  { assetKey: ASSETS.SLIME_BLUE,  anims: SLIME_BLUE_ANIMS },
+  { assetKey: ASSETS.SLIME_GREEN, anims: SLIME_GREEN_ANIMS },
+  { assetKey: ASSETS.SLIME_RED,   anims: SLIME_RED_ANIMS },
 ];

@@ -9,6 +9,8 @@ import AttackState from './states/AttackState';
 import CriticalAttackState from './states/CriticalAttackState';
 import SlideState from './states/SlideState';
 import GuardState from './states/GuardState';
+import HurtState from './states/HurtState';
+import DeadState from './states/DeadState';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y) {
@@ -41,23 +43,53 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     // Valid States
     this.states = {
-      idle: new IdleState(scene, this),
-      run: new RunState(scene, this),
-      jump: new JumpState(scene, this),
-      fall: new FallState(scene, this),
-      landing: new LandingState(scene, this),
-      attack: new AttackState(scene, this),
+      idle:            new IdleState(scene, this),
+      run:             new RunState(scene, this),
+      jump:            new JumpState(scene, this),
+      fall:            new FallState(scene, this),
+      landing:         new LandingState(scene, this),
+      attack:          new AttackState(scene, this),
       critical_attack: new CriticalAttackState(scene, this),
-      slide: new SlideState(scene, this),
-      guard: new GuardState(scene, this),
+      slide:           new SlideState(scene, this),
+      guard:           new GuardState(scene, this),
+      hurt:            new HurtState(scene, this),
+      dead:            new DeadState(scene, this),
     };
 
     // For tracking combo state or other time-based variables
     this.lastSlideTime = 0;
 
+    // Player stats
+    this.maxHealth = 5;
+    this.health = 5;
+
     // Initialize State Machine
     this.stateMachine = new StateMachine('idle', this.states, [scene, this]);
     this.stateMachine.transition('idle');
+  }
+
+  /**
+   * Applies damage to the player.
+   * Guards against hits while already hurt or dead.
+   *
+   * @param {number} [amount=1]
+   */
+  takeDamage(amount = 1) {
+    const currentKey = Object.keys(this.stateMachine.possibleStates).find(
+      (k) => this.stateMachine.possibleStates[k] === this.stateMachine.state
+    );
+    if (currentKey === 'hurt' || currentKey === 'dead') return;
+
+    this.health = Math.max(0, this.health - amount);
+
+    // Notify the UI layer so the HUD updates independently of the game world
+    this.scene.events.emit('player-health-changed', this.health, this.maxHealth);
+
+    if (this.health <= 0) {
+      this.stateMachine.transition('dead');
+    } else {
+      this.stateMachine.transition('hurt');
+    }
   }
 
   update() {
