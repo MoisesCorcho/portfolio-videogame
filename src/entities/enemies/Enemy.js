@@ -14,6 +14,7 @@ import EnemyDeadState from './states/EnemyDeadState';
  * @property {number} visionRange  - Distance (px) at which the enemy starts chasing the player.
  * @property {number} attackRange  - Distance (px) at which the enemy can attack the player.
  * @property {number} attackCooldown - Milliseconds between attacks.
+ * @property {object} [attackHitbox] - Configuration for attack hitbox {width, height, offsetX, offsetY, hitFrame}.
  * @property {{ idle: string, move: string, death: string }} animKeys - Animation key names.
  */
 
@@ -58,6 +59,19 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     /** @type {Phaser.Time.TimerEvent|null} */
     this.attackCooldownTimer = null;
+
+    /** @type {object|null} */
+    this.attackHitboxConfig = config.attackHitbox || null;
+
+    /** @type {string|null} */
+    this.attackSfx = config.attackSfx || null;
+    /** @type {string|null} */
+    this.hurtSfx = config.hurtSfx || null;
+    /** @type {string|null} */
+    this.deathSfx = config.deathSfx || null;
+
+    /** @type {boolean} */
+    this.facesLeftByDefault = false;
 
     // Physics defaults – subclasses can override after calling super()
     this.body.setGravityY(300);
@@ -114,5 +128,18 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
    */
   update(time, delta) {
     this.stateMachine.step();
+  }
+
+  /**
+   * Automatically flips the character sprite to look at the player's current position.
+   */
+  facePlayer() {
+    if (!this.scene || !this.scene.player) return;
+    const direction = this.scene.player.x < this.x ? -1 : 1;
+    const focusLeft = direction === -1;
+    
+    // If the sprite naturally faces left, flipX=true makes it face right.
+    // Если naturally faces right, flipX=true makes it face left.
+    this.setFlipX(this.facesLeftByDefault ? !focusLeft : focusLeft);
   }
 }

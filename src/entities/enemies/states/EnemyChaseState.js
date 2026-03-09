@@ -32,7 +32,7 @@ export default class EnemyChaseState extends EnemyState {
     // Move towards player
     const direction = player.x < enemy.x ? -1 : 1;
     enemy.setVelocityX(enemy.speed * direction);
-    enemy.setFlipX(direction === -1);
+    enemy.facePlayer();
   }
 
   /** @param {import('../Enemy').default} enemy */

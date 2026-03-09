@@ -71,6 +71,7 @@ export const SPRITE_CONFIG = {
   QUEST_MARKER: { frameWidth: 32, frameHeight: 32 },
   // Enemies
   SLIME: { frameWidth: 32, frameHeight: 32 },
+  DEMON_SLIME: { frameWidth: 288, frameHeight: 160 },
 };
 
 /**
@@ -264,6 +265,14 @@ export const SLIME_BLUE_ANIMS  = buildSlimeAnims('blue');
 export const SLIME_GREEN_ANIMS = buildSlimeAnims('green');
 export const SLIME_RED_ANIMS   = buildSlimeAnims('red');
 
+export const DEMON_SLIME_ANIMS = {
+  IDLE:   { key: 'demon_slime_idle',   start: 0,   end: 5,  rate: 10, repeat: -1 },
+  MOVE:   { key: 'demon_slime_move',   start: 22,  end: 33,  rate: 10, repeat: -1 },
+  ATTACK: { key: 'demon_slime_attack', start: 44,  end: 58,  rate: 10, repeat: 0  },
+  HURT:   { key: 'demon_slime_hurt',   start: 68,  end: 72,  rate: 10, repeat: 0  },
+  DEATH:  { key: 'demon_slime_death',  start: 90,  end: 109, rate: 10, repeat: 0  },
+};
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -315,4 +324,5 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.SLIME_BLUE,  anims: SLIME_BLUE_ANIMS },
   { assetKey: ASSETS.SLIME_GREEN, anims: SLIME_GREEN_ANIMS },
   { assetKey: ASSETS.SLIME_RED,   anims: SLIME_RED_ANIMS },
+  { assetKey: ASSETS.DEMON_SLIME, anims: DEMON_SLIME_ANIMS },
 ];

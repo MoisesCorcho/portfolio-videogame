@@ -9,7 +9,8 @@ import { AUDIO } from '../../../utils/Constants';
 export default class EnemyHurtState extends EnemyState {
   /** @param {import('../Enemy').default} enemy */
   enter(enemy) {
-    enemy.scene.audioManager.playSfx(AUDIO.SFX.SLIME_IMPACT, { volume: 0.6 });
+    const hurtSfx = enemy.hurtSfx ?? AUDIO.SFX.SLIME_IMPACT;
+    enemy.scene.audioManager.playSfx(hurtSfx, { volume: 0.6 });
     // Determine knockback direction
     const force = enemy.lastKnockbackForce || 50; // Fallback to 50 if 0
     let dirX = 1;
@@ -18,8 +19,9 @@ export default class EnemyHurtState extends EnemyState {
     if (enemy.lastAttackerX !== undefined && enemy.lastAttackerX !== null) {
       dirX = enemy.x > enemy.lastAttackerX ? 1 : -1;
     } else {
-      // Fallback: get pushed opposite to the direction we are facing
-      dirX = enemy.flipX ? 1 : -1;
+      // Fallback: get pushed opposite to the direction we are currently facing
+      const isFacingRight = enemy.facesLeftByDefault ? enemy.flipX : !enemy.flipX;
+      dirX = isFacingRight ? -1 : 1;
     }
 
     enemy.setVelocityX(force * dirX);
@@ -31,6 +33,10 @@ export default class EnemyHurtState extends EnemyState {
 
     // Visual feedback: red flash
     enemy.setTint(0xff4444);
+    if (enemy.animKeys.hurt) {
+      enemy.anims.play(enemy.animKeys.hurt, true);
+    }
+    
     enemy.scene.time.delayedCall(120, () => {
       if (enemy.active) enemy.clearTint();
     });

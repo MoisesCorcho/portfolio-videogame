@@ -21,6 +21,8 @@ export default class EnemyIdleState extends EnemyState {
 
     if (dist <= enemy.visionRange) {
       enemy.stateMachine.transition('chase');
+    } else {
+      enemy.facePlayer();
     }
   }
 }

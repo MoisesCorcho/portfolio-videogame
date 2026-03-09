@@ -90,6 +90,7 @@ export const ASSETS = {
   SLIME_BLUE: 'slime_blue',
   SLIME_GREEN: 'slime_green',
   SLIME_RED: 'slime_red',
+  DEMON_SLIME: 'demon_slime',
 
   // UI - Health Bar
   UI_HP_BAR: 'ui_hp_bar',
@@ -112,8 +113,11 @@ export const AUDIO = {
     ATTACK_SWORD: 'sfx_attack_sword',
     WINDOW_OPEN: 'sfx_window_open',
     WINDOW_CLOSE: 'sfx_window_close',
-    SLIME_IMPACT: 'sfx_slime_impact',
-    SLIME_DEATH:  'sfx_slime_death',
+    SLIME_IMPACT:        'sfx_slime_impact',
+    SLIME_DEATH:         'sfx_slime_death',
+    DEMON_SLIME_ATTACK:  'sfx_demon_slime_attack',
+    DEMON_SLIME_HURT:    'sfx_demon_slime_hurt',
+    DEMON_SLIME_DEATH:   'sfx_demon_slime_death',
   },
   ENV: {
     WATERFALL: 'env_waterfall',
@@ -168,4 +172,5 @@ export const ENTITY_TYPES = {
   DUMMY: 'dummy',
   NPC: 'npc',
   SLIME: 'slime',
+  DEMON_SLIME: 'demon_slime',
 };

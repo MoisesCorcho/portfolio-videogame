@@ -2,6 +2,7 @@ import Player from '../player/Player';
 import NPC from '../entities/NPC';
 import Dummy from '../entities/Dummy';
 import Slime from '../entities/enemies/Slime';
+import DemonSlime from '../entities/enemies/DemonSlime';
 import AudioManager from '../utils/AudioManager';
 import {
   ASSETS,
@@ -379,6 +380,25 @@ export default class Level2Scene extends Phaser.Scene {
       if (entityType === ENTITY_TYPES.DUMMY) {
         const dummy = this.dummies.get(obj.x, obj.y, ASSETS.DUMMY);
         if (dummy) dummy.setDepth(10);
+        obj.destroy();
+        return;
+      }
+
+      // Spawn demon slime boss
+      if (entityType === ENTITY_TYPES.DEMON_SLIME || obj.type === 'demon_slime' || obj.name === 'demon_slime') {
+        // Immediately hide the Phaser tile-preview sprite so it never renders as a frame artifact
+        obj.setVisible(false).setActive(false);
+
+        const w = obj.displayWidth;
+        const h = obj.displayHeight;
+
+        // For gid tile objects, createFromObjects gives x/y relative to the object's origin.
+        // Tiled sets the origin of `gid` objects to the bottom-left corner (0, 1).
+        const spawnX = obj.x + w / 2;
+        const spawnY = obj.y - h / 2;
+
+        const boss = new DemonSlime(this, spawnX, spawnY, w, h);
+        this.enemies.add(boss, true);
         obj.destroy();
         return;
       }

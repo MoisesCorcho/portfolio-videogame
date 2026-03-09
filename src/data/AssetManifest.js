@@ -512,8 +512,11 @@ const STATIC_ASSETS = [
   },
   { type: 'audio', key: AUDIO.SFX.JUMP,         path: 'assets/audio/sfx/jump.mp3' },
   { type: 'audio', key: AUDIO.SFX.LAND,         path: 'assets/audio/sfx/land.mp3' },
-  { type: 'audio', key: AUDIO.SFX.SLIME_IMPACT, path: 'assets/audio/enemies/slime/slime_impact.mp3' },
-  { type: 'audio', key: AUDIO.SFX.SLIME_DEATH,  path: 'assets/audio/enemies/slime/slime_death.mp3' },
+  { type: 'audio', key: AUDIO.SFX.SLIME_IMPACT,       path: 'assets/audio/enemies/slime/slime_impact.mp3' },
+  { type: 'audio', key: AUDIO.SFX.SLIME_DEATH,        path: 'assets/audio/enemies/slime/slime_death.mp3' },
+  { type: 'audio', key: AUDIO.SFX.DEMON_SLIME_ATTACK, path: 'assets/audio/enemies/bosses/demon_slime_attack.mp3' },
+  { type: 'audio', key: AUDIO.SFX.DEMON_SLIME_HURT,   path: 'assets/audio/enemies/bosses/demon_slime_hurt.mp3' },
+  { type: 'audio', key: AUDIO.SFX.DEMON_SLIME_DEATH,  path: 'assets/audio/enemies/bosses/demon_slime_death.mp3' },
   {
     type: 'audio',
     key: AUDIO.SFX.ATTACK_SWORD,
@@ -680,6 +683,12 @@ const STATIC_ASSETS = [
     key: ASSETS.SLIME_RED,
     path: 'assets/sprites/enemies/slime_red.png',
     config: SPRITE_CONFIG.SLIME,
+  },
+  {
+    type: 'spritesheet',
+    key: ASSETS.DEMON_SLIME,
+    path: 'assets/sprites/enemies/bosses/demon_slime.png',
+    config: SPRITE_CONFIG.DEMON_SLIME,
   },
 
   // UI - Health Bar assets

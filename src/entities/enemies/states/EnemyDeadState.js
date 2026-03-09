@@ -12,7 +12,8 @@ export default class EnemyDeadState extends EnemyState {
     enemy.setVelocityX(0);
     enemy.body.enable = false; // Disable physics so nothing else can interact with it
 
-    enemy.scene.audioManager.playSfx(AUDIO.SFX.SLIME_DEATH, { volume: 0.7 });
+    const deathSfx = enemy.deathSfx ?? AUDIO.SFX.SLIME_DEATH;
+    enemy.scene.audioManager.playSfx(deathSfx, { volume: 0.7 });
     enemy.anims.play(enemy.animKeys.death, true);
 
     // Fade out and destroy after the animation finishes
