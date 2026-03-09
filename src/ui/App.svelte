@@ -4,6 +4,7 @@
     import Modal from './components/Modal.svelte';
     import Dialogue from './components/Dialogue.svelte';
     import Sign from './components/Sign.svelte';
+    import GameOver from './components/GameOver.svelte';
 
     // Views
     import Profile from './components/header/Profile.svelte';
@@ -28,7 +29,9 @@
 </script>
 
 {#if state.isOpen}
-    {#if state.view === INTERACTION_TYPES.NPC}
+    {#if state.view === INTERACTION_TYPES.GAME_OVER}
+        <GameOver onrestart={() => window.location.reload()} />
+    {:else if state.view === INTERACTION_TYPES.NPC}
         <!-- NPC Dialogue uses its own lightweight box, not the full Modal -->
         <Dialogue
             npcName={state.data?.name ?? 'NPC'}

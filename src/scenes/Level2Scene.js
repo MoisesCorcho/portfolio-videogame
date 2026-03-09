@@ -16,7 +16,7 @@ import {
 } from '../utils/Constants';
 import { MASTER_ANIMATIONS_REGISTRY } from '../data/Animations';
 import { GAME_CONFIG } from '../config/GameConfig';
-import { closeModal, uiStore } from '../ui/stores/uiStore';
+import { closeModal, openModal, uiStore } from '../ui/stores/uiStore';
 import AnimatedTiles from 'phaser-animated-tiles/dist/AnimatedTiles.js';
 
 const DIALOGUE_CLOSE_RANGE = 150;
@@ -190,6 +190,13 @@ export default class Level2Scene extends Phaser.Scene {
 
     // Fade in when scene starts
     this.cameras.main.fadeIn(500, 0, 0, 0);
+
+    // Show game-over modal when player dies
+    this.events.once('player-dead', () => {
+      this.time.delayedCall(1200, () => {
+        openModal(INTERACTION_TYPES.GAME_OVER);
+      });
+    });
 
     // Launch the HUD overlay; pass this scene's key so UIScene knows whose events to listen to
     this.scene.launch(SCENES.UI, { parentScene: SCENES.LEVEL2 });

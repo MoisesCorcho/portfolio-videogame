@@ -144,6 +144,7 @@ export const INTERACTION_TYPES = {
   NPC: 'npc',
   SIGN: 'sign',
   TELEPORT: 'teleport',
+  GAME_OVER: 'game_over',
 };
 
 export const EVENTS = {
