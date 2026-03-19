@@ -2289,15 +2289,21 @@
                  "height":32,
                  "id":622,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"animation",
+                         "type":"string",
+                         "value":"quest_marker_question"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":3730,
-                 "y":1040.90909090909
+                 "x":3730.5,
+                 "y":1038.40909090909
                 }, 
                 {
-                 "height":36.5454545454545,
+                 "height":14.9999999999998,
                  "id":623,
                  "name":"",
                  "properties":[
@@ -2314,9 +2320,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":37.090909090909,
-                 "x":3728.18181818182,
-                 "y":1051.63636363636
+                 "width":26.7727272727275,
+                 "x":3731.68181818182,
+                 "y":1073.18181818182
                 }],
          "opacity":1,
          "type":"objectgroup",
