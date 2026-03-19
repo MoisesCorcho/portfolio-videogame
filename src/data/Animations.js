@@ -273,6 +273,15 @@ export const DEMON_SLIME_ANIMS = {
   DEATH:  { key: 'demon_slime_death',  start: 90,  end: 109, rate: 10, repeat: 0  },
 };
 
+export const TUTORIAL_PLAYER_ANIMS = {
+  GUARD: { key: 'guard', start: 80, end: 82, rate: 5, repeat: -1 },
+};
+
+export const TUTORIAL_PLAYER_2_ANIMS = {
+  CRITICAL_ATTACK: { key: 'criticalAttack', start: 32, end: 39, rate: 12, repeat: -1 },
+  SLIDE: { key: 'Slide', start: 16, end: 23, rate: 12, repeat: -1 },
+};
+
 import { ASSETS } from '../utils/Constants';
 
 /**
@@ -325,4 +334,7 @@ export const MASTER_ANIMATIONS_REGISTRY = [
   { assetKey: ASSETS.SLIME_GREEN, anims: SLIME_GREEN_ANIMS },
   { assetKey: ASSETS.SLIME_RED,   anims: SLIME_RED_ANIMS },
   { assetKey: ASSETS.DEMON_SLIME, anims: DEMON_SLIME_ANIMS },
+  // Tutorial Animations
+  { assetKey: ASSETS.PLAYER, anims: TUTORIAL_PLAYER_ANIMS },
+  { assetKey: ASSETS.PLAYER_2, anims: TUTORIAL_PLAYER_2_ANIMS },
 ];

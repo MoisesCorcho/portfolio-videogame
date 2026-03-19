@@ -291,6 +291,8 @@ export default class Level2Scene extends Phaser.Scene {
       interest_points: ASSETS.INTEREST_POINTS,
       training_dummy: ASSETS.DUMMY,
       bg_dirt2: ASSETS.BG_DIRT2,
+      char_blue: ASSETS.PLAYER,
+      char_blue_2: ASSETS.PLAYER_2,
     };
 
     const allTilesets = [];
@@ -379,6 +381,16 @@ export default class Level2Scene extends Phaser.Scene {
 
       const interactionType = getProp('interactionType');
       const entityType = getProp('entity');
+      const animationKey = getProp('anim') || getProp('animation');
+
+      if (animationKey) {
+        if (this.anims.exists(animationKey)) {
+          // Play the animation and force it to loop infinitely for hologram objects
+          obj.play({ key: animationKey, repeat: -1 });
+        } else {
+          console.warn(`[Level2Scene] Animation key not found: ${animationKey}`);
+        }
+      }
 
       if (obj.name === OBJECT_NAMES.START) {
         obj.setVisible(false);
