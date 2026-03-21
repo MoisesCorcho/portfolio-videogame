@@ -114,6 +114,18 @@ export default class AudioManager {
   }
 
   /**
+   * Stops and destroys all registered spatial sounds, then clears the registry.
+   * Call this when the scene that owns the spatial sounds is shutting down.
+   */
+  stopAllSpatialSounds() {
+    this.spatialSounds.forEach((item) => {
+      item.sound.stop();
+      item.sound.destroy();
+    });
+    this.spatialSounds.clear();
+  }
+
+  /**
    * Updates volume of spatial sounds based on player position.
    * @param {Phaser.GameObjects.Sprite} player - The player entity.
    */

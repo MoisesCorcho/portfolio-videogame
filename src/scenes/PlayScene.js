@@ -227,12 +227,13 @@ export default class PlayScene extends Phaser.Scene {
       }
     });
 
-    // Clean up subscription when scene shuts down
+    // Clean up subscription and spatial audio when scene shuts down
     this.events.on('shutdown', () => {
       if (window.__UI_STORE_UNSUBSCRIBE__) {
         window.__UI_STORE_UNSUBSCRIBE__();
         window.__UI_STORE_UNSUBSCRIBE__ = null;
       }
+      this.audioManager.stopAllSpatialSounds();
     });
   }
 

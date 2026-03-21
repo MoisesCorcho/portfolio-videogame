@@ -2300,10 +2300,10 @@
                  "visible":true,
                  "width":32,
                  "x":3730.5,
-                 "y":1038.40909090909
+                 "y":1038.41
                 }, 
                 {
-                 "height":14.9999999999998,
+                 "height":15,
                  "id":623,
                  "name":"",
                  "properties":[
@@ -2320,9 +2320,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":26.7727272727275,
-                 "x":3731.68181818182,
-                 "y":1073.18181818182
+                 "width":26.7727,
+                 "x":3731.68,
+                 "y":1073.18
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3453,29 +3453,6 @@
                  "width":14,
                  "x":361.625,
                  "y":1379.75
-                }, 
-                {
-                 "gid":334,
-                 "height":28,
-                 "id":621,
-                 "name":"",
-                 "properties":[
-                        {
-                         "name":"interactionType",
-                         "type":"string",
-                         "value":"teleport"
-                        }, 
-                        {
-                         "name":"targetScene",
-                         "type":"string",
-                         "value":"Level2Scene"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":445.5,
-                 "y":1411
                 }],
          "opacity":1,
          "type":"objectgroup",
