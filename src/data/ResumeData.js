@@ -14,6 +14,50 @@ export const ResumeData = {
   },
   experience: [
     {
+      id: 'exp_ticworks',
+      role: 'PHP Developer',
+      company: 'TICWorks',
+      date: 'Marzo 2026 – Abril 2026',
+      description:
+        'Participé activamente en la modernización y el mantenimiento evolutivo de la plataforma TICWorks, colaborando en la migración técnica del motor de PHP 7.2 hacia PHP 8.2. Implementamos el uso de PHPStan para análisis estático preventivo y optimizamos el sistema de logging. Reforcé la seguridad en módulos críticos (Auth, Jobs, Payments) y mejoré la experiencia de postulación con flujos dinámicos.',
+      stack: [
+        'PHP 8.2',
+        'Laravel',
+        'MySQL',
+        'PHPStan',
+        'Docker',
+        'Git',
+        'Composer',
+      ],
+    },
+    {
+      id: 'exp_lia',
+      role: 'Full Stack Developer (Laravel & React)',
+      company: 'Lia',
+      date: 'Febrero 2026 – Marzo 2026',
+      description:
+        'Lideré el desarrollo del ecosistema de monetización y la maduración de la interfaz de usuario de Lia (IA). Implementé el flujo de suscripciones con Stripe Checkout y Laravel Cashier v16. Desarrollé un Paywall con interceptores dinámicos y gestión de estado con Zustand, asegurando soporte para Dark Mode e internacionalización bajo Clean Architecture.',
+      stack: [
+        'PHP 8.3',
+        'Laravel 11',
+        'React',
+        'Zustand',
+        'Stripe',
+        'TypeScript',
+        'Tailwind',
+        'TDD',
+      ],
+    },
+    {
+      id: 'exp_flusso',
+      role: 'Laravel / Vue Fullstack Developer',
+      company: 'Flusso',
+      date: 'Febrero 2026 – Marzo 2026',
+      description:
+        'Ejecuté el rebranding completo de la Landing Page de Flusso, traduciendo diseños de Figma a una interfaz pixel-perfect de alta fidelidad. Implementé una experiencia 100% responsiva utilizando Tailwind CSS y Vue 3 con Inertia.js y Laravel 12, garantizando una implementación pulida y moderna del punto de entrada principal.',
+      stack: ['PHP 8.3', 'Laravel 12', 'Vue 3', 'Inertia.js', 'Tailwind', 'Git'],
+    },
+    {
       id: 'exp_andrestelocambia',
       role: 'Laravel Backend Developer',
       company: 'andrestelocambia',
