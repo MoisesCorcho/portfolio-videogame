@@ -1,20 +1,70 @@
 # Documentación Técnica del Proyecto Portfolio Game
 
-Este documento proporciona una visión detallada de la arquitectura, estructura de archivos y lógica principal del proyecto de juego desarrollado en Phaser 3 con Vite y TailwindCSS.
+Este documento proporciona una visión detallada de la arquitectura, estructura de archivos y lógica principal del proyecto: un videojuego de portfolio interactivo construido con Phaser 3, Svelte 5 y Vite.
+
+---
+
+## 🧱 Stack Tecnológico y Decisiones de Diseño
+
+### ¿Por qué este stack?
+
+El proyecto resuelve un problema concreto: **presentar un portfolio de desarrollo de software en forma de videojuego 2D**. Eso exige dos capas bien separadas:
+
+1. **Un motor de juego** para el mundo interactivo (física, colisiones, animaciones, audio).
+2. **Un framework de UI moderno** para mostrar contenido de portfolio (modales, formularios, datos estructurados).
+
+Mezclar ambas responsabilidades en una sola tecnología habría resultado en código acoplado y difícil de mantener. La solución es usar cada herramienta para lo que fue diseñada:
+
+| Tecnología | Versión | Rol |
+|:-----------|:--------|:----|
+| **Phaser 3** | `^3.90.0` | Motor de juego: renderizado WebGL/Canvas, física Arcade, input, animaciones, audio, escenas |
+| **Svelte 5** | `^5.48.5` | UI reactiva: modales de portfolio, HUD, diálogos de NPCs |
+| **Vite** | `^7.2.4` | Build tool y dev server con HMR; integra ambos mundos bajo el mismo proceso |
+| **TailwindCSS** | `^4.1.18` | Estilos utilitarios para los componentes Svelte |
+| **TypeScript** | `~5.9.3` | Type-checking (la configuración del proyecto es TS, el código del juego es JS) |
+| **phaser-animated-tiles** | `^2.0.2` | Plugin que habilita animaciones definidas en tilesets de Tiled dentro de Phaser |
+| **Prettier** | `^3.8.1` | Formateo de código unificado |
+
+### ¿Cómo se integran Svelte y Phaser?
+
+Son dos sistemas completamente independientes que corren en paralelo sobre el mismo `index.html`:
+
+```
+index.html
+├── <canvas>          ← Phaser renderiza aquí (WebGL/Canvas)
+└── <div id="ui-layer">  ← Svelte monta aquí (DOM normal)
+```
+
+`src/main.js` inicializa primero `Phaser.Game` y luego monta la app Svelte sobre `#ui-layer`. El div tiene `pointer-events: none` por defecto para no bloquear los clicks del juego, y los modales lo reactivan cuando están abiertos.
+
+**El puente de comunicación** entre ambos mundos es un **Svelte store** (`src/ui/stores/uiStore.js`):
+
+- Cuando el jugador interactúa con un objeto en Phaser (tecla E), `PlayScene` llama a `openModal(view, data)`.
+- El store actualiza su estado reactivo.
+- El componente `App.svelte` detecta el cambio y renderiza el modal correspondiente.
+- Al cerrar el modal, `closeModal()` resetea el store y Phaser reanuda la escena.
+
+Para los eventos en tiempo real (como la barra de vida), se usa el sistema de eventos nativo de Phaser: `this.scene.events.emit('player-health-changed', health, maxHealth)`, que `UIScene` escucha directamente.
+
+---
 
 ## 📁 Estructura del Proyecto
 
-El proyecto está organizado de manera modular para separar la configuración, los datos, la lógica del juego y la interfaz de usuario.
-
-### Directorios Principales (`src/`)
-
-- **`config/`**: Configuraciones globales del juego.
-- **`data/`**: Manifiestos de assets, configuraciones de animaciones y datos estáticos.
-- **`player/`**: Lógica del jugador, máquina de estados y definiciones de estados.
-- **`scenes/`**: Escenas de Phaser (Preloader, Juego principal).
-- **`ui/`**: Componentes de interfaz de usuario (svelte, stores).
-- **`utils/`**: Constantes y utilidades generales.
-- **`main.js`**: Punto de entrada de la aplicación.
+```
+src/
+├── config/         Configuración global (dimensiones, física, zoom)
+├── data/           AssetManifest, Animations, Dialogues, ResumeData
+├── entities/       Entidades del juego (NPCs, enemigos, dummy)
+│   └── enemies/    Clases de enemigos y sus estados FSM
+├── player/         Jugador y su máquina de estados
+│   └── states/     Un archivo por estado del jugador
+├── scenes/         Escenas de Phaser
+├── ui/             Componentes Svelte y stores
+│   ├── components/ Modales, diálogos, HUD
+│   └── stores/     Estado compartido Svelte ↔ Phaser
+├── utils/          Constants.js, AudioManager.js
+└── main.js         Punto de entrada
+```
 
 ---
 
@@ -22,343 +72,440 @@ El proyecto está organizado de manera modular para separar la configuración, l
 
 ### `src/main.js`
 
-Es el punto de entrada. Inicializa la instancia de `Phaser.Game` utilizando la configuración definida y monta la interfaz de usuario (Svelte) sobre el canvas del juego.
+Punto de entrada. Inicializa `Phaser.Game` con el orden de escenas `[Preloader, PlayScene, Level2Scene, UIScene]` y monta la app Svelte sobre `#ui-layer`. En HMR destruye la instancia previa del juego para evitar leaks de contexto WebGL.
 
 ### `src/config/GameConfig.js`
 
 Define las constantes globales de configuración:
 
-- Dimensiones del renderizado.
-- Gravedad y físicas Arcade.
-- Colores de fondo.
-- Niveles de zoom y dimensiones del mundo.
-- Flags de depuración (`debug: import.meta.env.DEV`).
+- Resolución de renderizado: **1024×576** (ratio 16:9).
+- Zoom: **3x** (pixel-perfect scaling).
+- Gravedad Arcade: **1000**.
+- Dimensiones del mundo: `worldWidth: 3200`, `worldHeight: 600`.
+- `debug: import.meta.env.DEV` — activa el overlay de física en desarrollo automáticamente.
+
+### `src/utils/Constants.js`
+
+Centraliza todos los _magic strings_: claves de assets (`ASSETS`), nombres de escenas (`SCENES`), capas de mapas (`MAP_LAYERS`), tipos de entidades (`ENTITY_TYPES`), tipos de interacción (`INTERACTION_TYPES`) y eventos de audio (`AUDIO`). Ninguna cadena de texto hardcodeada existe en el código del juego.
 
 ---
 
 ## 📦 Sistema de Gestión de Assets
 
-El sistema de assets es híbrido, combinando cargas dinámicas automáticas con definiciones manuales para assets complejos.
-
 ### `src/data/AssetManifest.js`
 
-Este archivo es el corazón de la gestión de assets.
+Núcleo de la gestión de assets. Combina carga dinámica con definiciones manuales:
 
-1.  **Carga Dinámica**: Utiliza `import.meta.glob` de Vite para descubrir automáticamente todos los archivos `.png` en `public/assets/decorations/`.
-2.  **Normalización de Claves**:
-    - Genera claves únicas para Phaser (ej. `GH_Decoration_bookshelf`) para evitar colisiones de nombres.
-    - Genera claves compatibles con Tiled (ej. `../decorations/...`) para que el mapa pueda encontrar los assets automáticamente.
-3.  **Assets Estáticos**: Define manualmente spritesheets (`PLAYER`, `FURNACE`), tilemaps (`level1.json`) y fondos parallax.
+1. **Carga Dinámica**: `import.meta.glob` de Vite descubre automáticamente todos los `.png` en `public/assets/decorations/`.
+2. **Normalización de Claves**:
+   - Clave Phaser: `GH_Decoration_bookshelf` (para el código del juego).
+   - Clave Tiled: `../decorations/...` (para que el mapa encuentre los assets automáticamente).
+3. **Assets Estáticos**: Spritesheets (`PLAYER`, `PLAYER_2`, enemigos), tilemaps, audio y fondos parallax se registran manualmente.
 
-### `src/scenes/Preloader.js`
+### `src/data/Animations.js`
 
-Se encarga de cargar todos los recursos antes de iniciar el juego.
+Registro central de animaciones:
 
-- Itera sobre el `ASSET_MANIFEST` generado.
-- Carga imágenes, spritesheets y mapas JSON.
-- Crea las animaciones globales del jugador una vez finalizada la carga (`createAnimations()`).
-
-### `src/utils/Constants.js`
-
-Centraliza todas las cadenas de texto mágicas (mágic strings) para claves de assets, nombres de escenas, capas de mapas y tipos de eventos, previniendo errores de tipografía.
+- **`PLAYER_ANIMS`**: Rangos de frames (start/end), frameRate y repetición del jugador.
+- **`SPRITE_CONFIG`**: Dimensiones de frame para cada spritesheet.
+- **`MASTER_ANIMATIONS_REGISTRY`**: Asocia assets con sus configuraciones para creación automática en escena.
 
 ---
 
-## 🎮 Lógica del Juego (Escenas)
+## 🎮 Escenas
+
+### Flujo de Escenas
+
+```
+Preloader → PlayScene (Level 1)
+                 ↓ (teleport)
+           Level2Scene (Level 2)  ←→  UIScene (HUD paralelo)
+```
+
+### `src/scenes/Preloader.js`
+
+Carga todos los assets y construye una pantalla de carga pixel art profesional antes de iniciar el juego.
+
+**Pantalla de carga:**
+- Fondo oscuro (`0x0d0d1e`) con 60 estrellas aleatorias de distintos tamaños y opacidades.
+- Overlay de scanlines (1px cada 4px, 8% opacidad) para efecto CRT retro.
+- Espada pixel art central construida con `Graphics` API (punta, hoja, guardamano, empuñadura, pomo).
+- Spinner de 8 cuadrados orbitales dorados con degradado de opacidad.
+- Título "THE DEVELOPER'S JOURNEY" con tween de pulso.
+- Barra de progreso (404×28) con fill verde y shimmer animado.
+- Texto de porcentaje y nombre del asset actual (truncado a 24 caracteres).
+- Decoraciones de esquina doradas.
+
+Al completar la carga crea las animaciones del jugador vía `createAnimations()` y transiciona a `PlayScene`.
 
 ### `src/scenes/PlayScene.js`
 
-Es la escena principal donde ocurre toda la jugabilidad.
+Escena principal de exploración (Nivel 1).
 
-- **`create()`**: Orquesta la inicialización del nivel en orden:
-  1.  **Fondo Parallax**: `createParallaxBackground()`. Capas con diferente velocidad de desplazamiento (`setScrollFactor`).
-  2.  **Animaciones de Entorno**: `createEnvironmentAnimations()`.
-  3.  **Nivel (Tilemap)**: `createLevel()`. Carga el mapa de Tiled, gestiona capas de tiles y objetos.
-  4.  **Jugador**: `createPlayer()`. Instancia la clase `Player`.
-  5.  **Cámara**: Configura el seguimiento (`startFollow`) y límites del mundo.
-- **Integración con Tiled**:
-  - **Mapeo de Tilesets**: Lógica inteligente para asociar tilesets de Tiled con texturas de Phaser (coincidencia exacta o difusa).
-  - **Capas de Objetos**: `processObjectLayer()` convierte objetos de Tiled en elementos interactivos o puntos de spawn.
-  - **Colisiones Manuales**: `processManualCollisions()` crea cuerpos físicos invisibles basados en formas dibujadas en Tiled.
+**`create()` — orden de inicialización:**
+1. Fondo parallax (6 capas, scroll ratio diferente por bioma).
+2. Carga del mapa Tiled `level1.json`.
+3. Spawn del jugador en el objeto `START`.
+4. Instancia de `AudioManager`.
+5. NPCs, dummies e interactables desde la capa `Objects`.
+6. Colisiones manuales y plataformas one-way.
+7. Cámara con `startFollow` al jugador (zoom 3x).
+8. Suscripción a eventos del store de UI para sonidos de ventanas.
+
+**`update()`**: Llama a `audioManager.updateSpatialSounds(player)`, detecta biomas y gestiona la mecánica de bajada de plataformas.
+
+**`shutdown`**: Llama a `audioManager.stopAllSpatialSounds()` para que los sonidos ambientes del Nivel 1 no persistan al pasar al Nivel 2.
+
+### `src/scenes/Level2Scene.js`
+
+Escena de combate (Nivel 2). Arquitectura paralela a `PlayScene` pero especializada en enemigos.
+
+**Diferencias clave respecto a PlayScene:**
+- Spawna `Slime` y `DemonSlime` desde la capa `Objects` de Tiled.
+- El grupo `enemies` tiene `runChildUpdate: true` para que cada enemigo llame a su propio `update`.
+- El overlap entre `attackZone` y `enemies` resuelve el daño con knockback.
+- Al morir el jugador emite `'player-dead'` → delay 1.2s → `openModal(GAME_OVER)`.
+- **Lifecycle de UIScene:** lanza `UIScene` en `create()` con `{ parentScene: SCENES.LEVEL2 }` y la detiene en `shutdown`.
+
+**Corrección de posición para objetos Tiled:** Los objetos tipo tile tienen su origen en la esquina inferior-izquierda. El spawn corrige: `(obj.x + w/2, obj.y - h/2)`.
+
+### `src/scenes/UIScene.js`
+
+Escena Phaser que corre en paralelo al juego principal, exclusivamente para el HUD.
+
+**Barra de vida:**
+- Orb rojo fill (56×54 px, escala 1.5x) recortado por una máscara rectangular.
+- El ancho de la máscara representa el ratio HP/maxHP.
+- Tween de 350ms (Sine.easeOut) anima el cambio de forma suave.
+- Frame decorativo encima para ocultar el overflow.
+- Todos los elementos tienen `scrollFactor: 0` (fijos a la cámara).
+
+**Comunicación con la escena padre:**
+1. `init(data)` captura la clave de la escena padre (`parentScene`).
+2. Se suscribe al evento `'player-health-changed'` de esa escena.
+3. El jugador emite ese evento en `takeDamage()`: `scene.events.emit('player-health-changed', health, maxHealth)`.
+4. En restart, UIScene rewirifica los listeners para evitar duplicados.
 
 ---
 
 ## 🏃‍♂️ Sistema del Jugador
 
-El jugador utiliza una Máquina de Estados Finitos (FSM) para gestionar su comportamiento complejo.
-
 ### `src/player/Player.js`
 
-Extiende `Phaser.Physics.Arcade.Sprite`.
+Extiende `Phaser.Physics.Arcade.Sprite`. Configura física (cuerpo 20×30 px), inputs y la `StateMachine`.
 
-- Configura físicas (rebote, colisiones con el mundo, tamaño del cuerpo).
-- Inicializa los inputs (teclado).
-- Instancia la `StateMachine`.
-- Define los estados posibles (`idle`, `run`, `jump`, `fall`, `landing`, `attack`).
+**Stats:** `maxHealth: 5`, `health: 5`, flag `isInvulnerable`.
+
+**Inputs:**
+| Tecla | Acción |
+|:------|:-------|
+| ←→ / A D | Movimiento |
+| Space | Salto |
+| J | Ataque (combo 2 hits) |
+| K | Ataque crítico |
+| L | Guardia |
+| S / ↓ | Slide / bajar plataforma |
+| E | Interactuar |
+
+**`takeDamage(amount)`:**
+- **Invulnerable** (slide activo): ignora completamente.
+- **Guard**: daño a la mitad (`Math.floor`), knockback en dirección contraria al facing, flash naranja 120ms, estado sin cambio.
+- **Normal**: daño completo, emite `'player-health-changed'`, transiciona a `hurt` o `dead`.
 
 ### `src/player/StateMachine.js`
 
-Clase genérica que gestiona las transiciones entre estados.
+FSM genérica. `transition(newState)` llama `exit()` del estado actual y `enter()` del nuevo. `step()` llama `update()` del estado activo cada frame.
 
-- **`transition(newState)`**: Cambia el estado actual y llama a los métodos `enter()`/`exit()`.
-- **`step()`**: Ejecuta el método `update()` del estado activo en cada frame.
+### `src/player/states/` — Estados
 
-### `src/player/states/`
-
-Cada archivo representa un comportamiento aislado (ej. `JumpState.js`, `RunState.js`), lo que facilita la adición de nuevas mecánicas sin ensuciar la clase `Player`.
-
----
-
-## 🎨 Animaciones
-
-### `src/data/Animations.js`
-
-Registro central de todas las configuraciones de animación.
-
-- **`PLAYER_ANIMS`**: Define rangos de frames (start/end), frameRate y repetición para el personaje.
-- **`SPRITE_CONFIG`**: Define las dimensiones de los frames para spritesheets.
-- **`MASTER_ANIMATIONS_REGISTRY`**: Relaciona assets (como el horno) con sus configuraciones de animación para que se creen automáticamente en la escena.
+| Estado | Descripción |
+|:-------|:------------|
+| `IdleState` | Estado por defecto. Espera input. |
+| `RunState` | Movimiento horizontal. Pasos dinámicos según material del suelo. |
+| `JumpState` | Aplica velocidad vertical. Reproduce `sfx_jump`. |
+| `FallState` | Caída libre. Transiciona a Landing al tocar el suelo. |
+| `LandingState` | Recuperación post-caída. Bloquea input brevemente. |
+| `AttackState` | Combo de 2 hits (J). Hitbox 25×25 px reposicionado por facing. Trackea `hitEnemies` Set para evitar hits dobles en el mismo swing. |
+| `CriticalAttackState` | Hit único (K). Knockback 150 px vs 80 px normal. |
+| `GuardState` | Bloqueo (L sostenido). Reduce daño a la mitad. Flash naranja al recibir hit. |
+| `SlideState` | Deslizamiento (S). Activa `isInvulnerable` en `enter()` y lo limpia en `exit()`. |
+| `HurtState` | Daño recibido. Flash rojo, stun 250ms, knockback. |
+| `DeadState` | Muerte. Animación de muerte, fade-out, dispara modal de Game Over. |
 
 ---
 
-## 🗺️ Mapa y Niveles (Tiled)
+## 👾 Sistema de Entidades
 
-El juego utiliza mapas creados en Tiled (`.json`).
+### `src/entities/enemies/Enemy.js` — Clase Base
 
-- **Capas de Tiles**: Renderizan el suelo y decoraciones estáticas.
-- **Capas de Objetos**:
-  - `Ground`: Colisiones principales.
-  - `Objects`: Elementos interactivos con propiedades personalizadas (`interactionType`, `animation`).
-  - `Collisions`: Formas personalizadas para colisiones precisas.
-- **Propiedades Personalizadas**: Se leen en `PlayScene.js` para asignar lógica (ej. abrir un modal al interactuar).
+Extiende `Phaser.Physics.Arcade.Sprite`. Todas las clases de enemigos heredan de aquí.
 
----
+**`EnemyConfig` (parámetro del constructor):**
+```javascript
+{
+  maxHealth, speed, damage,
+  visionRange,    // Distancia a la que detecta al jugador
+  attackRange,    // Distancia para iniciar el ataque
+  attackCooldown, // ms entre ataques
+  animKeys: { idle, move, attack, hurt, death },
+  attackHitbox?: { width, height, offsetX, offsetY, hitFrame },
+  attackSfx?, hurtSfx?, deathSfx?
+}
+```
 
-## 🪜 Plataformas Atravesables (One-Way Platforms)
+**Propiedades clave:**
+- `facesLeftByDefault` — Controla la lógica de `flipX` en `facePlayer()` para spritesheets que naturalmente miran a la izquierda.
+- `lastKnockbackForce` / `lastAttackerX` — Almacenados en `takeDamage()` para que `EnemyHurtState` los consuma.
 
-El juego soporta plataformas que permiten saltar a través de ellas desde abajo y pararse encima.
+**`takeDamage(amount, knockbackForce, sourceX)`:** Ignora si ya está en `hurt` o `dead`. Almacena datos de knockback y transiciona a `hurt`.
 
-### 🛠️ Detalles Técnicos
+### `src/entities/enemies/Slime.js`
 
-- **Archivos involucrados**:
-  - [`src/scenes/PlayScene.js`]: Contiene la lógica de creación y el loop de actualización.
-  - [`src/utils/Constants.js`]: Define el nombre de la capa (`PLATFORMS`).
-- **Funciones Clave**:
-  - `processOneWayPlatforms(layerName)`: Itera sobre los objetos de Tiled y crea `Phaser.Physics.Arcade.StaticGroup` de zonas invisibles.
-  - `update()`: Gestiona la entrada del teclado para la mecánica de bajada.
+Enemigo básico con tres variantes de dificultad progresiva:
 
-### 🧠 ¿Cómo funciona el sistema?
+| Variante | HP | Velocidad | Daño | Visión | Cooldown |
+|:---------|:---|:----------|:-----|:-------|:---------|
+| Green | 2 | 35 | 1 | 150 px | 1200 ms |
+| Blue | 3 | 50 | 2 | 200 px | 900 ms |
+| Red | 5 | 65 | 3 | 250 px | 700 ms |
 
-1.  **Colisiones Unidireccionales**: En Phaser, cada cuerpo físico tiene flags de colisión. Para estas plataformas, configuramos `body.checkCollision.up = true` y el resto (`down`, `left`, `right`) en `false`. Esto permite que el jugador pase a través de ellas desde cualquier dirección excepto desde arriba.
-2.  **Mecánica de Bajada (Drop-Down)**:
-    - Cuando el jugador está tocando el suelo (`body.touching.down`) y presiona la tecla **Abajo** o **S**, el sistema verifica si está sobre un objeto de la capa `Platforms`.
-    - Si es así, desactivamos temporalmente el colisionador principal (`oneWayCollider.active = false`).
-    - Usamos un `this.time.delayedCall(250, ...)` para reactivar el colisionador después de 250ms, permitiendo que el jugador atraviese la plataforma hacia abajo.
+No tiene animación de ataque dedicada. Usa daño por contacto en `EnemyAttackState`. Si se spawnea desde Tiled con dimensiones mayores a 32×32, se escala proporcionalmente.
 
-### 🗺️ Configuración en Tiled
+### `src/entities/enemies/DemonSlime.js`
 
-#### One-Way Platforms
+Boss del Nivel 2.
 
-1.  **Nueva Capa de Objetos**: Crea una capa de objetos llamada exactamente `Platforms` (respetando mayúsculas).
-2.  **Rectángulos**: Dibuja rectángulos en esta capa donde quieras que el jugador pueda aterrizar/atravesar.
-3.  **Invisibilidad**: Los objetos son invisibles en el juego, solo actúan como límites físicos.
+- **Spritesheet:** 288×160 px por frame, 5 filas (idle, walk, attack, hurt, death).
+- **Stats:** 15 HP, velocidad 45, daño 3, visión 350 px, rango de ataque 140 px, cooldown 1500 ms.
+- **Hitbox de ataque:** 120×140 px, offset 100 px desde el centro (ajustado por facing), daño se ejecuta exactamente en el frame 10 de la animación.
+- **`facesLeftByDefault = true`** — El spritesheet naturalmente mira a la izquierda.
+- **Audio propio:** `demon_slime_attack.mp3`, `demon_slime_hurt.mp3`, `demon_slime_death.mp3` en `public/assets/audio/enemies/bosses/`.
 
-#### Zonas de Biomas
+### `src/entities/Dummy.js`
 
-1.  **Capa de Objetos**: Crea una capa de objetos llamada `Biomes`.
-2.  **Rectángulos**: Dibuja rectángulos que cubran el área total de cada bioma (soporta profundidad Y).
-3.  **Propiedad Personalizada**:
-    - **Nombre**: `biome` (tipo string).
-    - **Valor**: El nombre del bioma (ej: `normal`, `autumn`, `winter`). Debe coincidir con los nombres definidos en `PlayScene.js` (BIOME_ZONES).
-4.  **Prioridad**: Si el jugador está dentro de varios rectángulos, se activará el primero que encuentre en la lista de objetos de Tiled.
+Maniquí de entrenamiento en PlayScene.
 
----
+- Físicas inmóviles. Reproduce animación `HURT` al recibir daño y regresa a `IDLE` al completarla.
+- Flag `isHurt` previene interrupciones de animación en hits múltiples rápidos.
+- No aplica daño. Útil para probar combos del jugador.
 
-## 🧩 Plugins y Extensiones
+### `src/entities/NPC.js`
 
-### `phaser-animated-tiles`
+NPC con patrulla opcional y sistema de diálogos. Configurado 100% desde Tiled vía propiedades personalizadas. Ver sección **Sistema de NPCs** para detalles.
 
-Este proyecto utiliza el plugin **[phaser-animated-tiles](https://www.npmjs.com/package/phaser-animated-tiles)** para habilitar la reproducción de animaciones definidas en los tilesets de Tiled dentro de Phaser 3.
+### Estados FSM de Enemigos (`src/entities/enemies/states/`)
 
-#### ❓ ¿Por qué es necesario?
+Todos los enemigos comparten estos estados genéricos:
 
-Phaser 3, por defecto, **NO reproduce animaciones de tiles** que se encuentren en las "Capas de Patrones" (Tile Layers) de Tiled. Solo renderiza el primer frame del tile de forma estática. Este plugin llena ese vacío, permitiendo que elementos como agua, fuego, o decoraciones animadas funcionen automáticamente sin necesidad de convertirlos en Sprites (GameObjects).
+| Estado | Comportamiento |
+|:-------|:--------------|
+| `EnemyIdleState` | Quieto, mirando al jugador. Transiciona a `chase` cuando el jugador entra en `visionRange`. |
+| `EnemyChaseState` | Se mueve hacia el jugador. A `attack` si está en `attackRange`; vuelve a `idle` si el jugador sale de `visionRange`. |
+| `EnemyAttackState` | Reproduce anim de ataque y dispara `attackSfx`. Escucha `animationupdate` para ejecutar la hitbox exactamente en `hitFrame`. Fallback para slimes: daño por contacto con timer de 200ms. |
+| `EnemyHurtState` | Flash rojo, knockback (dirección relativa a `lastAttackerX`), pop vertical (-100 vy), stun 250ms → `dead` o `chase`. |
+| `EnemyDeadState` | Reproduce `deathSfx` y animación de muerte, tween de fade-out, destruye el sprite. |
 
-#### 🛠️ Implementación en el Proyecto
-
-El plugin se ha instalado vía npm y se inicializa en `src/scenes/PlayScene.js`:
-
-1.  **Importación**: Se importa directamente desde `node_modules`.
-2.  **Carga**: Se carga en el método `preload()` de la escena como un `scenePlugin`.
-3.  **Inicialización**: Se ejecuta `this.sys.animatedTiles.init(this.map)` en el método `create()` una vez que el mapa ha sido generado.
-
-#### 🎨 Uso en Tiled
-
-Para que un tile se anime en el juego:
-
-1.  **Editor de Tilesets**:
-    - Abre tu tileset en Tiled (`.tsx` o pestaña de tileset).
-    - Selecciona el tile que quieres animar.
-    - Ve al panel de **Animación de Teselas** (Tile Animation Editor).
-    - Arrastra los frames que componen la animación y define la duración de cada uno (en ms).
-
-2.  **Capa de Patrones (Tile Layer)**:
-    - Selecciona una **Capa de Patrones** (NO una Capa de Objetos).
-    - Pinta el mapa con el tile animado que acabas de configurar.
-
-Al exportar el mapa a JSON y ejecutar el juego, el plugin detectará automáticamente estos metadatos y reproducirá la animación.
+**Daño frame-accurate:** `EnemyAttackState` registra un listener de `animationupdate`. Al alcanzar `hitFrame`, crea un `Phaser.Geom.Rectangle` y verifica si el cuerpo del jugador intersecta. Solo ejecuta el daño una vez por swing. El listener se limpia en `exit()` para evitar memory leaks.
 
 ---
 
-## 🎁 Conversión de GIFs a Sprites (EzGif)
+## 🖥️ Capa de UI (Svelte 5)
 
-Para integrar animaciones desde archivos GIF en Phaser, es recomendable convertirlos a Spritesheets:
+### Arquitectura de Comunicación
 
-1. **Herramienta**: Utiliza [EzGif - GIF to Sprite Sheet](https://ezgif.com/gif-to-sprite).
-2. **Opciones de Conversión**:
-   - **Tile alignment**: Selecciona `Stack horizontally`.
-   - **Margin around tiles**: `0 px`.
-3. **Cálculo de Dimensiones**:
-   - La página de EzGif indica el alto, ancho y cantidad de frames.
-   - **Importante**: Necesitamos conocer el **ancho** y **alto** exactos de un frame para poder importar de manera correcta el sprite en el software **Tiled**, asegurando que cada uno se encuadre perfectamente.
+```
+Phaser (PlayScene/Level2Scene)
+        │
+        ├── openModal(view, data)  ──→  uiStore  ──→  App.svelte
+        │                                               │
+        │                                    ┌──────────┤
+        │                                    │  Modal   │
+        │                                    │ Dialogue │
+        │                                    │  Sign    │
+        │                                    │ GameOver │
+        │                                    └──────────┘
+        │
+        └── scene.events.emit('player-health-changed')
+                    │
+                UIScene (Phaser, paralela)
+                    │
+              HUD (health bar)
+```
+
+### `src/ui/stores/uiStore.js`
+
+```javascript
+const uiStore = writable({ isOpen: false, view: null, data: null })
+export const openModal = (view, data) => { ... }
+export const closeModal = () => { ... }
+```
+
+El store es el único punto de acoplamiento entre Phaser y Svelte. Phaser no importa nada de Svelte; solo llama funciones del store.
+
+### `src/ui/App.svelte`
+
+Componente raíz. Renderiza condicionalmente según `uiStore.view`:
+
+| Vista | Componente |
+|:------|:-----------|
+| `GAME_OVER` | `GameOver.svelte` |
+| `NPC` | `Dialogue.svelte` |
+| `SIGN` | `Sign.svelte` |
+| `PROFILE`, `EXPERIENCE`, `SKILLS`, `EDUCATION`, `CERTS` | Contenido en `Modal.svelte` |
+
+### `src/ui/components/GameOver.svelte`
+
+Pantalla de muerte:
+- Overlay oscuro (75% opacidad).
+- Título "YOU DIED" en rojo (Press Start 2P), animación flickering.
+- Emoji calavera con pulso y filtro grayscale.
+- Botón "PLAY AGAIN" → `window.location.reload()`.
+
+Disparado por `Level2Scene` cuando el jugador muere: delay 1.2s → `openModal(GAME_OVER)`.
+
+### Componentes de portfolio (`src/ui/components/header/`)
+
+- `Profile.svelte` — Datos personales y resumen profesional.
+- `Experience.svelte` / `SingleExperience.svelte` — Historial laboral.
+- `Skills.svelte` — Habilidades técnicas.
+- `Education.svelte` — Formación académica.
+
+Todos usan datos de `src/data/ResumeData.js`.
 
 ---
 
 ## 🔊 Sistema de Audio Avanzado
 
-El juego implementa un motor de audio robusto y dinámico que sumerge al jugador en el entorno. Gestiona música de fondo adaptativa, efectos de sonido sincronizados con animaciones y audio espacial posicional.
+### `src/utils/AudioManager.js`
 
-### 📂 Gestión de Assets de Audio
+Singleton que centraliza todo el control de audio del juego.
 
-Todos los archivos de audio se encuentran en `public/assets/audio/` y se cargan a través del `AssetManifest.js`.
+**API completa:**
 
-- **Música (`/music`)**: Pistas en bucle para cada bioma (Normal, Otoño, Invierno).
-- **Ambiente (`/env`)**: Loops de sonidos naturales como cascadas, viento y fuego.
-- **Efectos (`/sfx`)**: Sonidos de acción (pasos, saltos, ataques, aterrizajes).
+```javascript
+playMusic(key, fadeDuration = 1000, targetVolume = null)
+// Cross-fade: fade-out de la pista actual, fade-in de la nueva.
+// Si la clave es la misma, no hace nada.
 
-### 🧠 Arquitectura del Código
+setMusicVolume(volume)
+// Clamp [0,1], aplica al track actual.
 
-#### 1. `src/utils/AudioManager.js` (El Núcleo)
+playSfx(key, config = {})
+// Sonido one-shot al volumen sfxVolume (0.5).
 
-Un Singleton que centraliza todo el control de audio.
+addSpatialSound(id, key, sourceObj, radius, maxVolume)
+// Registra un sonido ambiente looping en una posición del mapa.
+// Evita duplicados por id.
 
-- **Cross-fading de Música**: Transiciones suaves automáticas entre pistas de biomas. Si el jugador corre de un bioma a otro, la música antigua se desvanece mientras entra la nueva.
-- **Audio Espacial**: Calcula la distancia entre el jugador y las fuentes de sonido (como una fogata) en cada frame. Ajusta el volumen dinámicamente: más fuerte cerca, silencioso lejos.
-- **Control Global**: Métodos para pausar, reanudar y ajustar el volumen maestro.
+updateSpatialSounds(player)
+// Llamado cada frame. Calcula distancia jugador↔fuente.
+// Falloff lineal: volume = maxVolume * (1 - dist / radius)
+// Si dist >= radius → volume = 0.
 
-#### 2. Integración en `PlayScene.js`
+stopAllSpatialSounds()
+// Detiene y destruye todos los sonidos espaciales, limpia el Map.
+// PlayScene lo llama en shutdown para evitar que persistan en Level2.
+```
 
-- **Inicialización**: Crea la instancia de `AudioManager` al inicio.
-- **Update Loop**: Llama a `audioManager.updateSpatialSounds(player)` en cada frame para recalcular volúmenes espaciales.
-- **Detección de Biomas**: Monitorea la posición del jugador para disparar cambios de música según la zona del mapa.
+**Por qué singleton:** El `AudioManager` se instancia una vez en `PlayScene` y la misma instancia se reutiliza en `Level2Scene`. Esto permite que la música continúe entre escenas si es necesario, y que el estado de volumen sea consistente.
 
-#### 3. Estados del Jugador (`src/player/states/`)
+**Cleanup entre escenas:** Al hacer `scene.start('Level2Scene')`, `PlayScene` dispara su evento `shutdown`. En ese handler se llama `stopAllSpatialSounds()` para limpiar el Map antes de que Level2 arranque. Sin esto, los sonidos de la capa `Audio` del Nivel 1 persistirían indefinidamente.
 
-El audio está desacoplado de la lógica visual y se dispara por eventos de estado:
+### Integración por capas
 
-- **`JumpState.js`**: Reproduce `sfx_jump` al iniciar el salto.
-- **`LandingState.js`**: Reproduce `sfx_land` al tocar el suelo.
-- **`AttackState.js`**: Reproduce `sfx_attack` sincronizado con la animación.
-- **`RunState.js`**: Sistema de pasos inteligente (ver abajo).
-
-### 🛠️ Configuración en Tiled (Guía Detallada)
-
-Para que el sistema funcione, el mapa debe configurarse correctamente en Tiled.
-
-#### A. Música de Biomas
-
-1.  **Capa de Objetos**: Asegúrate de tener una capa llamada `Biomes`.
-2.  **Zonas**: Dibuja rectángulos cubriendo cada área.
-3.  **Propiedad `biome`**: Asigna el valor `normal`, `autumn` o `winter`. El `AudioManager` sabrá qué pista tocar.
-
-#### B. Audio Espacial (Cascadas, Fogatas)
-
-1.  **Capa `Audio`**: Crea una Capa de Objetos llamada **exactamente** `Audio`.
-2.  **Objetos de Sonido**: Coloca un punto o rectángulo en la fuente del sonido.
-3.  **Propiedades Personalizadas**:
-    - `sound` (string): Clave del sonido (ej: `WATERFALL` o `FIRE_CRACKLE`).
-    - `radius` (float): Distancia en píxeles donde se empieza a escuchar (ej: `400.0`).
-    - `volume` (float): Volumen máximo al estar encima (0.0 a 1.0).
-    - `loop` (bool): `true` (por defecto).
-
-> **Nota Técnica**: El código procesa esta capa `Audio` solo para extraer datos. **No crea sprites visuals**, por lo que no verás cajas verdes feas en el juego.
-
-#### C. Pasos Dinámicos (Suelo)
-
-El juego detecta el tipo de suelo bajo los pies del jugador para cambiar el sonido de los pasos.
-
-1.  **Editor de Tilesets**: En Tiled, edita tu tileset de suelos.
-2.  **Selección**: Selecciona los tiles de piedra, madera, etc.
-3.  **Propiedad `material`**: Añade una propiedad personalizada llamada `material` (string).
-    - Valor `stone` -> Reproduce `step_stone`.
-    - Sin propiedad -> Reproduce `step_grass` (por defecto).
+- **Música:** PlayScene detecta en qué rectángulo de la capa `Biomes` está el jugador y llama `audioManager.playMusic()`.
+- **Ambiente:** Objetos de la capa `Audio` (cascadas, fogatas, viento) se registran en `addSpatialSound()`. El volumen se recalcula cada frame en `update()`.
+- **SFX del jugador:** Los estados del jugador disparan SFX directamente (`JumpState` → `sfx_jump`, `LandingState` → `sfx_land`, etc.).
+- **SFX de enemigos:** Los estados FSM de los enemigos reproducen SFX según las propiedades de la clase (`attackSfx`, `hurtSfx`, `deathSfx`), con fallback a SFX genéricos de slime.
 
 ---
 
-## 🤖 Sistema de NPCs (Non-Player Characters)
-
-El juego soporta NPCs con comportamientos configurables directamente desde Tiled, incluyendo patrullaje opcional y sistema de diálogos interactivos.
-
-### 🛠️ Configuración en Tiled
-
-Para añadir un NPC al mapa:
-
-1.  **Capa de Objetos**: Trabaja sobre la capa `Objects`.
-2.  **Insertar Objeto**: Coloca un Tile Object en la posición deseada.
-3.  **Propiedades**: Añade las siguientes propiedades personalizadas.
-
-#### Propiedades Básicas (Obligatorias)
-
-| Propiedad         | Tipo     | Valor                    | Descripción                       |
-| :---------------- | :------- | :----------------------- | :-------------------------------- |
-| **`entity`**      | `string` | **`npc`**                | Identifica al objeto como un NPC. |
-| **`texture`**     | `string` | _(ej: `priestess`)_      | La clave del sprite en Phaser.    |
-| **`initialAnim`** | `string` | _(ej: `priestess_idle`)_ | Animación inicial por defecto.    |
-
-#### Comportamiento de Movimiento (Opcional)
-
-Por defecto, los NPCs son **estáticos**. Para que se muevan:
-
-| Propiedad       | Tipo    | Default | Descripción                                 |
-| :-------------- | :------ | :------ | :------------------------------------------ |
-| **`canMove`**   | `bool`  | `false` | Si es `true`, el NPC patrullará.            |
-| **`moveRange`** | `float` | `100`   | Distancia de patrulla (px) desde el origen. |
-| **`moveSpeed`** | `float` | `50`    | Velocidad de movimiento.                    |
-
-#### Sistema de Diálogo (Opcional)
-
-Para que el NPC interactúe con el jugador (tecla **E**):
-
-| Propiedad        | Tipo     | Ejemplo       | Descripción                                   |
-| :--------------- | :------- | :------------ | :-------------------------------------------- |
-| **`dialogueId`** | `string` | `priestess_1` | ID único definido en `src/data/Dialogues.js`. |
+## 🏃‍♂️ Sistema del Jugador (sección anterior — actualizada arriba)
 
 ---
 
-### 📝 Ejemplos de Configuración
+## 🗺️ Mapa y Niveles (Tiled)
 
-#### 1. Perro Guardián (Patrulla, sin diálogo)
+Los mapas se crean en **Tiled Map Editor** y se exportan como JSON a `public/assets/maps/`.
 
-Un NPC que camina de un lado a otro.
+### Capas que el motor interpreta
 
-- `entity`: `npc`
-- `texture`: `doggy_brown`
-- `initialAnim`: `doggy_run`
-- `canMove`: `true` (Bool)
-- `moveRange`: `150`
+| Capa | Tipo | Propósito |
+|:-----|:-----|:----------|
+| `Ground` | Tile Layer | Plataforma principal, colisión con el jugador |
+| `Collisions` | Object Layer | Rectángulos de colisión manual para geometría irregular |
+| `Platforms` | Object Layer | Plataformas one-way (atravesables desde abajo) |
+| `Objects` | Object Layer | Entidades, interactables, spawn points |
+| `Biomes` | Object Layer | Zonas que triggean cambio de música y fondo |
+| `Audio` | Object Layer | Fuentes de sonido espacial invisibles |
+| `START` | Object Layer | Punto de spawn del jugador |
 
-#### 2. Aldeano (Estático, con diálogo)
+### Propiedades personalizadas soportadas
 
-Un NPC quieto que habla al pulsar E.
+**En objetos de la capa `Objects`:**
 
-- `entity`: `npc`
-- `texture`: `villager_01`
-- `initialAnim`: `villager_01_idle`
-- `dialogueId`: `villager_1`
+| Propiedad | Tipo | Descripción |
+|:----------|:-----|:------------|
+| `entity` | string | `dummy`, `npc`, `slime`, `demon_slime` — spawna la entidad correspondiente |
+| `variant` | string | Para slimes: `blue`, `green`, `red` |
+| `interactionType` | string | `profile`, `experience`, `skills`, `education`, `sign`, `teleport` |
+| `animation` / `anim` | string | Clave de animación Phaser a reproducir sobre el objeto |
+| `dialogueId` | string | ID de diálogo definido en `Dialogues.js` (para NPCs) |
+| `targetScene` | string | Escena destino para teleports |
+| `text` | string | Texto a mostrar en letreros (`interactionType: sign`) |
+| `canMove` | bool | NPC patrulla si es `true` |
+| `moveRange` | float | Distancia de patrulla en px |
+| `texture` | string | Clave del sprite para NPCs |
+| `initialAnim` | string | Animación inicial del NPC |
 
-### 🗣️ Configurar Diálogos (`src/data/Dialogues.js`)
+**En objetos de la capa `Biomes`:**
 
-Para añadir nuevos textos, edita el archivo `Dialogues.js`:
+| Propiedad | Valor | Efecto |
+|:----------|:------|:-------|
+| `biome` | `normal` / `autumn` / `winter` | Cambia música y capas de fondo parallax al entrar |
+
+**En objetos de la capa `Audio`:**
+
+| Propiedad | Tipo | Descripción |
+|:----------|:-----|:------------|
+| `sound` | string | Clave del audio (`WATERFALL`, `FIRE_CRACKLE`, etc.) |
+| `radius` | float | Distancia máxima de escucha en px |
+| `volume` | float | Volumen máximo (0.0 a 1.0) |
+
+**En tiles individuales del tileset:**
+
+| Propiedad | Tipo | Efecto |
+|:----------|:-----|:-------|
+| `material` | `stone` / (omitido) | Cambia el SFX de pasos: piedra o hierba (default) |
+
+---
+
+## 🪜 Plataformas Atravesables (One-Way Platforms)
+
+Plataformas que permiten saltar a través desde abajo y pararse encima. Bajar con ↓ o S.
+
+**Técnica:** Se configuran cuerpos físicos con `body.checkCollision.up = true` y el resto en `false`. Al presionar ↓, el colisionador se desactiva 250ms con `delayedCall` y luego se reactiva.
+
+**Configuración en Tiled:** Capa de objetos `Platforms`, rectángulos invisibles sobre las plataformas.
+
+---
+
+## 🤖 Sistema de NPCs
+
+Configurado 100% desde Tiled via propiedades personalizadas en la capa `Objects`.
+
+### Propiedades en Tiled
+
+| Propiedad | Tipo | Obligatoria | Descripción |
+|:----------|:-----|:-----------|:------------|
+| `entity` | string | ✅ | `npc` |
+| `texture` | string | ✅ | Clave del sprite |
+| `initialAnim` | string | ✅ | Animación inicial |
+| `canMove` | bool | ❌ | Activa patrulla |
+| `moveRange` | float | ❌ | Distancia de patrulla (default: 100) |
+| `dialogueId` | string | ❌ | ID en `Dialogues.js` |
+
+### Configurar Diálogos (`src/data/Dialogues.js`)
 
 ```javascript
 export const NPC_DIALOGUES = {
@@ -374,36 +521,69 @@ export const NPC_DIALOGUES = {
 
 ---
 
-## 📐 Guía de Propiedades Personalizadas en Tiled (Referencia Rápida)
+## 🧩 Plugin: phaser-animated-tiles
 
-Para dar vida a los objetos en Tiled, puedes añadirles **Propiedades Personalizadas** (Custom Properties). El motor (`PlayScene.js`) leerá estas propiedades y les dará funcionalidad automáticamente.
+Phaser 3 no reproduce animaciones definidas en tilesets de Tiled por defecto (renderiza solo el primer frame). Este plugin llena ese vacío.
 
-### Propiedades Generales (Cualquier Objeto)
+**Inicialización en `PlayScene`:**
+1. `preload()` — carga el plugin como `scenePlugin`.
+2. `create()` — `this.sys.animatedTiles.init(this.map)` tras crear el mapa.
 
-Puedes añadir estas propiedades a cualquier objeto en la capa `Objects`, `Decorations`, etc.
+**Uso en Tiled:** Seleccioná el tile en el editor de tilesets → panel "Tile Animation" → arrastrá los frames y definí duración en ms. Pintá el mapa con ese tile. El plugin lo detecta automáticamente al exportar a JSON.
 
-| Propiedad             | Tipo     | Ejemplo de Valor | Descripción                                                                   |
-| :-------------------- | :------- | :--------------- | :---------------------------------------------------------------------------- |
-| **`interactionType`** | `string` | `sign`, `pc`     | Convierte el objeto en interactuable. Define qué acción ocurre al pulsar 'E'. |
-| **`animation`**       | `string` | `campfire_idle`  | Reproduce automáticamente una animación de Phaser sobre el objeto.            |
-| **`text`**            | `string` | `¡Peligro!`      | Texto a mostrar si el `interactionType` es un letrero o requiere lectura.     |
-| **`id`**              | `string` | `my_unique_id`   | Identificador único opcional para lógicas específicas (ej. un cofre único).   |
+---
 
-### Propiedades de Audio Espacial (Nuevo)
+## 🎁 Conversión de GIFs a Spritesheets (EzGif)
 
-¡Ahora puedes añadir sonido a **cualquier objeto** (fuentes, fogatas, NPCs), o usar la capa invisible `Audio`!
+Para integrar animaciones GIF en Phaser:
 
-| Propiedad    | Tipo     | Ejemplo de Valor | Descripción                                                              |
-| :----------- | :------- | :--------------- | :----------------------------------------------------------------------- |
-| **`sound`**  | `string` | `FIRE_CRACKLE`   | La clave del sonido a reproducir en bucle (referencia a `AUDIO.ENV`).    |
-| **`radius`** | `float`  | `300.0`          | El radio en píxeles donde el jugador puede escuchar el sonido.           |
-| **`volume`** | `float`  | `0.8`            | El volumen máximo (0.0 a 1.0) cuando el jugador está al lado del objeto. |
+1. **Herramienta**: [EzGif - GIF to Sprite Sheet](https://ezgif.com/gif-to-sprite).
+2. **Opciones**: `Stack horizontally`, margin `0 px`.
+3. **Dimensiones**: EzGif informa ancho, alto y cantidad de frames. El `frameWidth` para Phaser = ancho total / cantidad de frames.
 
-_(Nota: Si usas estas propiedades en un tile de cascada en la capa `Objects`, el sonido emanará de él automáticamente sin necesidad de separar el audio en otra capa)._
+---
 
-### Propiedades de Configuración de Mundo
+## 📐 Referencia Rápida: Propiedades Personalizadas en Tiled
 
-| Capa / Uso         | Propiedad  | Tipo     | Ejemplo de Valor | Descripción                                                                            |
-| :----------------- | :--------- | :------- | :--------------- | :------------------------------------------------------------------------------------- |
-| **Zonas de Bioma** | `biome`    | `string` | `winter`         | Se aplica a rectángulos en la capa `Biomes`. Define qué música y fondo se usa.         |
-| **Suelos (Tiles)** | `material` | `string` | `stone`          | Se aplica a Tiles individuales en el Editor de Tilesets. Cambia el ruido de los pasos. |
+### Objetos (`Objects` layer)
+
+| Propiedad | Tipo | Ejemplo | Descripción |
+|:----------|:-----|:--------|:------------|
+| `interactionType` | string | `sign`, `profile` | Acción al presionar E |
+| `animation` | string | `campfire_idle` | Animación Phaser sobre el objeto |
+| `text` | string | `¡Peligro!` | Texto para letreros |
+| `entity` | string | `npc`, `slime` | Spawna entidad |
+| `sound` | string | `FIRE_CRACKLE` | Audio espacial looping |
+| `radius` | float | `300.0` | Radio de escucha en px |
+| `volume` | float | `0.8` | Volumen máximo |
+
+### Zonas de Bioma (`Biomes` layer)
+
+| Propiedad | Tipo | Valores | Descripción |
+|:----------|:-----|:--------|:------------|
+| `biome` | string | `normal`, `autumn`, `winter` | Triggera música y fondo |
+
+### Tiles en Editor de Tileset
+
+| Propiedad | Tipo | Valores | Descripción |
+|:----------|:-----|:--------|:------------|
+| `material` | string | `stone` | Cambia SFX de pasos |
+
+---
+
+## 🛠️ Agregar un Nuevo Nivel
+
+1. Crear `src/scenes/Level3Scene.js` (copiar estructura de `Level2Scene`).
+2. Registrar en el array de escenas de `src/main.js`.
+3. Exportar mapa Tiled a `public/assets/maps/` y registrarlo en `AssetManifest.js` y `Constants.js`.
+4. Agregar la clave del mapa a `ASSETS` y el nombre de la escena a `SCENES` en `Constants.js`.
+
+## 🛠️ Agregar un Nuevo Enemigo
+
+1. Crear `src/entities/enemies/MyEnemy.js` extendiendo `Enemy.js`. Pasar `EnemyConfig` (con `animKeys` y opcionalmente `attackHitbox`) a `super()`. Definir `this.facesLeftByDefault = true` si el spritesheet mira a la izquierda naturalmente.
+2. Si necesita lógica de FSM especial, crear estados en `src/entities/enemies/states/` (los genéricos están ahí).
+3. Agregar la clave del asset a `ASSETS` y el tipo a `ENTITY_TYPES` en `Constants.js`.
+4. Registrar el spritesheet en `AssetManifest.js` (con `frameWidth`/`frameHeight`) y agregar configs de animación + `SPRITE_CONFIG` en `Animations.js`. Incluir en `MASTER_ANIMATIONS_REGISTRY`.
+5. Spawnear desde Tiled usando la propiedad `entity` con el valor del tipo en `ENTITY_TYPES`.
+6. En la escena, en `processObjectLayer`, agregar el branch que crea `new MyEnemy(this, x, y)` y lo agrega al grupo `enemies`.
+7. Assets de audio en `public/assets/audio/enemies/bosses/`, sprites en `public/assets/sprites/enemies/bosses/`.

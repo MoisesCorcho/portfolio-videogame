@@ -14,7 +14,7 @@
                         <span class="italic">{exp.date}</span>
                     </div>
                 </div>
-                <p class="text-sm mb-4 text-gray-300 leading-relaxed">{exp.description}</p>
+                <p class="text-sm mb-4 text-gray-300 leading-relaxed">{@html exp.description}</p>
                 <div class="flex flex-wrap gap-1">
                     {#each exp.stack as s}
                         <span class="pixel-chip text-xs">{s}</span>

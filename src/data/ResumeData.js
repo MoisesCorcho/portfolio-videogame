@@ -14,48 +14,22 @@ export const ResumeData = {
   },
   experience: [
     {
-      id: 'exp_ticworks',
-      role: 'PHP Developer',
-      company: 'TICWorks',
-      date: 'Marzo 2026 – Abril 2026',
+      id: 'exp_dvloper_2026',
+      role: 'Full Stack Developer',
+      company: 'DVLOPER',
+      date: 'Febrero 2026 – Actualidad',
       description:
-        'Participé activamente en la modernización y el mantenimiento evolutivo de la plataforma TICWorks, colaborando en la migración técnica del motor de PHP 7.2 hacia PHP 8.2. Implementamos el uso de PHPStan para análisis estático preventivo y optimizamos el sistema de logging. Reforcé la seguridad en módulos críticos (Auth, Jobs, Payments) y mejoré la experiencia de postulación con flujos dinámicos.',
+        'Como desarrollador en DVLOPER, participé en la arquitectura y desarrollo de múltiples productos digitales complejos para distintos clientes (bajo NDA):<br><br>• <strong class="text-slate-200">Plataforma HR Tech B2B (TicWorks):</strong> Participación en migración del core a PHP 8.2, dockerización, centralización de configuraciones sensibles en archivos .env  y optimización de flujos dinámicos de postulación.<br>• <strong class="text-slate-200">SaaS de IA para Instagram (Lia):</strong> Lideré la UI y el ecosistema de monetización usando React, Zustand, Stripe Checkout y Laravel Cashier v16 bajo principios de Clean Architecture.<br>• <strong class="text-slate-200">Exchange Corporativo Europeo (Flusso):</strong> Rebranding responsivo pixel-perfect de su landing page usando Vue 3 e Inertia.js sobre Laravel 12.',
       stack: [
-        'PHP 8.2',
+        'PHP 8.2/8.3',
         'Laravel',
-        'MySQL',
-        'PHPStan',
-        'Docker',
-        'Git',
-        'Composer',
-      ],
-    },
-    {
-      id: 'exp_lia',
-      role: 'Full Stack Developer (Laravel & React)',
-      company: 'Lia',
-      date: 'Febrero 2026 – Marzo 2026',
-      description:
-        'Lideré el desarrollo del ecosistema de monetización y la maduración de la interfaz de usuario de Lia (IA). Implementé el flujo de suscripciones con Stripe Checkout y Laravel Cashier v16. Desarrollé un Paywall con interceptores dinámicos y gestión de estado con Zustand, asegurando soporte para Dark Mode e internacionalización bajo Clean Architecture.',
-      stack: [
-        'PHP 8.3',
-        'Laravel 11',
         'React',
-        'Zustand',
+        'Vue 3',
+        'Inertia.js',
         'Stripe',
-        'TypeScript',
         'Tailwind',
-        'TDD',
+        'Docker',
       ],
-    },
-    {
-      id: 'exp_flusso',
-      role: 'Laravel / Vue Fullstack Developer',
-      company: 'Flusso',
-      date: 'Febrero 2026 – Marzo 2026',
-      description:
-        'Ejecuté el rebranding completo de la Landing Page de Flusso, traduciendo diseños de Figma a una interfaz pixel-perfect de alta fidelidad. Implementé una experiencia 100% responsiva utilizando Tailwind CSS y Vue 3 con Inertia.js y Laravel 12, garantizando una implementación pulida y moderna del punto de entrada principal.',
-      stack: ['PHP 8.3', 'Laravel 12', 'Vue 3', 'Inertia.js', 'Tailwind', 'Git'],
     },
     {
       id: 'exp_andrestelocambia',

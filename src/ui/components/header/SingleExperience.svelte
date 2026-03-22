@@ -33,7 +33,7 @@
             <!-- Description -->
             <div class="mb-6">
                 <p class="text-base leading-relaxed text-gray-200">
-                    {experience.description}
+                    {@html experience.description}
                 </p>
             </div>
 
